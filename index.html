@@ -7,15 +7,18 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Cormorant+Garamond:ital,wght@1,500;1,600&display=swap" rel="stylesheet">
+    
+    <!-- Библиотеки для PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
     <style>
         :root {
-            /* Розово-фиолетовая палитра */
             --primary: #6366f1;       /* Индиго */
             --secondary: #ec4899;     /* Розовый */
             --accent-purple: #a855f7;
             --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            --card-bg: rgba(255, 255, 255, 0.95);
+            --card-bg: rgba(255, 255, 255, 0.98);
             --text-dark: #1f2937;
             --text-light: #6b7280;
             --success: #10b981;
@@ -45,7 +48,6 @@
             border-radius: 24px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
             overflow: hidden;
-            backdrop-filter: blur(10px);
         }
 
         .header {
@@ -60,7 +62,6 @@
             font-size: 2.5rem;
             margin-bottom: 10px;
             font-weight: 600;
-            letter-spacing: -0.5px;
         }
 
         .header p {
@@ -73,7 +74,7 @@
             padding: 40px 30px;
         }
 
-        /* Аккордеон Теории */
+        /* Аккордеоны (Теория и Сны) */
         .accordion {
             border: 1px solid var(--border-color);
             border-radius: 16px;
@@ -95,19 +96,9 @@
             transition: background 0.3s;
         }
 
-        .accordion-header:hover {
-            background: #f3f4f6;
-        }
-
-        .accordion-header .icon {
-            transition: transform 0.3s ease;
-            font-size: 1.2rem;
-            color: var(--secondary);
-        }
-
-        .accordion-header.active .icon {
-            transform: rotate(180deg);
-        }
+        .accordion-header:hover { background: #f3f4f6; }
+        .accordion-header .icon { transition: transform 0.3s ease; font-size: 1.2rem; color: var(--secondary); }
+        .accordion-header.active .icon { transform: rotate(180deg); }
 
         .accordion-body {
             max-height: 0;
@@ -116,9 +107,7 @@
             background: white;
         }
 
-        .accordion-body.open {
-            max-height: 5000px; /* Большое значение для полного раскрытия */
-        }
+        .accordion-body.open { max-height: 5000px; }
 
         .theory-content {
             padding: 30px;
@@ -131,12 +120,10 @@
             font-size: 1.5rem;
             color: var(--text-dark);
             margin: 25px 0 15px 0;
-            border-bottom: 2px solid #fce7f3; /* Светло-розовая линия */
+            border-bottom: 2px solid #fce7f3;
             padding-bottom: 8px;
         }
         
-        .theory-content h3:first-child { margin-top: 0; }
-
         .theory-content h4 {
             font-size: 1.1rem;
             color: var(--primary);
@@ -147,11 +134,9 @@
         .theory-content p { margin-bottom: 12px; }
         .theory-content ul { margin-left: 20px; margin-bottom: 15px; list-style-type: disc; }
         .theory-content li { margin-bottom: 6px; }
-        
         .theory-content strong { color: var(--text-dark); font-weight: 600; }
         .theory-content em { color: var(--secondary); font-style: italic; }
 
-        /* Диаграммы */
         .diagram-container {
             background: #fdfbff;
             border: 1px solid #f3e8ff;
@@ -162,20 +147,9 @@
             overflow-x: auto;
         }
         
-        .diagram-container svg {
-            max-width: 100%;
-            height: auto;
-            min-width: 300px;
-        }
+        .diagram-container svg { max-width: 100%; height: auto; min-width: 300px; }
+        .caption { font-size: 0.85rem; color: var(--text-light); margin-top: 10px; font-style: italic; }
 
-        .caption {
-            font-size: 0.85rem;
-            color: var(--text-light);
-            margin-top: 10px;
-            font-style: italic;
-        }
-
-        /* Сетка инъюнкций */
         .injunction-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
@@ -184,7 +158,7 @@
         }
 
         .injunction-item {
-            background: #eff6ff; /* Светло-синий */
+            background: #eff6ff;
             color: #1d4ed8;
             padding: 10px;
             border-radius: 8px;
@@ -194,13 +168,12 @@
             border: 1px solid #dbeafe;
         }
 
-        /* Информационный блок перед тестом */
         .quiz-info-block {
             display: flex;
             justify-content: center;
             gap: 20px;
             flex-wrap: wrap;
-            background: #fdf4ff; /* Очень светло-розовый */
+            background: #fdf4ff;
             border: 1px solid #fbcfe8;
             padding: 15px 20px;
             border-radius: 12px;
@@ -210,11 +183,7 @@
             font-weight: 500;
         }
 
-        .info-item {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
+        .info-item { display: flex; align-items: center; gap: 6px; }
 
         .btn-start {
             display: block;
@@ -233,10 +202,7 @@
             box-shadow: 0 4px 15px rgba(236, 72, 153, 0.3);
         }
 
-        .btn-start:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(236, 72, 153, 0.4);
-        }
+        .btn-start:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(236, 72, 153, 0.4); }
 
         /* Опросник */
         .progress-container {
@@ -282,11 +248,7 @@
             color: var(--text-dark);
         }
 
-        .options-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
+        .options-grid { display: flex; flex-direction: column; gap: 12px; }
 
         .option-label {
             display: flex;
@@ -301,15 +263,10 @@
 
         .option-label:hover { border-color: var(--secondary); background: #fdf2f8; }
         
-        .option-label input[type="radio"] {
-            position: absolute;
-            opacity: 0;
-            cursor: pointer;
-        }
+        .option-label input[type="radio"] { position: absolute; opacity: 0; cursor: pointer; }
 
         .radio-custom {
-            width: 20px;
-            height: 20px;
+            width: 20px; height: 20px;
             border: 2px solid #d1d5db;
             border-radius: 50%;
             margin-right: 16px;
@@ -396,6 +353,37 @@
             border-radius: 4px;
         }
 
+        /* Блок снов */
+        .dream-prompt-box {
+            background: #1f2937;
+            color: #e5e7eb;
+            padding: 20px;
+            border-radius: 12px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            position: relative;
+            margin-top: 15px;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 6px 12px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            transition: background 0.2s;
+        }
+        .copy-btn:hover { background: #4338ca; }
+        .copy-btn.copied { background: var(--success); }
+
         @media (max-width: 768px) {
             .content { padding: 30px 20px; }
             .header h1 { font-size: 2rem; }
@@ -415,7 +403,7 @@
     </div>
 
     <div class="content">
-        <!-- Блок теории (Аккордеон) -->
+        <!-- Блок теории -->
         <div class="accordion">
             <div class="accordion-header" id="theoryToggle">
                 <span>Теория</span>
@@ -423,12 +411,10 @@
             </div>
             <div class="accordion-body" id="theoryBody">
                 <div class="theory-content">
-                    
                     <h3>Что такое Транзактный Анализ?</h3>
-                    <p>ТА — это теория личности и метод психотерапии, разработанный Эриком Берном. Он основан на идее, что каждый человек изначально находится в позиции <em>«Я-ОК, Ты-ОК»</em>, но в процессе взросления формирует бессознательный жизненный план (сценарий), который может искажать эту позицию.</p>
+                    <p>ТА — это теория личности и метод психотерапии, разработанный Эриком Берном. Он основан на идее, что каждый человек изначально находится в позиции <em>«Я-ОК, Ты-ОК»</em>, но в процессе взросления формирует бессознательный жизненный план (сценарий).</p>
 
                     <h3>1. Модель эго-состояний</h3>
-                    <p>Личность состоит из трех основных состояний:</p>
                     <ul>
                         <li><strong>Родитель (P):</strong> Заимствованные мысли, чувства и поведения от авторитетных фигур детства.</li>
                         <li><strong>Взрослый (A):</strong> Объективная оценка реальности «здесь и сейчас», логика.</li>
@@ -447,7 +433,7 @@
                     </div>
 
                     <h3>2. Инъюнкции (Сценарные приказания)</h3>
-                    <p>Инъюнкции — это глубинные запрещающие послания, составляющие ядро жизненного сценария. Согласно Р. и М. Гулдингам, существует 12 классических инъюнкций:</p>
+                    <p>Согласно Р. и М. Гулдингам, существует 12 классических инъюнкций:</p>
                     <div class="injunction-grid">
                         <div class="injunction-item">Не живи</div>
                         <div class="injunction-item">Не будь собой</div>
@@ -464,13 +450,13 @@
                     </div>
 
                     <h4>Кем формируются?</h4>
-                    <p>Инъюнкции исходят из <strong>эго-состояния Ребёнка родителя</strong> и направляются в <strong>эго-состояние Ребёнка ребёнка</strong>. Это значит, что они рождаются не из зрелой части родителя, а из его собственных детских травм, страхов и обид.</p>
+                    <p>Инъюнкции исходят из <strong>эго-состояния Ребёнка родителя</strong> и направляются в <strong>эго-состояние Ребёнка ребёнка</strong>. Они рождаются не из зрелой части родителя, а из его собственных детских травм, страхов и обид.</p>
 
                     <h4>Когда формируются?</h4>
-                    <p>Закладываются в <strong>раннем детстве (довербальный период)</strong>, преимущественно до 2–3 лет. Хотя могут усиливаться вплоть до 6–8 лет.</p>
+                    <p>Закладываются в <strong>раннем детстве (довербальный период)</strong>, преимущественно до 2–3 лет.</p>
 
                     <h4>Как передаются?</h4>
-                    <p>По своей природе они <strong>невербальны</strong>. Передаются через тон голоса, мимику, жесты, напряжение тела, эмоциональную атмосферу (холодность, тревога) и паттерны прикосновений. Ребёнок «считывает» их своим <em>Маленьким Профессором</em> (интуитивной частью психики).</p>
+                    <p>По своей природе они <strong>невербальны</strong>. Передаются через тон голоса, мимику, жесты, напряжение тела, эмоциональную атмосферу. Ребёнок «считывает» их своим <em>Маленьким Профессором</em>.</p>
 
                     <h3>3. Драйверы (Компенсаторные паттерны)</h3>
                     <p>Выделенные Таиби Калером 5 специфических поведенческих паттернов, которые активируются в стрессе. Они говорят: <em>«Ты ОК, только если...»</em>.</p>
@@ -483,16 +469,15 @@
                     </ul>
 
                     <h4>Кем формируются?</h4>
-                    <p>Исходят из <strong>Родителя родителя</strong> (критикующей или требовательной части) и направляются в <strong>Родителя ребёнка</strong> (внутренний критик). Это квинтэссенция наиболее эмоционально заряженных директив.</p>
+                    <p>Исходят из <strong>Родителя родителя</strong> и направляются в <strong>Родителя ребёнка</strong>. Это квинтэссенция наиболее эмоционально заряженных директив.</p>
 
                     <h4>Когда формируются?</h4>
-                    <p>Формируются позже инъюнкций, в возрасте <strong>от 3 до 12 лет</strong>, когда ребёнок уже владеет речью и понимает словесные инструкции («будь хорошим», «старайся», «не отставай»).</p>
+                    <p>Формируются позже инъюнкций, в возрасте <strong>от 3 до 12 лет</strong>, когда ребёнок уже владеет речью.</p>
 
                     <h4>Как передаются?</h4>
-                    <p><strong>Вербально</strong>, через повторяющиеся фразы и правила воспитания. Например: «Поторопись!», «Не плачь, будь мужчиной», «Учись лучше всех». Кристаллизуются как устойчивые привычки поведения для получения одобрения.</p>
+                    <p><strong>Вербально</strong>, через повторяющиеся фразы и правила воспитания: «Поторопись!», «Не плачь, будь мужчиной», «Учись лучше всех».</p>
 
                     <h3>4. Сценарная матрица</h3>
-                    <p>Модель показывает, как послания передаются между поколениями:</p>
                     <div class="diagram-container">
                         <svg viewBox="0 0 500 250" xmlns="http://www.w3.org/2000/svg">
                             <rect x="20" y="20" width="200" height="80" rx="8" fill="#e0e7ff" stroke="#4f46e5"/>
@@ -524,27 +509,16 @@
                     </div>
 
                     <h3>5. Драматический треугольник (Карпмана)</h3>
-                    <p>Модель ролей, в которых люди часто оказываются в играх и конфликтах:</p>
                     <div class="diagram-container">
                         <svg viewBox="0 0 400 250" xmlns="http://www.w3.org/2000/svg">
-                            <!-- Треугольник -->
                             <polygon points="200,30 50,200 350,200" fill="none" stroke="#6366f1" stroke-width="3"/>
-                            
-                            <!-- Вершины -->
                             <circle cx="200" cy="30" r="25" fill="#fff" stroke="#6366f1" stroke-width="2"/>
                             <text x="200" y="35" text-anchor="middle" fill="#6366f1" font-weight="bold" font-size="14">СПАСАТЕЛЬ</text>
-
                             <circle cx="50" cy="200" r="25" fill="#fff" stroke="#ef4444" stroke-width="2"/>
                             <text x="50" y="205" text-anchor="middle" fill="#ef4444" font-weight="bold" font-size="14">ЖЕРТВА</text>
-
                             <circle cx="350" cy="200" r="25" fill="#fff" stroke="#f59e0b" stroke-width="2"/>
                             <text x="350" y="205" text-anchor="middle" fill="#f59e0b" font-weight="bold" font-size="14">ПРЕСЛЕДО-</text>
                             <text x="350" y="220" text-anchor="middle" fill="#f59e0b" font-weight="bold" font-size="14">ВАТЕЛЬ</text>
-
-                            <!-- Стрелки взаимодействия (упрощенно) -->
-                            <path d="M 180 50 Q 100 100 70 180" fill="none" stroke="#ccc" stroke-dasharray="4"/>
-                            <path d="M 220 50 Q 300 100 330 180" fill="none" stroke="#ccc" stroke-dasharray="4"/>
-                            <path d="M 80 200 L 320 200" fill="none" stroke="#ccc" stroke-dasharray="4"/>
                         </svg>
                         <div class="caption">Рис 3. Роли в драматическом треугольнике</div>
                     </div>
@@ -556,7 +530,7 @@
             </div>
         </div>
 
-        <!-- Информационный блок с эмодзи -->
+        <!-- Информационный блок -->
         <div class="quiz-info-block">
             <div class="info-item"><span>📝</span> 58 вопросов</div>
             <div class="info-item"><span>⏱️</span> 10–15 минут</div>
@@ -584,8 +558,42 @@
         <div id="resultContainer" class="hidden result-section">
             <h2>Ваши результаты</h2>
             <div id="resultsBody"></div>
-            <button class="btn-start" id="btnDownloadPDF" style="margin-top: 20px;">Скачать PDF-отчет</button>
+            
+            <button class="btn-start" id="btnDownloadPDF" style="margin-top: 20px;">📄 Скачать PDF-отчет</button>
             <button class="btn-nav btn-prev" onclick="location.reload()" style="width: 100%; margin-top: 10px; text-align: center;">Пройти тест заново</button>
+
+            <!-- Аккордеон с анализатором снов -->
+            <div class="accordion" style="margin-top: 30px;">
+                <div class="accordion-header" id="dreamToggle">
+                    <span>🌙 ТА-Анализ ваших снов</span>
+                    <span class="icon">▼</span>
+                </div>
+                <div class="accordion-body" id="dreamBody">
+                    <div class="theory-content">
+                        <p>Ваше подсознание «проигрывает» сценарные паттерны во сне. Скопируйте этот промпт в ChatGPT/Claude, загрузите результаты теста (PDF или скриншот) и опишите свой сон:</p>
+                        
+                        <div class="dream-prompt-box" id="dreamPromptBlock">
+                            <button class="copy-btn" id="copyDreamBtn">📋 Копировать</button>
+<span id="dreamPromptText">Активируй режим «ТА-Аналитик Снов». Ты — эксперт по Трансактному анализу Эрика Берна. Твоя задача — анализировать мои сны строго через призму ТА, без мистики, сонников и фрейдизма.
+
+ТВОИ КЛЮЧЕВЫЕ ПРАВИЛА:
+1. Структурный анализ: Распределяй всех персонажей и объекты сна по эго-состояниям (Родитель, Взрослый, Ребенок). Уточняй их модификации (Критикующий/Заботливый Родитель, Адаптивный/Свободный Ребенок).
+2. Поиск сценария: Определяй скрытый жизненный сценарий (например, «Почти», «Неудачник», «Будь сильным») и инъюнкции (запреты типа «Не чувствуй», «Не делай»).
+3. Анализ игр и выгод: Ищи психологические игры (по Берну) и сценарную выгоду (какие поглаживания получает герой во сне?).
+4. Формат диалога: Не давай готовых диагнозов. Задавай уточняющие сократические вопросы, чтобы я сам осознал паттерн. Учитывай, что мой пересказ может быть неточным — фокусируйся на эмоциях и динамике.
+5. Завершение: В конце анализа предлагай мне заключить конкретный behavioral contract (контракт на изменение поведения наяву).
+
+💡 ДОПОЛНИТЕЛЬНЫЙ КОНТЕКСТ (Мой профиль):
+Если я загружу результаты теста, используй их. Если нет, ориентируйся на общие принципы ТА. Мой основной запрос — понять связь между моими снами и реальной жизнью (работа, отношения, страхи).
+
+Ответь только: "Режим активирован. Я готов анализировать ваши сны по Берну. Расскажите свой сон, и мы начнем с поиска эго-состояний ваших персонажей."</span>
+                        </div>
+                        <p style="margin-top: 15px; font-size: 0.9rem; color: var(--text-light);">
+                            💡 <strong>Как это работает:</strong> ИИ-агент в роли ТА-Аналитика будет анализировать ваши сны через призму эго-состояний, искать скрытые инъюнкции и драйверы, находить сценарные игры и предлагать сократические вопросы для осознания паттернов.
+                        </p>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -706,10 +714,9 @@
     // ==========================================
     let currentState = {
         currentQuestion: 0,
-        answers: {} // { questionId: value }
+        answers: {} 
     };
 
-    // Загрузка из localStorage
     const savedState = localStorage.getItem('ta_quiz_state');
     if (savedState) {
         try {
@@ -717,20 +724,20 @@
             if(parsed && typeof parsed.currentQuestion === 'number' && parsed.answers) {
                 currentState = parsed;
             }
-        } catch(e) {
-            console.error("Error loading state", e);
-        }
+        } catch(e) { console.error("Error loading state", e); }
     }
 
     // ==========================================
     // 3. ЛОГИКА ИНТЕРФЕЙСА
     // ==========================================
-    const theoryToggle = document.getElementById('theoryToggle');
-    const theoryBody = document.getElementById('theoryBody');
-    
-    theoryToggle.addEventListener('click', () => {
-        theoryToggle.classList.toggle('active');
-        theoryBody.classList.toggle('open');
+    document.getElementById('theoryToggle').addEventListener('click', function() {
+        this.classList.toggle('active');
+        document.getElementById('theoryBody').classList.toggle('open');
+    });
+
+    document.getElementById('dreamToggle').addEventListener('click', function() {
+        this.classList.toggle('active');
+        document.getElementById('dreamBody').classList.toggle('open');
     });
 
     document.getElementById('btnStart').addEventListener('click', () => {
@@ -749,13 +756,11 @@
         const q = questions[currentState.currentQuestion];
         const container = document.getElementById('questionContent');
         
-        // Обновление прогресса
         const progress = ((currentState.currentQuestion) / questions.length) * 100;
         document.getElementById('progressFill').style.width = `${progress}%`;
         document.getElementById('progressText').textContent = `Вопрос ${currentState.currentQuestion + 1} из ${questions.length}`;
         document.getElementById('progressPercent').textContent = `${Math.round(progress)}%`;
 
-        // Генерация вариантов ответа
         let optionsHTML = '';
         const labels = [
             { val: 1, text: 'Совсем не согласен' },
@@ -903,53 +908,134 @@
         }
 
         document.getElementById('resultsBody').innerHTML = html;
-        window.calculatedResults = results;
+        window.calculatedResults = results; // Глобальная переменная для PDF
+        window.topInjData = topInj;
+        window.topDrvData = topDrv;
     }
 
     // ==========================================
-    // 5. ГЕНЕРАЦИЯ PDF
+    // 5. ГЕНЕРАЦИЯ ПОЛНОЦЕННОГО PDF
     // ==========================================
-    document.getElementById('btnDownloadPDF').addEventListener('click', () => {
+    document.getElementById('btnDownloadPDF').addEventListener('click', async () => {
+        if (!window.calculatedResults) return alert('Результаты не найдены.');
+        
         const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
+        const doc = new jsPDF('p', 'mm', 'a4');
+        const pageWidth = doc.internal.pageSize.getWidth();
+        const marginX = 15;
+        const contentWidth = pageWidth - 2 * marginX;
         
-        doc.setFont("helvetica", "bold");
-        doc.setFontSize(20);
-        doc.text("Отчет по транзактному анализу", 20, 20);
+        // Создаем временный div для рендеринга HTML в PDF
+        const tempDiv = document.createElement('div');
+        tempDiv.style.cssText = `position:fixed; left:-9999px; top:0; width:${Math.floor(contentWidth * 3.78)}px; background:#fff; padding:20px; font-family:Arial, Helvetica, sans-serif; color:#222; font-size:13px; line-height:1.5;`;
         
-        doc.setFont("helvetica", "normal");
-        doc.setFontSize(10);
-        doc.text(`Дата прохождения: ${new Date().toLocaleDateString('ru-RU')}`, 20, 30);
-        
-        let y = 45;
-        doc.setFontSize(14);
-        doc.setFont("helvetica", "bold");
-        doc.text("Результаты по шкалам:", 20, y);
-        y += 10;
-        
-        doc.setFontSize(11);
-        doc.setFont("helvetica", "normal");
-        
-        window.calculatedResults.forEach(res => {
-            if (y > 270) { doc.addPage(); y = 20; }
-            doc.text(`${LABELS[res.category]}: ${res.score} / 5.0`, 20, y);
+        let htmlContent = `
+            <div style="text-align:center; margin-bottom:20px; border-bottom:2px solid #6366f1; padding-bottom:15px;">
+                <h1 style="font-size:22px; color:#6366f1; margin:0;">Отчет по транзактному анализу</h1>
+                <p style="color:#666; font-size:12px; margin:5px 0 0 0;">Дата: ${new Date().toLocaleDateString('ru-RU')}</p>
+            </div>
             
-            doc.setFillColor(200, 200, 200);
-            doc.rect(80, y - 4, 100, 4, 'F');
-            doc.setFillColor(99, 102, 241); // Цвет градиента
-            doc.rect(80, y - 4, 100 * (res.score / 5), 4, 'F');
-            
-            y += 10;
+            <h2 style="font-size:16px; color:#1f2937; margin:20px 0 10px 0;">1. Ваши ведущие паттерны</h2>
+            <table style="width:100%; border-collapse:collapse; margin-bottom:20px;">
+                <tr style="background:#f3f4f6;">
+                    <th style="padding:8px; text-align:left; border-bottom:1px solid #ddd;">Параметр</th>
+                    <th style="padding:8px; text-align:right; border-bottom:1px solid #ddd;">Балл</th>
+                </tr>
+        `;
+        
+        window.calculatedResults.slice(0, 8).forEach(res => {
+            const color = res.score >= 4.0 ? '#dc2626' : (res.score >= 3.0 ? '#d97706' : '#6b7280');
+            htmlContent += `
+                <tr>
+                    <td style="padding:8px; border-bottom:1px solid #eee;">${LABELS[res.category]}</td>
+                    <td style="padding:8px; text-align:right; font-weight:bold; color:${color}; border-bottom:1px solid #eee;">${res.score} / 5.0</td>
+                </tr>
+            `;
         });
+        htmlContent += `</table>`;
 
-        y += 15;
-        doc.setFontSize(10);
-        doc.setTextColor(100);
-        const disclaimer = "Данный отчет является инструментом для самопознания и рефлексии, основанным на методологии транзактного анализа (Э. Берн, Р. и М. Гулдинги, В. Джойнс). Он не является клиническим диагнозом.";
-        const splitDisclaimer = doc.splitTextToSize(disclaimer, 170);
-        doc.text(splitDisclaimer, 20, y);
+        if (window.topInjData && window.topInjData.length > 0) {
+            htmlContent += `<h2 style="font-size:16px; color:#dc2626; margin:20px 0 10px 0;">2. Развернутый анализ инъюнкций</h2>`;
+            window.topInjData.forEach(item => {
+                const data = INJ_INTERP[item.category];
+                htmlContent += `
+                    <div style="background:#fef2f2; border-left:4px solid #dc2626; padding:12px; margin-bottom:15px; border-radius:4px;">
+                        <h3 style="font-size:14px; color:#991b1b; margin:0 0 8px 0;">${LABELS[item.category]} (${item.score}/5)</h3>
+                        <p style="margin:0 0 8px 0; font-size:12px;"><strong>Проявления:</strong> ${data ? data.manifests : ''}</p>
+                        <p style="margin:0; font-size:12px; color:#059669;"><strong>Разрешение:</strong> ${ALLOWANCES[item.category]}</p>
+                    </div>
+                `;
+            });
+        }
 
-        doc.save("TA_Результаты.pdf");
+        if (window.topDrvData && window.topDrvData.length > 0) {
+            htmlContent += `<h2 style="font-size:16px; color:#059669; margin:20px 0 10px 0;">3. Развернутый анализ драйверов</h2>`;
+            window.topDrvData.forEach(item => {
+                const data = DRV_INTERP[item.category];
+                htmlContent += `
+                    <div style="background:#ecfdf5; border-left:4px solid #059669; padding:12px; margin-bottom:15px; border-radius:4px;">
+                        <h3 style="font-size:14px; color:#065f46; margin:0 0 8px 0;">${LABELS[item.category]} (${item.score}/5)</h3>
+                        <p style="margin:0 0 8px 0; font-size:12px;"><strong>Проявления:</strong> ${data ? data.manifests : ''}</p>
+                        <p style="margin:0; font-size:12px; color:#4f46e5;"><strong>Практика выхода:</strong> ${data ? data.action : ''}</p>
+                    </div>
+                `;
+            });
+        }
+
+        htmlContent += `
+            <div style="background:#fffbeb; border:1px solid #fde68a; padding:12px; border-radius:6px; margin-top:20px; font-size:11px; color:#92400e;">
+                <strong>Дисклеймер:</strong> Данный отчет является инструментом для самопознания и рефлексии, основанным на методологии транзактного анализа (Э. Берн, Р. и М. Гулдинги, В. Джойнс). Он не является клиническим диагнозом и не заменяет консультацию квалифицированного психотерапевта.
+            </div>
+        `;
+        
+        tempDiv.innerHTML = htmlContent;
+        document.body.appendChild(tempDiv);
+        
+        try {
+            const canvas = await html2canvas(tempDiv, { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
+            const imgData = canvas.toDataURL('image/jpeg', 0.95);
+            const imgWidth = contentWidth;
+            const imgHeight = (canvas.height * imgWidth) / canvas.width;
+            
+            let heightLeft = imgHeight;
+            let position = 15; // Отступ сверху
+            
+            // Первая страница
+            doc.addImage(imgData, 'JPEG', marginX, position, imgWidth, imgHeight, undefined, 'FAST');
+            heightLeft -= (doc.internal.pageSize.getHeight() - position - 15); // Вычитаем высоту первой страницы минус отступы
+            
+            // Последующие страницы, если контент длинный
+            while (heightLeft > 0) {
+                position = heightLeft - imgHeight + 15; // Смещение вверх для следующей части
+                doc.addPage();
+                doc.addImage(imgData, 'JPEG', marginX, position, imgWidth, imgHeight, undefined, 'FAST');
+                heightLeft -= (doc.internal.pageSize.getHeight() - 30); // Высота страницы минус отступы сверху и снизу
+            }
+            
+            doc.save(`TA_Report_${Date.now()}.pdf`);
+        } catch (e) {
+            console.error('Ошибка PDF:', e);
+            alert('Не удалось сгенерировать PDF. Попробуйте сделать скриншот результатов.');
+        } finally {
+            document.body.removeChild(tempDiv);
+        }
+    });
+
+    // Копирование промпта для снов
+    document.getElementById('copyDreamBtn').addEventListener('click', () => {
+        const text = document.getElementById('dreamPromptText').innerText;
+        navigator.clipboard.writeText(text).then(() => {
+            const btn = document.getElementById('copyDreamBtn');
+            btn.textContent = '✅ Скопировано!';
+            btn.classList.add('copied');
+            setTimeout(() => {
+                btn.textContent = '📋 Копировать';
+                btn.classList.remove('copied');
+            }, 2000);
+        }).catch(err => {
+            console.error('Failed to copy: ', err);
+            alert('Не удалось скопировать. Выделите текст вручную.');
+        });
     });
 </script>
 
