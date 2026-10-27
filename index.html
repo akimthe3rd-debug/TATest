@@ -74,8 +74,8 @@
             padding: 40px 30px;
         }
 
-        /* Аккордеоны */
-        .accordion {
+        /* Главный Аккордеон Теории */
+        .main-accordion {
             border: 1px solid var(--border-color);
             border-radius: 16px;
             margin-bottom: 30px;
@@ -83,7 +83,7 @@
             background: white;
         }
 
-        .accordion-header {
+        .main-accordion-header {
             background: #f9fafb;
             padding: 20px 24px;
             cursor: pointer;
@@ -96,56 +96,91 @@
             transition: background 0.3s;
         }
 
-        .accordion-header:hover { background: #f3f4f6; }
-        .accordion-header .icon { transition: transform 0.3s ease; font-size: 1.2rem; color: var(--secondary); }
-        .accordion-header.active .icon { transform: rotate(180deg); }
+        .main-accordion-header:hover { background: #f3f4f6; }
+        .main-accordion-header .icon { transition: transform 0.3s ease; font-size: 1.2rem; color: var(--secondary); }
+        .main-accordion-header.active .icon { transform: rotate(180deg); }
 
-        .accordion-body {
+        .main-accordion-body {
             max-height: 0;
             overflow: hidden;
             transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
             background: white;
         }
 
-        .accordion-body.open { max-height: 5000px; }
+        .main-accordion-body.open { max-height: 10000px; /* Увеличили лимит для вложенных списков */ }
 
-        .theory-content {
-            padding: 30px;
+        /* Вложенные Аккордеоны (Подразделы теории) */
+        .sub-accordion {
+            border-top: 1px solid #f3f4f6;
+        }
+        .sub-accordion:first-child { border-top: none; }
+
+        .sub-accordion-header {
+            padding: 15px 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            font-size: 1rem;
+            color: var(--text-dark);
+            background: #fcfcfd;
+            transition: background 0.2s;
+        }
+
+        .sub-accordion-header:hover { background: #f9fafb; }
+        .sub-accordion-header .sub-icon { transition: transform 0.3s; font-size: 0.9rem; color: var(--text-light); }
+        .sub-accordion-header.active .sub-icon { transform: rotate(180deg); }
+
+        .sub-accordion-body {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+            background: white;
+            padding: 0 20px; /* Горизонтальные отступы будут добавлены контенту ниже */
+        }
+        
+        .sub-accordion-body.open { max-height: 5000px; }
+
+        .theory-content-inner {
+            padding: 20px 0;
             font-size: 0.95rem;
             color: var(--text-light);
         }
 
-        .theory-content h3 {
+        .theory-content-inner h3 {
             font-family: 'Cormorant Garamond', serif;
-            font-size: 1.5rem;
+            font-size: 1.4rem;
             color: var(--text-dark);
-            margin: 25px 0 15px 0;
-            border-bottom: 2px solid #fce7f3;
-            padding-bottom: 8px;
-        }
-        
-        .theory-content h4 {
-            font-size: 1.1rem;
-            color: var(--primary);
             margin: 20px 0 10px 0;
+            border-bottom: 1px solid #fce7f3;
+            padding-bottom: 5px;
+        }
+        .theory-content-inner h3:first-child { margin-top: 0; }
+        
+        .theory-content-inner h4 {
+            font-size: 1.05rem;
+            color: var(--primary);
+            margin: 15px 0 8px 0;
             font-weight: 600;
         }
 
-        .theory-content p { margin-bottom: 12px; }
-        .theory-content ul { margin-left: 20px; margin-bottom: 15px; list-style-type: disc; }
-        .theory-content li { margin-bottom: 6px; }
-        .theory-content strong { color: var(--text-dark); font-weight: 600; }
-        .theory-content em { color: var(--secondary); font-style: italic; }
+        .theory-content-inner p { margin-bottom: 10px; }
+        .theory-content-inner ul { margin-left: 20px; margin-bottom: 10px; list-style-type: disc; }
+        .theory-content-inner ol { margin-left: 20px; margin-bottom: 10px; list-style-type: decimal; }
+        .theory-content-inner li { margin-bottom: 5px; }
+        .theory-content-inner strong { color: var(--text-dark); font-weight: 600; }
+        .theory-content-inner em { color: var(--secondary); font-style: italic; }
 
         .diagram-container {
             background: #fdfbff;
             border: 1px solid #f3e8ff;
             border-radius: 12px;
-            padding: 20px;
-            margin: 20px auto;
+            padding: 15px;
+            margin: 15px auto;
             text-align: center;
             width: 100%;
-            max-width: 400px; 
+            max-width: 350px; 
             overflow-x: auto;
         }
         
@@ -157,28 +192,28 @@
         }
 
         .caption { 
-            font-size: 0.85rem; 
+            font-size: 0.8rem; 
             color: var(--text-light); 
-            margin-top: 15px; 
+            margin-top: 10px; 
             font-style: italic; 
             text-align: center;
         }
 
         .injunction-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            gap: 10px;
-            margin: 20px 0;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 8px;
+            margin: 15px 0;
         }
 
         .injunction-item {
             background: #eff6ff;
             color: #1d4ed8;
-            padding: 10px;
-            border-radius: 8px;
+            padding: 8px;
+            border-radius: 6px;
             text-align: center;
             font-weight: 500;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             border: 1px solid #dbeafe;
         }
 
@@ -494,169 +529,227 @@
     <div class="content">
         <!-- Блок теории -->
         <div id="startScreen">
-            <div class="accordion">
-                <div class="accordion-header" id="theoryToggle">
+            <div class="main-accordion">
+                <div class="main-accordion-header" id="theoryToggle">
                     <span>Теория</span>
                     <span class="icon">▼</span>
                 </div>
-                <div class="accordion-body" id="theoryBody">
-                    <div class="theory-content">
-                        <h3>Что такое Транзактный Анализ?</h3>
-                        <p>ТА — это теория личности и метод психотерапии, разработанный Эриком Берном. Он основан на идее, что каждый человек изначально находится в позиции <em>«Я-ОК, Ты-ОК»</em>, но в процессе взросления формирует бессознательный жизненный план (сценарий).</p>
-
-                        <h3>1. Модель эго-состояний</h3>
-                        <p>Личность состоит из трех основных состояний:</p>
-                        <ul>
-                            <li><strong>Родитель (P):</strong> Заимствованные мысли, чувства и поведения от авторитетных фигур детства.</li>
-                            <li><strong>Взрослый (A):</strong> Объективная оценка реальности «здесь и сейчас», логика.</li>
-                            <li><strong>Ребенок (C):</strong> Архаичные реакции, спонтанность, эмоции, сохранившиеся с детства.</li>
-                        </ul>
-                        
-                        <div class="diagram-container">
-                            <svg viewBox="0 0 300 400" class="diagram-svg" xmlns="http://www.w3.org/2000/svg">
-                                <line x1="150" y1="100" x2="150" y2="180" stroke="#cbd5e1" stroke-width="3" />
-                                <line x1="150" y1="220" x2="150" y2="300" stroke="#cbd5e1" stroke-width="3" />
-                                <circle cx="150" cy="70" r="50" fill="#e0e7ff" stroke="#4f46e5" stroke-width="3"/>
-                                <text x="150" y="75" text-anchor="middle" dominant-baseline="middle" fill="#4f46e5" font-weight="bold" font-size="16" font-family="Inter, sans-serif">РОДИТЕЛЬ</text>
-                                <circle cx="150" cy="200" r="50" fill="#f3f4f6" stroke="#4b5563" stroke-width="3"/>
-                                <text x="150" y="205" text-anchor="middle" dominant-baseline="middle" fill="#4b5563" font-weight="bold" font-size="16" font-family="Inter, sans-serif">ВЗРОСЛЫЙ</text>
-                                <circle cx="150" cy="330" r="50" fill="#fce7f3" stroke="#ec4899" stroke-width="3"/>
-                                <text x="150" y="335" text-anchor="middle" dominant-baseline="middle" fill="#ec4899" font-weight="bold" font-size="16" font-family="Inter, sans-serif">РЕБЕНОК</text>
-                            </svg>
-                            <div class="caption">Рис 1. Структурная модель Р-В-Р</div>
+                <div class="main-accordion-body" id="theoryBody">
+                    
+                    <!-- Подраздел 1: Основы ТА -->
+                    <div class="sub-accordion">
+                        <div class="sub-accordion-header" onclick="toggleSubAccordion(this)">
+                            <span>1. Что такое Транзактный Анализ?</span>
+                            <span class="sub-icon">▼</span>
                         </div>
-
-                        <h3>2. Инъюнкции (Сценарные приказания)</h3>
-                        <p>Согласно Р. и М. Гулдингам, существует 12 классических инъюнкций:</p>
-                        <div class="injunction-grid">
-                            <div class="injunction-item">Не живи</div>
-                            <div class="injunction-item">Не будь собой</div>
-                            <div class="injunction-item">Не будь ребёнком</div>
-                            <div class="injunction-item">Не расти</div>
-                            <div class="injunction-item">Не добивайся успеха</div>
-                            <div class="injunction-item">Не приближайся</div>
-                            <div class="injunction-item">Не доверяй</div>
-                            <div class="injunction-item">Не чувствуй</div>
-                            <div class="injunction-item">Не будь важным</div>
-                            <div class="injunction-item">Не думай</div>
-                            <div class="injunction-item">Не будь здоровым</div>
-                            <div class="injunction-item">Не принадлежи</div>
+                        <div class="sub-accordion-body">
+                            <div class="theory-content-inner">
+                                <p>ТА — это теория личности и метод психотерапии, разработанный Эриком Берном. Он основан на идее, что каждый человек изначально находится в позиции <em>«Я-ОК, Ты-ОК»</em>, но в процессе взросления формирует бессознательный жизненный план (сценарий).</p>
+                            </div>
                         </div>
+                    </div>
 
-                        <h4>Кем формируются?</h4>
-                        <p>Инъюнкции исходят из <strong>эго-состояния Ребёнка родителя</strong> и направляются в <strong>эго-состояние Ребёнка ребёнка</strong>. Они рождаются не из зрелой части родителя, а из его собственных детских травм, страхов и обид.</p>
-
-                        <h4>Когда формируются?</h4>
-                        <p>Закладываются в <strong>раннем детстве (довербальный период)</strong>, преимущественно до 2–3 лет.</p>
-
-                        <h4>Как передаются?</h4>
-                        <p>По своей природе они <strong>невербальны</strong>. Передаются через тон голоса, мимику, жесты, напряжение тела, эмоциональную атмосферу. Ребёнок «считывает» их своим <em>Маленьким Профессором</em>.</p>
-
-                        <h3>3. Драйверы (Компенсаторные паттерны)</h3>
-                        <p>Выделенные Таиби Калером 5 специфических поведенческих паттернов, которые активируются в стрессе. Они говорят: <em>«Ты ОК, только если...»</em>.</p>
-                        <ul>
-                            <li><strong>Будь совершенным:</strong> «...если всё идеально».</li>
-                            <li><strong>Будь сильным:</strong> «...если не показываешь слабости».</li>
-                            <li><strong>Радуй других:</strong> «...если угождаешь другим».</li>
-                            <li><strong>Торопись:</strong> «...если делаешь всё быстро».</li>
-                            <li><strong>Старайся:</strong> «...если прилагаешь максимум усилий».</li>
-                        </ul>
-
-                        <h4>Кем формируются?</h4>
-                        <p>Исходят из <strong>Родителя родителя</strong> и направляются в <strong>Родителя ребёнка</strong>. Это квинтэссенция наиболее эмоционально заряженных директив.</p>
-
-                        <h4>Когда формируются?</h4>
-                        <p>Формируются позже инъюнкций, в возрасте <strong>от 3 до 12 лет</strong>, когда ребёнок уже владеет речью.</p>
-
-                        <h4>Как передаются?</h4>
-                        <p><strong>Вербально</strong>, через повторяющиеся фразы и правила воспитания: «Поторопись!», «Не плачь, будь мужчиной», «Учись лучше всех».</p>
-
-                        <h3>4. Сценарная матрица</h3>
-                        <div class="diagram-container">
-                            <svg viewBox="0 0 500 250" class="diagram-svg" xmlns="http://www.w3.org/2000/svg">
-                                <rect x="20" y="20" width="200" height="80" rx="8" fill="#e0e7ff" stroke="#4f46e5"/>
-                                <text x="120" y="65" text-anchor="middle" fill="#4f46e5" font-weight="bold">Родитель родителя</text>
-                                <text x="120" y="85" text-anchor="middle" fill="#4f46e5" font-size="12">(Директивы / Драйверы)</text>
-                                
-                                <rect x="280" y="20" width="200" height="80" rx="8" fill="#fce7f3" stroke="#ec4899"/>
-                                <text x="380" y="65" text-anchor="middle" fill="#ec4899" font-weight="bold">Ребёнок родителя</text>
-                                <text x="380" y="85" text-anchor="middle" fill="#ec4899" font-size="12">(Инъюнкции / Приказания)</text>
-
-                                <line x1="120" y1="100" x2="120" y2="150" stroke="#4f46e5" stroke-width="2" marker-end="url(#arrow)"/>
-                                <line x1="380" y1="100" x2="380" y2="150" stroke="#ec4899" stroke-width="2" marker-end="url(#arrow)"/>
-
-                                <rect x="20" y="150" width="200" height="80" rx="8" fill="#f3f4f6" stroke="#4b5563"/>
-                                <text x="120" y="195" text-anchor="middle" fill="#4b5563" font-weight="bold">Родитель ребёнка</text>
-                                <text x="120" y="215" text-anchor="middle" fill="#4b5563" font-size="12">(Контрсценарий)</text>
-
-                                <rect x="280" y="150" width="200" height="80" rx="8" fill="#f3f4f6" stroke="#4b5563"/>
-                                <text x="380" y="195" text-anchor="middle" fill="#4b5563" font-weight="bold">Ребёнок ребёнка</text>
-                                <text x="380" y="215" text-anchor="middle" fill="#4b5563" font-size="12">(Сценарий)</text>
-                                
-                                <defs>
-                                    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
-                                        <path d="M 0 0 L 10 5 L 0 10 z" fill="#4b5563"/>
-                                    </marker>
-                                </defs>
-                            </svg>
-                            <div class="caption">Рис 2. Сценарная матрица (по К. Стайнеру)</div>
+                    <!-- Подраздел 2: Эго-состояния -->
+                    <div class="sub-accordion">
+                        <div class="sub-accordion-header" onclick="toggleSubAccordion(this)">
+                            <span>2. Модель эго-состояний (Р-В-Р)</span>
+                            <span class="sub-icon">▼</span>
                         </div>
-
-                        <h3>5. Драматический треугольник (Карпмана) и Игры</h3>
-                        <p>Треугольник Карпмана описывает структуру психологических игр — серии скрытых трансакций, ведущих к предсказуемой развязке («расплате»). Роли: <strong>Преследователь</strong>, <strong>Жертва</strong>, <strong>Спасатель</strong>.</p>
-                        
-                        <div class="diagram-container">
-                            <svg viewBox="0 0 400 250" class="diagram-svg" xmlns="http://www.w3.org/2000/svg">
-                                <polygon points="200,30 50,200 350,200" fill="none" stroke="#6366f1" stroke-width="3"/>
-                                <circle cx="200" cy="30" r="25" fill="#fff" stroke="#6366f1" stroke-width="2"/>
-                                <text x="200" y="35" text-anchor="middle" fill="#6366f1" font-weight="bold" font-size="14">СПАСАТЕЛЬ</text>
-                                <circle cx="50" cy="200" r="25" fill="#fff" stroke="#ef4444" stroke-width="2"/>
-                                <text x="50" y="205" text-anchor="middle" fill="#ef4444" font-weight="bold" font-size="14">ЖЕРТВА</text>
-                                <circle cx="350" cy="200" r="25" fill="#fff" stroke="#f59e0b" stroke-width="2"/>
-                                <text x="350" y="205" text-anchor="middle" fill="#f59e0b" font-weight="bold" font-size="14">ПРЕСЛЕДО-</text>
-                                <text x="350" y="220" text-anchor="middle" fill="#f59e0b" font-weight="bold" font-size="14">ВАТЕЛЬ</text>
-                            </svg>
-                            <div class="caption">Рис 3. Роли в драматическом треугольнике</div>
-                        </div>
-
-                        <h4>Как это работает в контексте сценария?</h4>
-                        <p>Игры часто являются способом подтверждения сценарных убеждений. Процесс обычно выглядит так (Минискрипт Т. Калера):</p>
-                        <ol style="margin-left: 20px; margin-bottom: 15px;">
-                            <li><strong>Драйвер (Старт):</strong> Человек попадает в стресс или ситуацию, напоминающую детскую травму. Автоматически включается драйвер (например, «Будь сильным» или «Радуй других»). Это попытка контролировать ситуацию и сохранить иллюзию безопасности.</li>
-                            <li><strong>Стоппор (Тупик):</strong> Драйвер не приносит ожидаемого облегчения или признания. Энергия уходит впустую. Возникает ощущение бессилия.</li>
-                            <li><strong>Рэкетное чувство (Эмоциональный выбор):</strong> Вместо подлинного чувства возникает ложное, привычное с детства («рэкет»). Например, обида вместо гнева, вина вместо ответственности, стыд вместо печали.</li>
-                            <li><strong>Переключение ролей:</strong> Накопившееся рэкетное чувство заставляет человека резко сменить роль в треугольнике.
+                        <div class="sub-accordion-body">
+                            <div class="theory-content-inner">
+                                <p>Личность состоит из трех основных состояний:</p>
                                 <ul>
-                                    <li><em>Из Жертвы в Преследователя:</em> «Я терпел, я был хорошим, теперь вы все виноваты!» (Гнев/Обида).</li>
-                                    <li><em>Из Спасателя в Жертву:</em> «Я всем помогал, а меня никто не ценит!» (Разочарование).</li>
-                                    <li><em>Из Преследователя в Спасателя:</em> Чувство вины за агрессию толкает к гиперопеке, чтобы «загладить вину».</li>
+                                    <li><strong>Родитель (P):</strong> Заимствованные мысли, чувства и поведения от авторитетных фигур детства.</li>
+                                    <li><strong>Взрослый (A):</strong> Объективная оценка реальности «здесь и сейчас», логика.</li>
+                                    <li><strong>Ребенок (C):</strong> Архаичные реакции, спонтанность, эмоции, сохранившиеся с детства.</li>
                                 </ul>
-                            </li>
-                            <li><strong>Расплата:</strong> Игра завершается подтверждением сценарного решения (например, «Люди неблагодарные» или «Я никому не нужен»). Человек получает знакомое, хоть и неприятное, эмоциональное состояние, которое укрепляет старый сценарий.</li>
-                        </ol>
-
-                        <h4>Треугольник внутри одного человека</h4>
-                        <p>Важно понимать, что треугольник Карпмана — это не всегда взаимодействие трех разных людей. Часто эти роли переключаются <strong>внутри одного человека</strong> между его эго-состояниями:</p>
-                        <ul>
-                            <li><strong>Жертва</strong> часто соответствует <em>Адаптивному Ребенку</em> (чувство беспомощности, ожидание помощи).</li>
-                            <li><strong>Преследователь</strong> часто соответствует <em>Критикующему Родителю</em> (внутренний голос, говорящий «ты недостаточно хорош», или внешняя агрессия).</li>
-                            <li><strong>Спасатель</strong> может быть проявлением <em>Заботливого Родителя</em> (гиперконтроль, помощь там, где она не нужна, чтобы чувствовать себя нужным).</li>
-                        </ul>
-                        <p>Например, человек может сам себя преследовать внутренним критиком («Будь совершенным»), чувствуя себя жертвой этого давления, а затем «спасать» себя прокрастинацией или уходом в фантазии.</p>
-
-                        <h4>Как выйти из треугольника?</h4>
-                        <p>Выход из игры невозможен, пока человек действует из своих сценарных частей (Родителя или Адаптивного Ребенка). Ключ к выходу — активация <strong>Взрослого эго-состояния</strong>:</p>
-                        <ul>
-                            <li><strong>Осознание:</strong> Заметьте момент входа в драйвер. Что я сейчас делаю? Спешу? Угождаю? Подавляю чувства?</li>
-                            <li><strong>Пауза:</strong> Не реагируйте автоматически. Скажите себе: «Я замечаю, что хочу сыграть в игру "..."».</li>
-                            <li><strong>Подлинное чувство:</strong> Позвольте себе почувствовать то, что скрывалось за рэкетом. Если за обидой стоит страх одиночества — примите страх. Если за виной стоит злость — примите злость.</li>
-                            <li><strong>Новое решение:</strong> Используйте Разрешения. Вместо «Радуй других» скажите себе: «Я имею право радовать себя». Вместо «Будь сильным» — «Я имею право на слабость и просьбу о помощи».</li>
-                            <li><strong>Отказ от участия:</strong> Если кто-то приглашает вас в игру (кидает крючок), откажитесь принимать участие. Ответьте из Взрослого: «Я вижу, что ты расстроен, но я не буду спасать тебя, если ты не просишь конкретно о чем-то реальном».</li>
-                        </ul>
-
-                        <div style="background: #fffbeb; border: 1px solid #fde68a; padding: 15px; border-radius: 8px; margin-top: 20px; font-size: 0.9rem; color: #92400e;">
-                            <strong>Важно:</strong> Данный опросник является инструментом самопознания и не заменяет профессиональную психотерапевтическую работу.
+                                <div class="diagram-container">
+                                    <svg viewBox="0 0 300 400" class="diagram-svg" xmlns="http://www.w3.org/2000/svg">
+                                        <line x1="150" y1="100" x2="150" y2="180" stroke="#cbd5e1" stroke-width="3" />
+                                        <line x1="150" y1="220" x2="150" y2="300" stroke="#cbd5e1" stroke-width="3" />
+                                        <circle cx="150" cy="70" r="50" fill="#e0e7ff" stroke="#4f46e5" stroke-width="3"/>
+                                        <text x="150" y="75" text-anchor="middle" dominant-baseline="middle" fill="#4f46e5" font-weight="bold" font-size="16" font-family="Inter, sans-serif">РОДИТЕЛЬ</text>
+                                        <circle cx="150" cy="200" r="50" fill="#f3f4f6" stroke="#4b5563" stroke-width="3"/>
+                                        <text x="150" y="205" text-anchor="middle" dominant-baseline="middle" fill="#4b5563" font-weight="bold" font-size="16" font-family="Inter, sans-serif">ВЗРОСЛЫЙ</text>
+                                        <circle cx="150" cy="330" r="50" fill="#fce7f3" stroke="#ec4899" stroke-width="3"/>
+                                        <text x="150" y="335" text-anchor="middle" dominant-baseline="middle" fill="#ec4899" font-weight="bold" font-size="16" font-family="Inter, sans-serif">РЕБЕНОК</text>
+                                    </svg>
+                                    <div class="caption">Рис 1. Структурная модель Р-В-Р</div>
+                                </div>
+                            </div>
                         </div>
+                    </div>
+
+                    <!-- Подраздел 3: Инъюнкции -->
+                    <div class="sub-accordion">
+                        <div class="sub-accordion-header" onclick="toggleSubAccordion(this)">
+                            <span>3. Инъюнкции (Сценарные приказания)</span>
+                            <span class="sub-icon">▼</span>
+                        </div>
+                        <div class="sub-accordion-body">
+                            <div class="theory-content-inner">
+                                <p>Согласно Р. и М. Гулдингам, существует 12 классических инъюнкций:</p>
+                                <div class="injunction-grid">
+                                    <div class="injunction-item">Не живи</div>
+                                    <div class="injunction-item">Не будь собой</div>
+                                    <div class="injunction-item">Не будь ребёнком</div>
+                                    <div class="injunction-item">Не расти</div>
+                                    <div class="injunction-item">Не добивайся успеха</div>
+                                    <div class="injunction-item">Не приближайся</div>
+                                    <div class="injunction-item">Не доверяй</div>
+                                    <div class="injunction-item">Не чувствуй</div>
+                                    <div class="injunction-item">Не будь важным</div>
+                                    <div class="injunction-item">Не думай</div>
+                                    <div class="injunction-item">Не будь здоровым</div>
+                                    <div class="injunction-item">Не принадлежи</div>
+                                </div>
+
+                                <h4>Кем формируются?</h4>
+                                <p>Инъюнкции исходят из <strong>эго-состояния Ребёнка родителя</strong> и направляются в <strong>эго-состояние Ребёнка ребёнка</strong>. Они рождаются не из зрелой части родителя, а из его собственных детских травм, страхов и обид.</p>
+
+                                <h4>Когда формируются?</h4>
+                                <p>Закладываются в <strong>раннем детстве (довербальный период)</strong>, преимущественно до 2–3 лет.</p>
+
+                                <h4>Как передаются?</h4>
+                                <p>По своей природе они <strong>невербальны</strong>. Передаются через тон голоса, мимику, жесты, напряжение тела, эмоциональную атмосферу. Ребёнок «считывает» их своим <em>Маленьким Профессором</em>.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Подраздел 4: Драйверы -->
+                    <div class="sub-accordion">
+                        <div class="sub-accordion-header" onclick="toggleSubAccordion(this)">
+                            <span>4. Драйверы (Компенсаторные паттерны)</span>
+                            <span class="sub-icon">▼</span>
+                        </div>
+                        <div class="sub-accordion-body">
+                            <div class="theory-content-inner">
+                                <p>Выделенные Таиби Калером 5 специфических поведенческих паттернов, которые активируются в стрессе. Они говорят: <em>«Ты ОК, только если...»</em>.</p>
+                                <ul>
+                                    <li><strong>Будь совершенным:</strong> «...если всё идеально».</li>
+                                    <li><strong>Будь сильным:</strong> «...если не показываешь слабости».</li>
+                                    <li><strong>Радуй других:</strong> «...если угождаешь другим».</li>
+                                    <li><strong>Торопись:</strong> «...если делаешь всё быстро».</li>
+                                    <li><strong>Старайся:</strong> «...если прилагаешь максимум усилий».</li>
+                                </ul>
+
+                                <h4>Кем формируются?</h4>
+                                <p>Исходят из <strong>Родителя родителя</strong> и направляются в <strong>Родителя ребёнка</strong>. Это квинтэссенция наиболее эмоционально заряженных директив.</p>
+
+                                <h4>Когда формируются?</h4>
+                                <p>Формируются позже инъюнкций, в возрасте <strong>от 3 до 12 лет</strong>, когда ребёнок уже владеет речью.</p>
+
+                                <h4>Как передаются?</h4>
+                                <p><strong>Вербально</strong>, через повторяющиеся фразы и правила воспитания: «Поторопись!», «Не плачь, будь мужчиной», «Учись лучше всех».</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Подраздел 5: Сценарная матрица -->
+                    <div class="sub-accordion">
+                        <div class="sub-accordion-header" onclick="toggleSubAccordion(this)">
+                            <span>5. Сценарная матрица</span>
+                            <span class="sub-icon">▼</span>
+                        </div>
+                        <div class="sub-accordion-body">
+                            <div class="theory-content-inner">
+                                <div class="diagram-container">
+                                    <svg viewBox="0 0 500 250" class="diagram-svg" xmlns="http://www.w3.org/2000/svg">
+                                        <rect x="20" y="20" width="200" height="80" rx="8" fill="#e0e7ff" stroke="#4f46e5"/>
+                                        <text x="120" y="65" text-anchor="middle" fill="#4f46e5" font-weight="bold">Родитель родителя</text>
+                                        <text x="120" y="85" text-anchor="middle" fill="#4f46e5" font-size="12">(Директивы / Драйверы)</text>
+                                        
+                                        <rect x="280" y="20" width="200" height="80" rx="8" fill="#fce7f3" stroke="#ec4899"/>
+                                        <text x="380" y="65" text-anchor="middle" fill="#ec4899" font-weight="bold">Ребёнок родителя</text>
+                                        <text x="380" y="85" text-anchor="middle" fill="#ec4899" font-size="12">(Инъюнкции / Приказания)</text>
+
+                                        <line x1="120" y1="100" x2="120" y2="150" stroke="#4f46e5" stroke-width="2" marker-end="url(#arrow)"/>
+                                        <line x1="380" y1="100" x2="380" y2="150" stroke="#ec4899" stroke-width="2" marker-end="url(#arrow)"/>
+
+                                        <rect x="20" y="150" width="200" height="80" rx="8" fill="#f3f4f6" stroke="#4b5563"/>
+                                        <text x="120" y="195" text-anchor="middle" fill="#4b5563" font-weight="bold">Родитель ребёнка</text>
+                                        <text x="120" y="215" text-anchor="middle" fill="#4b5563" font-size="12">(Контрсценарий)</text>
+
+                                        <rect x="280" y="150" width="200" height="80" rx="8" fill="#f3f4f6" stroke="#4b5563"/>
+                                        <text x="380" y="195" text-anchor="middle" fill="#4b5563" font-weight="bold">Ребёнок ребёнка</text>
+                                        <text x="380" y="215" text-anchor="middle" fill="#4b5563" font-size="12">(Сценарий)</text>
+                                        
+                                        <defs>
+                                            <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+                                                <path d="M 0 0 L 10 5 L 0 10 z" fill="#4b5563"/>
+                                            </marker>
+                                        </defs>
+                                    </svg>
+                                    <div class="caption">Рис 2. Сценарная матрица (по К. Стайнеру)</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Подраздел 6: Треугольник Карпмана (Расширенный) -->
+                    <div class="sub-accordion">
+                        <div class="sub-accordion-header" onclick="toggleSubAccordion(this)">
+                            <span>6. Драматический треугольник и Игры</span>
+                            <span class="sub-icon">▼</span>
+                        </div>
+                        <div class="sub-accordion-body">
+                            <div class="theory-content-inner">
+                                <p>Треугольник Карпмана описывает структуру психологических игр — серии скрытых трансакций, ведущих к предсказуемой развязке («расплате»). Роли: <strong>Преследователь</strong>, <strong>Жертва</strong>, <strong>Спасатель</strong>.</p>
+                                
+                                <div class="diagram-container">
+                                    <svg viewBox="0 0 400 250" class="diagram-svg" xmlns="http://www.w3.org/2000/svg">
+                                        <polygon points="200,30 50,200 350,200" fill="none" stroke="#6366f1" stroke-width="3"/>
+                                        <circle cx="200" cy="30" r="25" fill="#fff" stroke="#6366f1" stroke-width="2"/>
+                                        <text x="200" y="35" text-anchor="middle" fill="#6366f1" font-weight="bold" font-size="14">СПАСАТЕЛЬ</text>
+                                        <circle cx="50" cy="200" r="25" fill="#fff" stroke="#ef4444" stroke-width="2"/>
+                                        <text x="50" y="205" text-anchor="middle" fill="#ef4444" font-weight="bold" font-size="14">ЖЕРТВА</text>
+                                        <circle cx="350" cy="200" r="25" fill="#fff" stroke="#f59e0b" stroke-width="2"/>
+                                        <text x="350" y="205" text-anchor="middle" fill="#f59e0b" font-weight="bold" font-size="14">ПРЕСЛЕДО-</text>
+                                        <text x="350" y="220" text-anchor="middle" fill="#f59e0b" font-weight="bold" font-size="14">ВАТЕЛЬ</text>
+                                    </svg>
+                                    <div class="caption">Рис 3. Роли в драматическом треугольнике</div>
+                                </div>
+
+                                <h4>Как это работает в контексте сценария? (Минискрипт Калера)</h4>
+                                <p>Игры часто являются способом подтверждения сценарных убеждений. Процесс обычно выглядит так:</p>
+                                <ol>
+                                    <li><strong>Драйвер (Старт):</strong> Человек попадает в стресс или ситуацию, напоминающую детскую травму. Автоматически включается драйвер (например, «Будь сильным» или «Радуй других»). Это попытка контролировать ситуацию и сохранить иллюзию безопасности.</li>
+                                    <li><strong>Стоппор (Тупик):</strong> Драйвер не приносит ожидаемого облегчения или признания. Энергия уходит впустую. Возникает ощущение бессилия.</li>
+                                    <li><strong>Рэкетное чувство (Эмоциональный выбор):</strong> Вместо подлинного чувства возникает ложное, привычное с детства («рэкет»). Например, обида вместо гнева, вина вместо ответственности, стыд вместо печали.</li>
+                                    <li><strong>Переключение ролей:</strong> Накопившееся рэкетное чувство заставляет человека резко сменить роль в треугольнике.
+                                        <ul>
+                                            <li><em>Из Жертвы в Преследователя:</em> «Я терпел, я был хорошим, теперь вы все виноваты!» (Гнев/Обида).</li>
+                                            <li><em>Из Спасателя в Жертву:</em> «Я всем помогал, а меня никто не ценит!» (Разочарование).</li>
+                                            <li><em>Из Преследователя в Спасателя:</em> Чувство вины за агрессию толкает к гиперопеке, чтобы «загладить вину».</li>
+                                        </ul>
+                                    </li>
+                                    <li><strong>Расплата:</strong> Игра завершается подтверждением сценарного решения (например, «Люди неблагодарные» или «Я никому не нужен»). Человек получает знакомое, хоть и неприятное, эмоциональное состояние, которое укрепляет старый сценарий.</li>
+                                </ol>
+
+                                <h4>Треугольник внутри одного человека</h4>
+                                <p>Важно понимать, что треугольник Карпмана — это не всегда взаимодействие трех разных людей. Часто эти роли переключаются <strong>внутри одного человека</strong> между его эго-состояниями:</p>
+                                <ul>
+                                    <li><strong>Жертва</strong> часто соответствует <em>Адаптивному Ребенку</em> (чувство беспомощности, ожидание помощи).</li>
+                                    <li><strong>Преследователь</strong> часто соответствует <em>Критикующему Родителю</em> (внутренний голос, говорящий «ты недостаточно хорош», или внешняя агрессия).</li>
+                                    <li><strong>Спасатель</strong> может быть проявлением <em>Заботливого Родителя</em> (гиперконтроль, помощь там, где она не нужна, чтобы чувствовать себя нужным).</li>
+                                </ul>
+                                <p>Например, человек может сам себя преследовать внутренним критиком («Будь совершенным»), чувствуя себя жертвой этого давления, а затем «спасать» себя прокрастинацией или уходом в фантазии.</p>
+
+                                <h4>Как выйти из треугольника?</h4>
+                                <p>Выход из игры невозможен, пока человек действует из своих сценарных частей (Родителя или Адаптивного Ребенка). Ключ к выходу — активация <strong>Взрослого эго-состояния</strong>:</p>
+                                <ul>
+                                    <li><strong>Осознание:</strong> Заметьте момент входа в драйвер. Что я сейчас делаю? Спешу? Угождаю? Подавляю чувства?</li>
+                                    <li><strong>Пауза:</strong> Не реагируйте автоматически. Скажите себе: «Я замечаю, что хочу сыграть в игру "..."».</li>
+                                    <li><strong>Подлинное чувство:</strong> Позвольте себе почувствовать то, что скрывалось за рэкетом. Если за обидой стоит страх одиночества — примите страх. Если за виной стоит злость — примите злость.</li>
+                                    <li><strong>Новое решение:</strong> Используйте Разрешения. Вместо «Радуй других» скажите себе: «Я имею право радовать себя». Вместо «Будь сильным» — «Я имею право на слабость и просьбу о помощи».</li>
+                                    <li><strong>Отказ от участия:</strong> Если кто-то приглашает вас в игру (кидает крючок), откажитесь принимать участие. Ответьте из Взрослого: «Я вижу, что ты расстроен, но я не буду спасать тебя, если ты не просишь конкретно о чем-то реальном».</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="padding: 20px; background: #fffbeb; border-top: 1px solid #fde68a; font-size: 0.9rem; color: #92400e;">
+                        <strong>Важно:</strong> Данный опросник является инструментом самопознания и не заменяет профессиональную психотерапевтическую работу.
                     </div>
                 </div>
             </div>
@@ -697,13 +790,13 @@
             <button class="btn-start" id="btnDownloadPDF" style="margin-top: 20px;">📄 Скачать PDF-отчет</button>
             <button class="btn-nav btn-prev" onclick="location.reload()" style="width: 100%; margin-top: 10px; text-align: center;">Пройти тест заново</button>
 
-            <div class="accordion" style="margin-top: 30px;">
-                <div class="accordion-header" id="dreamToggle">
+            <div class="main-accordion" style="margin-top: 30px;">
+                <div class="main-accordion-header" id="dreamToggle">
                     <span>🌙 ТА-Анализ ваших снов</span>
                     <span class="icon">▼</span>
                 </div>
-                <div class="accordion-body" id="dreamBody">
-                    <div class="theory-content">
+                <div class="main-accordion-body" id="dreamBody">
+                    <div class="theory-content-inner" style="padding: 20px;">
                         <p>Ваше подсознание «проигрывает» сценарные паттерны во сне. Скопируйте этот промпт в ChatGPT/Claude, загрузите результаты теста (PDF или скриншот) и опишите свой сон:</p>
                         
                         <div class="dream-prompt-box" id="dreamPromptBlock">
@@ -863,7 +956,7 @@
         answers: {} 
     };
 
-    const STORAGE_KEY = 'ta_quiz_state_v5'; 
+    const STORAGE_KEY = 'ta_quiz_state_v6'; 
 
     function loadState() {
         try {
@@ -897,8 +990,17 @@
     document.addEventListener('DOMContentLoaded', () => {
         const saved = loadState();
         
-        setupAccordion('theoryToggle', 'theoryBody');
-        setupAccordion('dreamToggle', 'dreamBody');
+        // Главный аккордеон теории
+        document.getElementById('theoryToggle').addEventListener('click', function() {
+            this.classList.toggle('active');
+            document.getElementById('theoryBody').classList.toggle('open');
+        });
+
+        // Аккордеон снов
+        document.getElementById('dreamToggle').addEventListener('click', function() {
+            this.classList.toggle('active');
+            document.getElementById('dreamBody').classList.toggle('open');
+        });
 
         const btnStartNew = document.getElementById('btnStartNew');
         const btnResume = document.getElementById('btnResumeTest');
@@ -936,15 +1038,11 @@
         document.getElementById('copyDreamBtn').addEventListener('click', copyDreamPrompt);
     });
 
-    function setupAccordion(headerId, bodyId) {
-        const header = document.getElementById(headerId);
-        const body = document.getElementById(bodyId);
-        if(header && body) {
-            header.addEventListener('click', () => {
-                header.classList.toggle('active');
-                body.classList.toggle('open');
-            });
-        }
+    // Функция для переключения вложенных аккордеонов
+    window.toggleSubAccordion = function(headerElement) {
+        headerElement.classList.toggle('active');
+        const body = headerElement.nextElementSibling;
+        body.classList.toggle('open');
     }
 
     function startFreshTest() {
