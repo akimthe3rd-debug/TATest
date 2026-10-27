@@ -9,7 +9,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Cormorant+Garamond:ital,wght@1,500;1,600&display=swap" rel="stylesheet">
     
     <!-- Библиотеки для PDF -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <style>
         :root {
@@ -183,22 +184,27 @@
             border: 1px solid #dbeafe;
         }
 
+        /* Информационный блок перед тестом */
         .quiz-info-block {
             display: flex;
             justify-content: center;
-            gap: 20px;
+            gap: 15px; /* Одинаковый отступ между всеми элементами */
             flex-wrap: wrap;
             background: #fdf4ff;
             border: 1px solid #fbcfe8;
-            padding: 15px 20px;
+            padding: 12px 20px;
             border-radius: 12px;
             margin-bottom: 25px;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             color: #be185d;
             font-weight: 500;
         }
 
-        .info-item { display: flex; align-items: center; gap: 6px; }
+        .info-item { 
+            display: flex; 
+            align-items: center; 
+            gap: 6px; /* Отступ между иконкой и текстом внутри элемента */
+        }
 
         .btn-start {
             display: block;
@@ -320,11 +326,17 @@
             border-radius: 12px;
             cursor: pointer;
             transition: all 0.2s;
+            user-select: none; /* Предотвращает выделение текста при быстром клике */
         }
 
         .option-label:hover { border-color: var(--secondary); background: #fdf2f8; }
         
-        .option-label input[type="radio"] { position: absolute; opacity: 0; cursor: pointer; }
+        /* Стилизация выбранного варианта */
+        .option-label.selected {
+            border-color: var(--secondary);
+            background: #fdf2f8;
+            box-shadow: 0 0 0 1px var(--secondary);
+        }
 
         .radio-custom {
             width: 20px; height: 20px;
@@ -336,12 +348,12 @@
             transition: all 0.2s;
         }
 
-        .option-label input[type="radio"]:checked + .radio-custom {
+        .option-label.selected .radio-custom {
             border-color: var(--secondary);
             background: var(--secondary);
         }
 
-        .option-label input[type="radio"]:checked + .radio-custom::after {
+        .option-label.selected .radio-custom::after {
             content: '';
             position: absolute;
             top: 50%; left: 50%;
@@ -351,9 +363,10 @@
             border-radius: 50%;
         }
 
-        .option-label input[type="radio"]:checked ~ .option-text {
-            color: var(--secondary);
-            font-weight: 600;
+        .option-text {
+            font-size: 1rem;
+            color: var(--text-dark);
+            font-weight: 500;
         }
 
         .navigation {
@@ -445,25 +458,21 @@
         .copy-btn:hover { background: #4338ca; }
         .copy-btn.copied { background: var(--success); }
 
-        /* Специфические стили для PDF контента (скрыты на сайте, видны только при генерации) */
-        #pdfContentWrapper {
-            display: none; /* Скрыто по умолчанию */
-        }
-        
-        @media print {
-            body { background: white; padding: 0; }
-            .container { box-shadow: none; border-radius: 0; width: 100%; max-width: 100%; }
-            .header, .content:not(#resultContainer), .quiz-info-block, .accordion, .btn-start, .btn-nav, .progress-container { display: none !important; }
-            #resultContainer { display: block !important; padding: 0; }
-            #resultsBody { display: none; } /* Прячем веб-версию результатов */
-            #pdfContentWrapper { display: block !important; padding: 20px; font-family: Arial, sans-serif; color: black; }
+        /* Контейнер для скрытого рендеринга PDF */
+        #pdf-render-container {
+            position: fixed;
+            left: -9999px;
+            top: 0;
+            width: 800px; /* Ширина A4 примерно 794px при 96dpi */
+            background: white;
+            z-index: -1;
         }
 
         @media (max-width: 768px) {
             .content { padding: 30px 20px; }
             .header h1 { font-size: 2rem; }
             .question-text { font-size: 1.1rem; }
-            .quiz-info-block { flex-direction: column; align-items: center; text-align: center; gap: 10px; }
+            .quiz-info-block { flex-direction: column; align-items: center; text-align: center; gap: 8px; }
             .navigation { flex-direction: column-reverse; gap: 10px; }
             .btn-nav { width: 100%; text-align: center; }
             .progress-container { flex-direction: column; align-items: stretch; gap: 15px; }
@@ -502,7 +511,7 @@
                             <li><strong>Ребенок (C):</strong> Архаичные реакции, спонтанность, эмоции, сохранившиеся с детства.</li>
                         </ul>
                         
-                        <!-- ИСПРАВЛЕННАЯ ДИАГРАММА Р-В-Р -->
+                        <!-- ДИАГРАММА Р-В-Р -->
                         <div class="diagram-container">
                             <svg viewBox="0 0 300 400" class="diagram-svg" xmlns="http://www.w3.org/2000/svg">
                                 <!-- Линии связи -->
@@ -622,12 +631,12 @@
                 </div>
             </div>
 
-            <!-- Информационный блок -->
+            <!-- Информационный блок (Исправлено: иконка добавлена, выравнивание восстановлено) -->
             <div class="quiz-info-block">
                 <div class="info-item"><span>📝</span> 58 вопросов</div>
                 <div class="info-item"><span>⏱️</span> 10–15 минут</div>
                 <div class="info-item"><span>📊</span> Шкала от 1 до 5</div>
-                <div class="info-item"><span>💾</span> Прогресс сохраняется автоматически</div>
+                <div class="info-item"><span>💾</span> Сохранение прогресса</div>
             </div>
 
             <!-- Контейнер кнопок старта -->
@@ -659,7 +668,7 @@
         <div id="resultContainer" class="hidden result-section">
             <h2>Ваши результаты</h2>
             
-            <!-- Веб-версия результатов (для просмотра на экране) -->
+            <!-- Веб-версия результатов -->
             <div id="resultsBody"></div>
             
             <button class="btn-start" id="btnDownloadPDF" style="margin-top: 20px;">📄 Скачать PDF-отчет</button>
@@ -701,8 +710,8 @@
     </div>
 </div>
 
-<!-- Скрытый контейнер для генерации PDF. Он заполняется JS перед скачиванием -->
-<div id="pdfContentWrapper"></div>
+<!-- Скрытый контейнер для генерации PDF -->
+<div id="pdf-render-container"></div>
 
 <script>
     // ==========================================
@@ -815,7 +824,6 @@
         'try-hard': { manifests: "В огромных усилиях при скромных результатах, хронической усталости, ощущении «я должен заслужить».", action: "Разрешение: «Делай! Результат важнее усилия». Практика: выполните задачу «на троечку», без перенапряжения." }
     };
 
-    // Пары для связок
     const PAIRS = [
         {inj:'not-succeed', drv:'try-hard', desc:'Классическая связка: человек прилагает огромные усилия (драйвер «Старайся»), чтобы обойти запрет на успех (инъюнкция «Не добивайся успеха»). Парадокс в том, что именно усилие блокирует результат.'},
         {inj:'not-feel', drv:'be-strong', desc:'Инъюнкция «Не чувствуй» защищается драйвером «Будь сильным». Человек подавляет эмоции, демонстрирует неуязвимость, но тело «говорит» через психосоматику.'},
@@ -833,7 +841,7 @@
         answers: {} 
     };
 
-    const STORAGE_KEY = 'ta_quiz_state_v3'; 
+    const STORAGE_KEY = 'ta_quiz_state_v4'; 
 
     function loadState() {
         try {
@@ -856,7 +864,6 @@
         localStorage.removeItem(STORAGE_KEY);
     }
 
-    // Глобальные переменные для хранения результатов после расчета
     window.finalResults = null;
     window.topInjData = [];
     window.topDrvData = [];
@@ -946,6 +953,26 @@
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
+    // Глобальная функция для выбора ответа (вызывается из onclick в HTML)
+    window.selectOption = function(questionIndex, value) {
+        const q = questions[questionIndex];
+        currentState.answers[q.id] = value;
+        saveState();
+        
+        // Обновляем визуальное состояние всех опций текущего вопроса
+        const options = document.querySelectorAll('.option-label');
+        options.forEach(opt => {
+            opt.classList.remove('selected');
+            if(parseInt(opt.getAttribute('data-value')) === value) {
+                opt.classList.add('selected');
+            }
+        });
+
+        // Активируем кнопку Далее
+        const nextBtn = document.getElementById('btnNext');
+        if(nextBtn) nextBtn.disabled = false;
+    }
+
     function renderQuestion() {
         const q = questions[currentState.currentQuestion];
         const container = document.getElementById('questionContent');
@@ -964,20 +991,21 @@
             { val: 5, text: 'Полностью согласен' }
         ];
 
+        const currentValue = currentState.answers[q.id];
+
         labels.forEach(opt => {
-            const inputId = `q${q.id}_opt${opt.val}`;
-            const isChecked = currentState.answers[q.id] === opt.val ? 'checked' : '';
+            const isSelected = currentValue === opt.val ? 'selected' : '';
+            // Используем onclick напрямую для максимальной надежности
             optionsHTML += `
-                <label class="option-label" for="${inputId}">
-                    <input type="radio" name="q${q.id}" id="${inputId}" value="${opt.val}" ${isChecked} onchange="handleAnswer(${q.id}, ${opt.val})">
-                    <span class="radio-custom"></span>
-                    <span class="option-text">${opt.text}</span>
-                </label>
+                <div class="option-label ${isSelected}" data-value="${opt.val}" onclick="selectOption(${currentState.currentQuestion}, ${opt.val})">
+                    <div class="radio-custom"></div>
+                    <div class="option-text">${opt.text}</div>
+                </div>
             `;
         });
 
         const isLast = currentState.currentQuestion === questions.length - 1;
-        const isDisabled = !currentState.answers[q.id];
+        const isDisabled = !currentValue;
 
         container.innerHTML = `
             <div class="question-card">
@@ -994,12 +1022,6 @@
                 </div>
             </div>
         `;
-    }
-
-    window.handleAnswer = function(qId, value) {
-        currentState.answers[qId] = value;
-        saveState();
-        document.getElementById('btnNext').disabled = false;
     }
 
     window.nextQuestion = function() {
@@ -1046,10 +1068,8 @@
         }
         results.sort((a, b) => b.score - a.score);
 
-        // Сохраняем глобально для PDF
         window.finalResults = results;
 
-        // Фильтрация для анализа
         const injKeys = ["not-live","not-be-yourself","not-be-child","not-grow","not-succeed","not-be-close","not-trust","not-feel","not-matter","not-think","not-be-well","not-belong"];
         const drvKeys = ["be-perfect","be-strong","please-others","be-quick","try-hard"];
 
@@ -1059,7 +1079,6 @@
         window.topInjData = topInj;
         window.topDrvData = topDrv;
 
-        // Поиск пар
         const foundPairs = [];
         PAIRS.forEach(p => {
             const injScore = results.find(r => r.category === p.inj)?.score || 0;
@@ -1123,16 +1142,16 @@
     }
 
     // ==========================================
-    // 5. ГЕНЕРАЦИЯ ПОЛНОЦЕННОГО PDF (Новая логика)
+    // 5. НАДЕЖНАЯ ГЕНЕРАЦИЯ PDF
     // ==========================================
     async function generateFullPDF() {
         if (!window.finalResults) return alert('Результаты не найдены.');
         
-        const element = document.getElementById('pdfContentWrapper');
+        const element = document.getElementById('pdf-render-container');
         
-        // Строим HTML для PDF
+        // Строим чистый HTML для PDF (без CSS классов сайта, только inline стили для надежности)
         let pdfHtml = `
-            <div style="font-family: 'Arial', sans-serif; color: #333; line-height: 1.5; font-size: 14px;">
+            <div style="font-family: Arial, Helvetica, sans-serif; color: #333; line-height: 1.6; font-size: 14px; padding: 20px;">
                 
                 <!-- Шапка -->
                 <div style="text-align: center; margin-bottom: 30px; border-bottom: 2px solid #6366f1; padding-bottom: 20px;">
@@ -1244,24 +1263,49 @@
         `;
 
         element.innerHTML = pdfHtml;
-        element.style.display = 'block'; // Делаем видимым для html2pdf
+        element.style.display = 'block';
 
-        const opt = {
-            margin:       [10, 10, 10, 10], // mm
-            filename:     `TA_Report_${Date.now()}.pdf`,
-            image:        { type: 'jpeg', quality: 0.98 },
-            html2canvas:  { scale: 2, useCORS: true },
-            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
-            pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] } // Важно для переноса страниц
-        };
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF('p', 'mm', 'a4');
+        const pageWidth = doc.internal.pageSize.getWidth();
+        const pageHeight = doc.internal.pageSize.getHeight();
+        const marginX = 10;
+        const contentWidth = pageWidth - 2 * marginX;
 
         try {
-            await html2pdf().set(opt).from(element).save();
+            // Рендерим элемент в Canvas
+            const canvas = await html2canvas(element, {
+                scale: 2,
+                useCORS: true,
+                logging: false,
+                backgroundColor: '#ffffff'
+            });
+
+            const imgData = canvas.toDataURL('image/jpeg', 0.95);
+            const imgWidth = contentWidth;
+            const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+            let heightLeft = imgHeight;
+            let position = marginX; // Начальная позиция Y
+
+            // Добавляем первую страницу
+            doc.addImage(imgData, 'JPEG', marginX, position, imgWidth, imgHeight, undefined, 'FAST');
+            heightLeft -= (pageHeight - position - marginX);
+
+            // Если контент длиннее одной страницы, добавляем новые
+            while (heightLeft > 0) {
+                position = heightLeft - imgHeight + marginX; // Смещение вверх
+                doc.addPage();
+                doc.addImage(imgData, 'JPEG', marginX, position, imgWidth, imgHeight, undefined, 'FAST');
+                heightLeft -= (pageHeight - 2 * marginX);
+            }
+
+            doc.save(`TA_Report_${Date.now()}.pdf`);
         } catch (error) {
-            console.error("Ошибка генерации PDF:", error);
-            alert("Произошла ошибка при создании PDF. Попробуйте еще раз.");
+            console.error("Ошибка PDF:", error);
+            alert("Произошла ошибка при создании PDF. Пожалуйста, попробуйте еще раз.");
         } finally {
-            element.style.display = 'none'; // Скрываем обратно
+            element.style.display = 'none';
         }
     }
 
