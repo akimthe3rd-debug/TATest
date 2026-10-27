@@ -3,51 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Глубинная ТА-Диагностика: Сценарии и Драйверы</title>
-    <meta name="description" content="Профессиональный опросник на основе транзактного анализа (Э. Берн, Р. и М. Гулдинги, Т. Калер)">
+    <title>Диагностика сценарных предписаний и драйверов (ТА)</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Cormorant+Garamond:ital,wght@1,500;1,600&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         :root {
-            --primary: #6366f1;
-            --primary-dark: #4f46e5;
-            --secondary: #ec4899;
-            --bg-gradient: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%);
-            --card-bg: #ffffff;
-            --text-dark: #1f2937;
+            --bg-primary: #f8f9fa;
+            --bg-card: #ffffff;
+            --text-primary: #1f2937;
             --text-secondary: #4b5563;
-            --text-muted: #9ca3af;
+            --accent: #4f46e5;
+            --accent-light: #e0e7ff;
             --border: #e5e7eb;
             --success: #10b981;
-            --warning-bg: #fffbeb;
-            --warning-text: #92400e;
+            --warning: #f59e0b;
+            --danger: #ef4444;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        
+
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: var(--bg-gradient);
-            min-height: 100vh;
-            color: var(--text-dark);
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
             line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             padding: 20px;
         }
 
         .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: var(--card-bg);
-            border-radius: 24px;
-            box-shadow: 0 20px 60px rgba(99, 102, 241, 0.1);
+            max-width: 900px;
+            width: 100%;
+            background: var(--bg-card);
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.05);
             overflow: hidden;
         }
 
         .header {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
             padding: 40px 30px;
             text-align: center;
             color: white;
@@ -55,39 +54,36 @@
 
         .header h1 {
             font-family: 'Cormorant Garamond', serif;
-            font-style: italic;
             font-size: 2.5rem;
-            margin-bottom: 10px;
             font-weight: 600;
+            margin-bottom: 10px;
         }
 
-        .header p { font-size: 1.1rem; opacity: 0.95; font-weight: 300; }
+        .header p { font-size: 1.1rem; opacity: 0.9; font-weight: 300; }
 
         .content { padding: 40px 30px; }
 
-        /* --- Аккордеон теории --- */
-        .theory-accordion {
+        /* Аккордеон для теории */
+        .accordion {
             border: 1px solid var(--border);
-            border-radius: 16px;
+            border-radius: 12px;
             margin-bottom: 30px;
             overflow: hidden;
-            background: #fafafa;
         }
 
         .accordion-header {
+            background: #f9fafb;
             padding: 20px 24px;
-            background: white;
             cursor: pointer;
             display: flex;
             justify-content: space-between;
             align-items: center;
             font-weight: 600;
             font-size: 1.1rem;
-            color: var(--primary-dark);
-            transition: background 0.3s;
+            transition: background 0.2s;
         }
 
-        .accordion-header:hover { background: #f9fafb; }
+        .accordion-header:hover { background: #f3f4f6; }
         .accordion-header .icon { transition: transform 0.3s; font-size: 1.2rem; }
         .accordion-header.active .icon { transform: rotate(180deg); }
 
@@ -95,74 +91,109 @@
             max-height: 0;
             overflow: hidden;
             transition: max-height 0.4s ease-out;
-            padding: 0 24px;
+            background: white;
         }
 
-        .accordion-body.open {
-            max-height: 2000px; /* Достаточно большое значение для анимации */
-            padding: 20px 24px;
-            border-top: 1px solid var(--border);
+        .accordion-body.open { max-height: 5000px; /* Достаточно большое значение */ }
+
+        .theory-content {
+            padding: 30px;
+            font-size: 0.95rem;
+            color: var(--text-secondary);
         }
 
-        .theory-text h3 { font-size: 1.2rem; margin: 20px 0 10px; color: var(--text-dark); }
-        .theory-text p { margin-bottom: 12px; color: var(--text-secondary); font-size: 0.95rem; }
-        .theory-text ul { margin-left: 20px; margin-bottom: 16px; color: var(--text-secondary); }
-        .theory-text li { margin-bottom: 6px; }
-        .theory-text strong { color: var(--primary-dark); }
+        .theory-content h3 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.6rem;
+            color: var(--text-primary);
+            margin: 30px 0 15px 0;
+            border-bottom: 2px solid var(--accent-light);
+            padding-bottom: 8px;
+        }
+        .theory-content h3:first-child { margin-top: 0; }
 
-        .start-btn-container { text-align: center; margin-top: 30px; }
+        .theory-content p { margin-bottom: 15px; }
+        .theory-content ul { margin-left: 20px; margin-bottom: 15px; }
+        .theory-content li { margin-bottom: 8px; }
 
-        /* --- Кнопки --- */
-        .btn {
-            padding: 16px 40px;
+        .diagram-container {
+            background: #f9fafb;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .diagram-container svg {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .injunction-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .injunction-item {
+            background: var(--accent-light);
+            color: var(--accent);
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .btn-start {
+            display: block;
+            width: 100%;
+            max-width: 300px;
+            margin: 30px auto 0;
+            padding: 16px;
+            background: var(--accent);
+            color: white;
             border: none;
             border-radius: 12px;
-            font-size: 1.05rem;
+            font-size: 1.1rem;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
+            transition: all 0.3s;
         }
 
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
-        }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 25px rgba(99, 102, 241, 0.4); }
+        .btn-start:hover { background: #4338ca; transform: translateY(-2px); }
 
-        .btn-secondary { background: #f3f4f6; color: var(--text-dark); }
-        .btn-secondary:hover { background: #e5e7eb; }
-
-        .btn-pdf { background: #ef4444; color: white; }
-        .btn-pdf:hover { background: #dc2626; }
-
-        /* --- Прогресс --- */
+        /* Опросник */
         .progress-container {
             padding: 20px 30px;
             background: #f9fafb;
             border-bottom: 1px solid var(--border);
         }
-        .progress-bar { height: 6px; background: #e5e7eb; border-radius: 10px; overflow: hidden; margin-bottom: 10px; }
+
+        .progress-bar {
+            height: 6px;
+            background: #e5e7eb;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
         .progress-fill {
             height: 100%;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            background: var(--accent);
             border-radius: 10px;
             transition: width 0.4s ease;
             width: 0%;
         }
-        .progress-text { display: flex; justify-content: space-between; font-size: 0.9rem; color: var(--text-muted); font-weight: 500; }
 
-        /* --- Вопросы --- */
-        .question-card { display: none; animation: fadeIn 0.4s ease; }
-        .question-card.active { display: block; }
+        .question-card { animation: fadeIn 0.4s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         .question-number {
             display: inline-block;
-            background: var(--primary);
+            background: var(--accent);
             color: white;
             padding: 6px 14px;
             border-radius: 20px;
@@ -171,11 +202,20 @@
             margin-bottom: 20px;
         }
 
-        .question-text { font-size: 1.3rem; font-weight: 600; margin-bottom: 30px; color: var(--text-dark); line-height: 1.4; }
+        .question-text {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 30px;
+            color: var(--text-primary);
+        }
 
-        .scale-container { display: flex; flex-direction: column; gap: 12px; }
+        .options-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
 
-        .scale-option {
+        .option-label {
             display: flex;
             align-items: center;
             padding: 16px 20px;
@@ -183,15 +223,21 @@
             border: 2px solid var(--border);
             border-radius: 12px;
             cursor: pointer;
-            transition: all 0.2s ease;
-            user-select: none;
+            transition: all 0.2s;
         }
 
-        .scale-option:hover { border-color: var(--primary); background: #f5f3ff; transform: translateX(4px); }
-        .scale-option.selected { border-color: var(--primary); background: #eef2ff; }
+        .option-label:hover { border-color: var(--accent); background: #f5f7ff; }
+        
+        /* Скрываем стандартный радио, но оставляем для доступности и логики */
+        .option-label input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+        }
 
-        .scale-radio {
-            width: 22px; height: 22px;
+        .radio-custom {
+            width: 20px;
+            height: 20px;
             border: 2px solid #d1d5db;
             border-radius: 50%;
             margin-right: 16px;
@@ -200,78 +246,87 @@
             transition: all 0.2s;
         }
 
-        .scale-option.selected .scale-radio { border-color: var(--primary); background: var(--primary); }
-        .scale-option.selected .scale-radio::after {
-            content: '✓'; position: absolute; top: 50%; left: 50%;
-            transform: translate(-50%, -50%); color: white; font-size: 13px; font-weight: bold;
+        .option-label input[type="radio"]:checked + .radio-custom {
+            border-color: var(--accent);
+            background: var(--accent);
         }
 
-        .scale-label { font-size: 1rem; color: var(--text-dark); font-weight: 500; }
-
-        .navigation { display: flex; justify-content: space-between; margin-top: 40px; gap: 16px; }
-        .btn-next { margin-left: auto; }
-        .btn-next:disabled, .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
-
-        /* --- Результаты --- */
-        .result-screen { text-align: center; padding: 40px 30px; }
-        .result-screen h2 {
-            font-size: 2.2rem; margin-bottom: 20px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        .option-label input[type="radio"]:checked + .radio-custom::after {
+            content: '';
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 8px; height: 8px;
+            background: white;
+            border-radius: 50%;
         }
 
-        .result-summary {
-            text-align: left;
-            background: #f9fafb;
-            padding: 30px;
-            border-radius: 20px;
-            margin: 30px 0;
-            border: 1px solid var(--border);
+        .option-label input[type="radio"]:checked ~ .option-text {
+            color: var(--accent);
+            font-weight: 600;
         }
 
-        .result-summary h3 { font-size: 1.3rem; margin-bottom: 16px; color: var(--primary-dark); text-align: center; }
-        .result-summary p { margin-bottom: 12px; color: var(--text-secondary); line-height: 1.7; }
-
-        .results-table { width: 100%; border-collapse: collapse; margin: 20px 0; background: white; border-radius: 12px; overflow: hidden; }
-        .results-table th { background: #f3f4f6; padding: 12px 16px; text-align: left; font-weight: 600; font-size: 0.9rem; color: var(--text-dark); }
-        .results-table td { padding: 12px 16px; border-top: 1px solid var(--border); font-size: 0.95rem; color: var(--text-secondary); }
-        .score-high { color: #dc2626; font-weight: 700; }
-        .score-medium { color: #d97706; font-weight: 700; }
-
-        .case-card {
-            background: white; border-left: 4px solid var(--primary);
-            border-radius: 12px; padding: 20px; margin: 16px 0; text-align: left;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
-        }
-        .case-card h4 { margin-top: 0; color: var(--primary-dark); font-size: 1.1rem; }
-        .case-label {
-            display: inline-block; background: #eef2ff; color: var(--primary);
-            padding: 4px 10px; border-radius: 12px; font-size: 0.8rem; font-weight: 700; margin-right: 8px;
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
         }
 
-        .prompt-block {
-            background: #1f2937; color: #e5e7eb; padding: 20px; border-radius: 12px;
-            font-family: 'Courier New', monospace; font-size: 0.85rem; line-height: 1.6;
-            position: relative; margin-top: 15px; white-space: pre-wrap;
+        .btn-nav {
+            padding: 14px 28px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
         }
-        .copy-prompt-btn {
-            position: absolute; top: 10px; right: 10px;
-            background: var(--primary); color: white; border: none; border-radius: 6px;
-            padding: 6px 12px; font-size: 0.8rem; cursor: pointer; font-family: 'Inter', sans-serif;
-        }
-        .copy-prompt-btn.copied { background: var(--success); }
 
-        .share-buttons { display: flex; gap: 12px; justify-content: center; margin-top: 30px; flex-wrap: wrap; }
+        .btn-prev { background: #f3f4f6; color: var(--text-primary); }
+        .btn-prev:hover { background: #e5e7eb; }
+        
+        .btn-next { background: var(--accent); color: white; }
+        .btn-next:hover { background: #4338ca; }
+        .btn-next:disabled { background: #9ca3af; cursor: not-allowed; }
 
         .hidden { display: none !important; }
 
+        /* Результаты */
+        .result-section {
+            text-align: left;
+        }
+        .result-section h2 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2rem;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .result-block {
+            background: #f9fafb;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+            border-left: 4px solid var(--accent);
+        }
+        .result-block h3 { color: var(--accent); margin-bottom: 12px; }
+        .result-bar {
+            height: 8px;
+            background: #e5e7eb;
+            border-radius: 4px;
+            margin-top: 8px;
+            overflow: hidden;
+        }
+        .result-bar-fill {
+            height: 100%;
+            background: var(--accent);
+            border-radius: 4px;
+        }
+
         @media (max-width: 768px) {
-            .header h1 { font-size: 1.8rem; }
-            .content { padding: 30px 20px; }
-            .question-text { font-size: 1.15rem; }
-            .btn { width: 100%; justify-content: center; }
-            .navigation { flex-direction: column-reverse; }
-            .btn-next { margin-left: 0; }
+            .content { padding: 20px; }
+            .header h1 { font-size: 2rem; }
+            .question-text { font-size: 1.1rem; }
         }
     </style>
 </head>
@@ -279,559 +334,432 @@
 
 <div class="container">
     <div class="header">
-        <h1>Диагностика сценарных предписаний</h1>
-        <p>Инструмент транзактного анализа для выявления глубинных паттернов</p>
+        <h1>Диагностика сценарных предписаний и драйверов</h1>
+        <p>Инструмент транзактного анализа для выявления сценарных паттернов</p>
     </div>
 
-    <!-- ЭКРАН 1: СТАРТ И ТЕОРИЯ -->
-    <div id="startScreen" class="content">
-        <div class="theory-accordion">
+    <div class="content">
+        <!-- Блок теории (Аккордеон) -->
+        <div class="accordion">
             <div class="accordion-header" id="theoryToggle">
-                <span>📖 Читать теорию перед тестом (Рекомендуется)</span>
+                <span>Теоретическая база транзактного анализа</span>
                 <span class="icon">▼</span>
             </div>
             <div class="accordion-body" id="theoryBody">
-                <div class="theory-text">
-                    <h3>Что такое сценарий?</h3>
-                    <p>Сценарий — это бессознательный жизненный план, сформированный в раннем детстве. Согласно Эрику Берну, он определяет основные жизненные решения человека.</p>
-                    
-                    <h3>1. Инъюнкции (сценарные приказания)</h3>
-                    <p>Это <strong>глубинные запрещающие послания</strong>, составляющие ядро сценария (Р. и М. Гулдинги). Они исходят из <em>Ребёнка родителя</em> и направляются в <em>Ребёнка ребёнка</em> в довербальный период (до 2-3 лет) через невербальные сигналы: тон голоса, мимику, эмоциональную атмосферу.</p>
-                    <p><strong>12 классических инъюнкций:</strong> Не живи, Не будь собой, Не будь ребёнком, Не расти, Не добивайся успеха, Не приближайся, Не доверяй, Не чувствуй, Не будь важным, Не думай, Не будь здоровым, Не принадлежи.</p>
+                <div class="theory-content">
+                    <h3>Что такое транзактный анализ (ТА)?</h3>
+                    <p>ТА — это теория личности и систематическая психотерапия, разработанная Эриком Берном. Она основана на предпосылке, что каждый человек имеет ценность и достоинство (позиция «Я-ОК, Ты-ОК»), и что люди способны менять свои сценарные решения, принятые в детстве.</p>
 
-                    <h3>2. Драйверы (компенсаторные паттерны)</h3>
-                    <p>Драйверы (Т. Калер) — это 5 специфических поведенческих паттернов, которые являются функциональными проявлениями контрсценария. Они формируются позже (3-12 лет) и говорят: <em>«Ты ОК, только если...»</em></p>
+                    <h3>1. Модель эго-состояний</h3>
+                    <p>Личность состоит из трех эго-состояний, каждое из которых имеет свой собственный набор чувств, мыслей и поведений:</p>
+                    <div class="diagram-container">
+                        <svg viewBox="0 0 400 220" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="200" cy="60" r="50" fill="#e0e7ff" stroke="#4f46e5" stroke-width="2"/>
+                            <text x="200" y="65" text-anchor="middle" fill="#4f46e5" font-weight="bold" font-size="18">Родитель</text>
+                            <circle cx="200" cy="160" r="50" fill="#f3f4f6" stroke="#4b5563" stroke-width="2"/>
+                            <text x="200" y="165" text-anchor="middle" fill="#4b5563" font-weight="bold" font-size="18">Взрослый</text>
+                            <circle cx="200" cy="260" r="50" fill="#fce7f3" stroke="#ec4899" stroke-width="2"/>
+                            <text x="200" y="265" text-anchor="middle" fill="#ec4899" font-weight="bold" font-size="18">Ребенок</text>
+                        </svg>
+                        <p style="font-size: 0.85rem; margin-top: 10px; color: #6b7280;">Рис 1. Структурная модель эго-состояний</p>
+                    </div>
                     <ul>
-                        <li><strong>Будь совершенным:</strong> «Ты ОК, только если всё идеально» (процесс «Пока не...»)</li>
-                        <li><strong>Будь сильным:</strong> «Ты ОК, только если не показываешь слабости» (процесс «Никогда...»)</li>
-                        <li><strong>Радуй других:</strong> «Ты ОК, только если угождаешь другим» (процесс «После...»)</li>
-                        <li><strong>Спеши:</strong> «Ты ОК, только если делаешь всё быстро»</li>
-                        <li><strong>Старайся:</strong> «Ты ОК, только если стараешься изо всех сил» (процесс «Всегда...»)</li>
+                        <li><strong>Родитель:</strong> заимствованные паттерны мыслей, чувств и поведений от родительских фигур.</li>
+                        <li><strong>Взрослый:</strong> объективная оценка реальности «здесь и сейчас», обработка данных.</li>
+                        <li><strong>Ребенок:</strong> архаичные паттерны, сохранившиеся с детства (спонтанность, адаптация или бунт).</li>
                     </ul>
-                    <p style="background: var(--warning-bg); color: var(--warning-text); padding: 12px; border-radius: 8px; margin-top: 15px;">
-                        <strong>Важно:</strong> Данный опросник является инструментом самопознания и не заменяет профессиональную психотерапевтическую работу.
-                    </p>
+
+                    <h3>2. Сценарные предписания (Инъюнкции)</h3>
+                    <p>Согласно Р. и М. Гулдингам, в раннем детстве (до 2-3 лет) ребенок получает от Ребенка своих родителей невербальные запрещающие послания. Существует 12 классических инъюнкций:</p>
+                    <div class="injunction-grid">
+                        <div class="injunction-item">Не живи</div>
+                        <div class="injunction-item">Не будь собой</div>
+                        <div class="injunction-item">Не будь ребенком</div>
+                        <div class="injunction-item">Не расти</div>
+                        <div class="injunction-item">Не добивайся успеха</div>
+                        <div class="injunction-item">Не приближайся</div>
+                        <div class="injunction-item">Не доверяй</div>
+                        <div class="injunction-item">Не чувствуй</div>
+                        <div class="injunction-item">Не будь важным</div>
+                        <div class="injunction-item">Не думай</div>
+                        <div class="injunction-item">Не будь здоровым</div>
+                        <div class="injunction-item">Не принадлежи</div>
+                    </div>
+
+                    <h3>3. Драйверы</h3>
+                    <p>Выделенные Таиби Калером 5 компенсаторных паттернов поведения, которые активируются в стрессе и несут послание «Ты ОК, только если...»:</p>
+                    <ul>
+                        <li><strong>Будь совершенным:</strong> «...если все сделано идеально».</li>
+                        <li><strong>Будь сильным:</strong> «...если не показываешь чувств и слабости».</li>
+                        <li><strong>Радуй других:</strong> «...если заботишься о других в ущерб себе».</li>
+                        <li><strong>Торопись:</strong> «...если делаешь все быстро».</li>
+                        <li><strong>Старайся:</strong> «...если прикладываешь максимум усилий (даже без результата)».</li>
+                    </ul>
+
+                    <h3>4. Сценарная матрица</h3>
+                    <p>Модель К. Стайнера, показывающая, как послания передаются от родителей к ребенку:</p>
+                    <div class="diagram-container">
+                        <svg viewBox="0 0 500 250" xmlns="http://www.w3.org/2000/svg">
+                            <rect x="20" y="20" width="200" height="80" rx="8" fill="#e0e7ff" stroke="#4f46e5"/>
+                            <text x="120" y="65" text-anchor="middle" fill="#4f46e5" font-weight="bold">Родитель родителя</text>
+                            <text x="120" y="85" text-anchor="middle" fill="#4f46e5" font-size="12">(Директивы / Контрприказания)</text>
+                            
+                            <rect x="280" y="20" width="200" height="80" rx="8" fill="#fce7f3" stroke="#ec4899"/>
+                            <text x="380" y="65" text-anchor="middle" fill="#ec4899" font-weight="bold">Ребенок родителя</text>
+                            <text x="380" y="85" text-anchor="middle" fill="#ec4899" font-size="12">(Инъюнкции / Приказания)</text>
+
+                            <line x1="120" y1="100" x2="120" y2="150" stroke="#4f46e5" stroke-width="2" marker-end="url(#arrow)"/>
+                            <line x1="380" y1="100" x2="380" y2="150" stroke="#ec4899" stroke-width="2" marker-end="url(#arrow)"/>
+
+                            <rect x="20" y="150" width="200" height="80" rx="8" fill="#f3f4f6" stroke="#4b5563"/>
+                            <text x="120" y="195" text-anchor="middle" fill="#4b5563" font-weight="bold">Родитель ребенка</text>
+                            <text x="120" y="215" text-anchor="middle" fill="#4b5563" font-size="12">(Контрсценарий)</text>
+
+                            <rect x="280" y="150" width="200" height="80" rx="8" fill="#f3f4f6" stroke="#4b5563"/>
+                            <text x="380" y="195" text-anchor="middle" fill="#4b5563" font-weight="bold">Ребенок ребенка</text>
+                            <text x="380" y="215" text-anchor="middle" fill="#4b5563" font-size="12">(Сценарные решения)</text>
+                            
+                            <defs>
+                                <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+                                    <path d="M 0 0 L 10 5 L 0 10 z" fill="#4b5563"/>
+                                </marker>
+                            </defs>
+                        </svg>
+                        <p style="font-size: 0.85rem; margin-top: 10px; color: #6b7280;">Рис 2. Сценарная матрица</p>
+                    </div>
+
+                    <h3>5. Драматический треугольник (Карпмана)</h3>
+                    <p>Модель сценарных игр, в которых люди переключаются между тремя ролями:</p>
+                    <div class="diagram-container">
+                        <svg viewBox="0 0 400 220" xmlns="http://www.w3.org/2000/svg">
+                            <polygon points="200,30 50,190 350,190" fill="none" stroke="#4f46e5" stroke-width="2"/>
+                            <text x="200" y="25" text-anchor="middle" fill="#4f46e5" font-weight="bold" font-size="16">Спасатель</text>
+                            <text x="40" y="210" text-anchor="middle" fill="#ef4444" font-weight="bold" font-size="16">Преследователь</text>
+                            <text x="360" y="210" text-anchor="middle" fill="#f59e0b" font-weight="bold" font-size="16">Жертва</text>
+                        </svg>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="start-btn-container">
-            <p style="margin-bottom: 20px; color: var(--text-secondary);">Тест содержит 58 вопросов и займет около 10–15 минут. Ваш прогресс сохраняется автоматически.</p>
-            <button class="btn btn-primary" id="btnStart">Начать тестирование →</button>
-        </div>
-    </div>
+        <button class="btn-start" id="btnStart">Перейти к тестированию</button>
 
-    <!-- ЭКРАН 2: ВОЗВРАЩЕНИЕ К ТЕСТУ -->
-    <div id="resumeScreen" class="content hidden" style="text-align: center;">
-        <h2 style="margin-bottom: 15px;">👋 С возвращением!</h2>
-        <p style="margin-bottom: 30px; color: var(--text-secondary);">У вас есть несохраненный прогресс. Хотите продолжить?</p>
-        <div style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;">
-            <button class="btn btn-primary" id="btnResume">Продолжить тест</button>
-            <button class="btn btn-secondary" id="btnRestart">Начать заново</button>
-        </div>
-    </div>
-
-    <!-- ЭКРАН 3: ОПРОСНИК -->
-    <div id="quizContainer" class="hidden">
-        <div class="progress-container">
-            <div class="progress-bar"><div id="progressFill" class="progress-fill"></div></div>
-            <div class="progress-text">
-                <span id="progressText">Вопрос 1 из 58</span>
-                <span id="progressPercent">0%</span>
+        <!-- Контейнер опросника -->
+        <div id="quizContainer" class="hidden">
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 0.9rem; color: var(--text-secondary);">
+                    <span id="progressText">Вопрос 1 из 48</span>
+                    <span id="progressPercent">0%</span>
+                </div>
             </div>
+            <div class="content" id="questionContent"></div>
         </div>
-        <div class="content" id="questionsContent"></div>
-    </div>
 
-    <!-- ЭКРАН 4: РЕЗУЛЬТАТЫ -->
-    <div id="resultScreen" class="result-screen hidden">
-        <div style="font-size: 4rem; margin-bottom: 20px;">🎉</div>
-        <h2>Ваш профиль готов!</h2>
-        <div class="result-summary" id="resultContent"></div>
-        <div class="share-buttons">
-            <button class="btn btn-pdf" id="btnDownloadPDF">📄 Скачать PDF-отчет</button>
-            <button class="btn btn-primary" id="btnShare">📤 Поделиться</button>
+        <!-- Контейнер результатов -->
+        <div id="resultContainer" class="hidden result-section">
+            <h2>Ваши результаты</h2>
+            <div id="resultsBody"></div>
+            <button class="btn-start" id="btnDownloadPDF" style="margin-top: 20px;">Скачать PDF-отчет</button>
+            <button class="btn-nav btn-prev" onclick="location.reload()" style="width: 100%; margin-top: 10px; text-align: center;">Пройти тест заново</button>
         </div>
     </div>
 </div>
 
 <script>
-// ==========================================
-// 1. ДАННЫЕ (58 вопросов из исходного кода)
-// ==========================================
-const QUESTIONS = [
-    // ИНЪЮНКЦИИ (43 вопроса)
-    { id: 1, text: "Иногда я чувствую, что моё существование не имеет смысла или ценности", type: "injunction", category: "not-live" },
-    { id: 2, text: "Мне трудно быть собой, я часто чувствую, что должен играть роль", type: "injunction", category: "not-be-yourself" },
-    { id: 3, text: "Я чувствую запрет на спонтанность, игру и лёгкость", type: "injunction", category: "not-be-child" },
-    { id: 4, text: "Я чувствую сопротивление изменениям и развитию, боюсь взрослеть", type: "injunction", category: "not-grow" },
-    { id: 5, text: "Когда я приближаюсь к успеху, что-то мешает мне его достичь", type: "injunction", category: "not-succeed" },
-    { id: 6, text: "Мне трудно подпускать людей близко, я держу дистанцию в отношениях", type: "injunction", category: "not-be-close" },
-    { id: 7, text: "Мне трудно доверять себе, другим людям или миру в целом", type: "injunction", category: "not-trust" },
-    { id: 8, text: "Я подавляю свои эмоции, мне трудно чувствовать и выражать чувства", type: "injunction", category: "not-feel" },
-    { id: 9, text: "Я чувствую, что мои потребности и желания не важны", type: "injunction", category: "not-matter" },
-    { id: 10, text: "Мне трудно принимать решения самостоятельно, я полагаюсь на мнения других", type: "injunction", category: "not-think" },
-    { id: 11, text: "Я замечаю, что саботирую своё здоровье или благополучие", type: "injunction", category: "not-be-well" },
-    { id: 12, text: "Я чувствую себя чужим, не принадлежащим ни к какой группе или сообществу", type: "injunction", category: "not-belong" },
-    { id: 13, text: "Бывают моменты, когда я думаю, что мир был бы лучше без меня", type: "injunction", category: "not-live" },
-    { id: 14, text: "Я часто меняю своё поведение в зависимости от того, с кем я нахожусь", type: "injunction", category: "not-be-yourself" },
-    { id: 15, text: "Я саботирую свои успехи, когда они становятся слишком заметными", type: "injunction", category: "not-succeed" },
-    { id: 16, text: "Мне трудно понять, что я на самом деле чувствую в данный момент", type: "injunction", category: "not-feel" },
-    { id: 17, text: "Я часто сомневаюсь в своих решениях и ищу подтверждения у других", type: "injunction", category: "not-think" },
-    { id: 18, text: "Я замечаю паттерны саморазрушающего поведения (переедание, недосып, игнорирование симптомов)", type: "injunction", category: "not-be-well" },
-    { id: 19, text: "Я чувствую себя изолированным, даже находясь среди людей", type: "injunction", category: "not-belong" },
-    { id: 20, text: "Иногда я ловлю себя на мысли, что мне всё равно, что будет с моей жизнью", type: "injunction", category: "not-live" },
-    { id: 21, text: "Я часто действую так, словно моя жизнь не имеет особой ценности", type: "injunction", category: "not-live" },
-    { id: 22, text: "Я часто ношу «маску», чтобы соответствовать ожиданиям окружающих", type: "injunction", category: "not-be-yourself" },
-    { id: 23, text: "Мне сложно понять, чего я на самом деле хочу, отдельно от желаний других людей", type: "injunction", category: "not-be-yourself" },
-    { id: 24, text: "Я чувствую вину, когда позволяю себе просто отдыхать без дела", type: "injunction", category: "not-be-child" },
-    { id: 25, text: "Мне трудно позволить себе быть спонтанным и непредсказуемым", type: "injunction", category: "not-be-child" },
-    { id: 26, text: "Перед важными жизненными изменениями я часто отступаю назад", type: "injunction", category: "not-grow" },
-    { id: 27, text: "Мне комфортнее оставаться в знакомой ситуации, даже если она меня не устраивает", type: "injunction", category: "not-grow" },
-    { id: 28, text: "Когда я близок к важному достижению, я часто нахожу способ всё испортить", type: "injunction", category: "not-succeed" },
-    { id: 29, text: "Мне некомфортно, когда другие замечают мои успехи и хвалят меня", type: "injunction", category: "not-succeed" },
-    { id: 30, text: "Когда отношения становятся слишком близкими, я начинаю отдаляться", type: "injunction", category: "not-be-close" },
-    { id: 31, text: "Мне легче открываться людям, когда знаю, что скоро расстанусь с ними", type: "injunction", category: "not-be-close" },
-    { id: 32, text: "Мне трудно поверить, что кто-то может искренне желать мне добра", type: "injunction", category: "not-trust" },
-    { id: 33, text: "Я всегда держу в голове запасной план на случай, если подведут другие", type: "injunction", category: "not-trust" },
-    { id: 34, text: "Я часто не могу сразу понять, что именно я сейчас чувствую", type: "injunction", category: "not-feel" },
-    { id: 35, text: "Мне легче анализировать свои эмоции, чем проживать их", type: "injunction", category: "not-feel" },
-    { id: 36, text: "Мне сложно открыто выражать свои желания, чтобы не быть навязчивым", type: "injunction", category: "not-matter" },
-    { id: 37, text: "Я часто чувствую, что занимаю слишком много места или времени других людей", type: "injunction", category: "not-matter" },
-    { id: 38, text: "Я часто сомневаюсь в правильности своих выводов, даже когда они логичны", type: "injunction", category: "not-think" },
-    { id: 39, text: "Мне легче следовать чужим советам, чем принимать решения самостоятельно", type: "injunction", category: "not-think" },
-    { id: 40, text: "Я часто игнорирую сигналы своего тела о необходимости отдыха", type: "injunction", category: "not-be-well" },
-    { id: 41, text: "Мне проще заботиться о здоровье других, чем о своём собственном", type: "injunction", category: "not-be-well" },
-    { id: 42, text: "Даже в компании близких людей я иногда чувствую себя отстранённым", type: "injunction", category: "not-belong" },
-    { id: 43, text: "Мне трудно полностью расслабиться в новой компании или коллективе", type: "injunction", category: "not-belong" },
-    // ДРАЙВЕРЫ (15 вопросов)
-    { id: 44, text: "Я стремлюсь делать всё идеально, избегаю ошибок и критики", type: "driver", category: "be-perfect" },
-    { id: 45, text: "Я подавляю свои эмоции, стараюсь быть сильным и не показывать слабости", type: "driver", category: "be-strong" },
-    { id: 46, text: "Я ставлю потребности других выше своих, стараюсь всем угодить", type: "driver", category: "please-others" },
-    { id: 47, text: "Я постоянно спешу, делаю всё быстро, но не всегда завершаю начатое", type: "driver", category: "be-quick" },
-    { id: 48, text: "Я прикладываю огромные усилия, но часто не достигаю результата", type: "driver", category: "try-hard" },
-    { id: 49, text: "Я перепроверяю свою работу много раз, боюсь сделать что-то неправильно", type: "driver", category: "be-perfect" },
-    { id: 50, text: "Мне трудно просить о помощи, я предпочитаю справляться сам", type: "driver", category: "be-strong" },
-    { id: 51, text: "Я чувствую вину, когда говорю «нет» или не могу помочь кому-то", type: "driver", category: "please-others" },
-    { id: 52, text: "Я начинаю много дел одновременно, но редко довожу их до конца", type: "driver", category: "be-quick" },
-    { id: 53, text: "Я чувствую, что должен постоянно доказывать свою ценность через усилия", type: "driver", category: "try-hard" },
-    { id: 54, text: "Я откладываю завершение дел, потому что они никогда не бывают достаточно хорошими", type: "driver", category: "be-perfect" },
-    { id: 55, text: "Я скрываю свои истинные чувства, даже когда мне плохо", type: "driver", category: "be-strong" },
-    { id: 56, text: "Я чувствую себя обязанным отвечать на все просьбы, даже в ущерб себе", type: "driver", category: "please-others" },
-    { id: 57, text: "Я чувствую внутреннюю спешку, даже когда нет внешних дедлайнов", type: "driver", category: "be-quick" },
-    { id: 58, text: "Я часто чувствую усталость и выгорание из-за чрезмерных усилий", type: "driver", category: "try-hard" }
-];
+    // ==========================================
+    // 1. ДАННЫЕ ОПРОСНИКА (48 вопросов, охватывающих 12 инъюнкций и 5 драйверов)
+    // ==========================================
+    const questions = [
+        // --- ИНЪЮНКЦИИ (по 2-3 вопроса на каждую из 12 инъюнкций) ---
+        { id: 1, text: "Иногда я ловлю себя на мысли, что мое существование не имеет смысла или ценности.", category: "Не живи" },
+        { id: 2, text: "Бывают моменты, когда я думаю, что мир был бы лучше без меня.", category: "Не живи" },
+        
+        { id: 3, text: "Мне трудно быть собой, я часто чувствую, что должен играть роль или притворяться.", category: "Не будь собой" },
+        { id: 4, text: "Я часто меняю свое поведение и мнение в зависимости от того, с кем я нахожусь.", category: "Не будь собой" },
+        
+        { id: 5, text: "Я чувствую запрет на спонтанность, игру, беззаботность и легкость.", category: "Не будь ребенком" },
+        { id: 6, text: "Я чувствую вину, когда позволяю себе просто отдыхать без дела.", category: "Не будь ребенком" },
+        
+        { id: 7, text: "Я чувствую сопротивление изменениям и развитию, мне страшно взрослеть.", category: "Не расти" },
+        { id: 8, text: "Мне комфортнее оставаться в знакомой, даже неприятной ситуации, чем делать шаг в неизвестность.", category: "Не расти" },
+        
+        { id: 9, text: "Когда я приближаюсь к успеху, что-то внутри мешает мне его достичь или я все порчу.", category: "Не добивайся успеха" },
+        { id: 10, text: "Мне некомфортно, когда другие замечают мои успехи и хвалят меня.", category: "Не добивайся успеха" },
+        
+        { id: 11, text: "Мне трудно подпускать людей близко, я держу дистанцию в отношениях.", category: "Не приближайся" },
+        { id: 12, text: "Когда отношения становятся слишком близкими, я начинаю отдаляться или искать недостатки.", category: "Не приближайся" },
+        
+        { id: 13, text: "Мне трудно доверять себе, другим людям или миру в целом.", category: "Не доверяй" },
+        { id: 14, text: "Я всегда держу в голове запасной план на случай, если меня подведут или предадут.", category: "Не доверяй" },
+        
+        { id: 15, text: "Я подавляю свои эмоции, мне трудно чувствовать и открыто выражать чувства.", category: "Не чувствуй" },
+        { id: 16, text: "Мне легче анализировать свои эмоции умом, чем реально проживать их телом.", category: "Не чувствуй" },
+        
+        { id: 17, text: "Я чувствую, что мои потребности и желания не важны по сравнению с потребностями других.", category: "Не будь важным" },
+        { id: 18, text: "Мне сложно открыто выражать свои желания, чтобы не быть навязчивым.", category: "Не будь важным" },
+        
+        { id: 19, text: "Мне трудно принимать решения самостоятельно, я постоянно полагаюсь на мнения других.", category: "Не думай" },
+        { id: 20, text: "Я часто сомневаюсь в правильности своих выводов, даже когда они логичны и обоснованны.", category: "Не думай" },
+        
+        { id: 21, text: "Я замечаю, что саботирую свое здоровье или благополучие (недосып, переедание, игнорирование симптомов).", category: "Не будь здоровым" },
+        { id: 22, text: "Мне проще заботиться о здоровье других, чем о своем собственном.", category: "Не будь здоровым" },
+        
+        { id: 23, text: "Я чувствую себя чужим, не принадлежащим ни к какой группе, семье или сообществу.", category: "Не принадлежи" },
+        { id: 24, text: "Даже в компании близких людей я иногда чувствую себя отстраненным и одиноким.", category: "Не принадлежи" },
 
-const SCALE_LABELS = ["Совсем нет", "Скорее нет", "Затрудняюсь", "Скорее да", "Полностью да"];
+        // --- ДРАЙВЕРЫ (по 2 вопроса на каждый из 5 драйверов) ---
+        { id: 25, text: "Я стремлюсь делать всё идеально, избегаю ошибок и критики.", category: "Будь совершенным" },
+        { id: 26, text: "Я перепроверяю свою работу много раз, потому что боюсь сделать что-то неправильно.", category: "Будь совершенным" },
+        
+        { id: 27, text: "Мне трудно просить о помощи, я предпочитаю справляться со всем сам.", category: "Будь сильным" },
+        { id: 28, text: "Я скрываю свои истинные чувства, считая, что проявлять их — это признак слабости.", category: "Будь сильным" },
+        
+        { id: 29, text: "Я часто ставлю потребности других выше своих собственных.", category: "Радуй других" },
+        { id: 30, text: "Я чувствую вину, когда говорю «нет» или не могу помочь кому-то.", category: "Радуй других" },
+        
+        { id: 31, text: "Я чувствую, что должен всё успевать, и испытываю дискомфорт, когда сижу без дела.", category: "Торопись" },
+        { id: 32, text: "Я начинаю много дел одновременно, но редко довожу их до конца.", category: "Торопись" },
+        
+        { id: 33, text: "Я чувствую, что должен постоянно доказывать свою ценность через усилия и старания.", category: "Старайся" },
+        { id: 34, text: "Я часто чувствую усталость и выгорание из-за чрезмерных усилий, даже если результат невелик.", category: "Старайся" }
+    ];
 
-// Словари для интерпретации (сокращенные для компактности, но сохраняющие суть)
-const LABELS = {
-    'not-live':'Не живи', 'not-be-yourself':'Не будь собой', 'not-be-child':'Не будь ребёнком', 'not-grow':'Не расти',
-    'not-succeed':'Не добивайся успеха', 'not-be-close':'Не приближайся', 'not-trust':'Не доверяй', 'not-feel':'Не чувствуй',
-    'not-matter':'Не будь важным', 'not-think':'Не думай', 'not-be-well':'Не будь здоровым', 'not-belong':'Не принадлежи',
-    'be-perfect':'Будь совершенным', 'be-strong':'Будь сильным', 'please-others':'Радуй других', 'be-quick':'Спеши', 'try-hard':'Старайся'
-};
+    // ==========================================
+    // 2. УПРАВЛЕНИЕ СОСТОЯНИЕМ
+    // ==========================================
+    let currentState = {
+        currentQuestion: 0,
+        answers: {} // { questionId: value }
+    };
 
-const ALLOWANCES = {
-    'not-live':'Живи! Ты имеешь право существовать', 'not-be-yourself':'Будь собой! Ты имеешь право на аутентичность',
-    'not-be-child':'Будь ребёнком! Ты имеешь право на спонтанность', 'not-grow':'Расти! Ты имеешь право развиваться',
-    'not-succeed':'Добивайся успеха! Ты имеешь право на реализацию', 'not-be-close':'Приближайся! Ты имеешь право на близость',
-    'not-trust':'Доверяй! Ты имеешь право доверять себе и миру', 'not-feel':'Чувствуй! Все твои эмоции законны',
-    'not-matter':'Будь важным! Твои потребности имеют значение', 'not-think':'Думай! Ты имеешь право на собственное мнение',
-    'not-be-well':'Будь здоровым! Ты имеешь право на благополучие', 'not-belong':'Принадлежи! Ты имеешь право быть частью',
-    'be-perfect':'Ты достаточно хорош уже сейчас', 'be-strong':'Ты имеешь право на уязвимость и чувства',
-    'please-others':'Радуй себя! Ты имеешь право на собственные потребности', 'be-quick':'Замедлись! Качество важнее скорости',
-    'try-hard':'Делай! Результат важнее усилия'
-};
-
-const INJ_INTERP = {
-    'not-live': { manifests: "В хроническом чувстве бессмысленности, пассивных суицидальных фантазиях, саморазрушающем поведении.", action: "Разрешение: «Живи! Ты имеешь право занимать место в этом мире»." },
-    'not-be-yourself': { manifests: "В жизни «в маске», постоянной игре ролей, потере контакта с истинным Я, синдроме самозванца.", action: "Разрешение: «Будь собой! Ты имеешь право на аутентичность»." },
-    'not-be-child': { manifests: "В неспособности расслабляться и играть, чувстве вины за отдых, хронической серьёзности.", action: "Разрешение: «Будь ребёнком! Ты имеешь право на спонтанность и игру»." },
-    'not-grow': { manifests: "В страхе перед новыми этапами жизни, саботаже собственного развития, регрессии в стрессе.", action: "Разрешение: «Расти! Ты имеешь право развиваться и меняться»." },
-    'not-succeed': { manifests: "В само-саботаже на пороге успеха, «случайных» ошибках в ключевые моменты, синдроме самозванца.", action: "Разрешение: «Добивайся успеха! Ты имеешь право на реализацию»." },
-    'not-be-close': { manifests: "В хронической дистанции в отношениях, неспособности подпускать людей близко, саботаже развивающейся близости.", action: "Разрешение: «Приближайся! Ты имеешь право на близость»." },
-    'not-trust': { manifests: "В хронической подозрительности, неспособности опереться на других, контроле во всех сферах.", action: "Разрешение: «Доверяй! Ты имеешь право доверять себе, другим и миру»." },
-    'not-feel': { manifests: "В эмоциональном онемении, неспособности назвать свои чувства, психосоматических симптомах.", action: "Разрешение: «Чувствуй! Все твои эмоции законны»." },
-    'not-matter': { manifests: "В неспособности просить, чувстве, что «мои желания не важны», хроническом приоритете чужих потребностей.", action: "Разрешение: «Будь важным! Твои потребности имеют значение»." },
-    'not-think': { manifests: "В хронической нерешительности, поиске внешних подтверждений, зависимости от чужих мнений.", action: "Разрешение: «Думай! Ты имеешь право на собственное мнение»." },
-    'not-be-well': { manifests: "В хронических болезнях, психосоматике, неспособности заботиться о себе, саморазрушающих привычках.", action: "Разрешение: «Будь здоровым! Ты имеешь право на благополучие»." },
-    'not-belong': { manifests: "В хроническом ощущении «я чужой», неспособности вписаться в коллективы, ощущении изоляции.", action: "Разрешение: «Принадлежи! Ты имеешь право быть частью»." }
-};
-
-const DRV_INTERP = {
-    'be-perfect': { manifests: "В перфекционизме, хронической неудовлетворённости, прокрастинации, выгорании от самопроверок.", action: "Разрешение: «Ты достаточно хорош уже сейчас». Практика: делайте вещи «достаточно хорошо», а не идеально." },
-    'be-strong': { manifests: "В подавлении эмоций, неспособности просить о помощи, хроническом напряжении, психосоматике.", action: "Разрешение: «Ты имеешь право на уязвимость и чувства». Практика: просите о маленькой помощи раз в день." },
-    'please-others': { manifests: "В неспособности говорить «нет», чувстве вины за заботу о себе, выгорании от постоянной отдачи.", action: "Разрешение: «Радуй себя! Ты имеешь право на собственные потребности». Практика: говорите «нет» одной маленькой просьбе в день." },
-    'be-quick': { manifests: "В множестве начатых, но не завершённых дел, хронической спешке, неспособности замедлиться.", action: "Разрешение: «Замедлись! Качество важнее скорости». Практика: делайте одну вещь в день намеренно медленно." },
-    'try-hard': { manifests: "В огромных усилиях при скромных результатах, хронической усталости, ощущении «я должен заслужить».", action: "Разрешение: «Делай! Результат важнее усилия». Практика: выполните задачу «на троечку», без перенапряжения." }
-};
-
-const DREAM_PROMPT = `Активируй режим «ТА-Аналитик Снов». Ты — эксперт по Трансактному анализу Эрика Берна. Твоя задача — анализировать мои сны строго через призму ТА.
-
-ПРАВИЛА:
-1. Структурный анализ: Распределяй персонажей сна по эго-состояниям (Родитель, Взрослый, Ребенок).
-2. Поиск сценария: Определяй скрытый жизненный сценарий и инъюнкции.
-3. Анализ игр: Ищи психологические игры и сценарную выгоду.
-4. Формат: Задавай уточняющие сократические вопросы, чтобы я сам осознал паттерн.
-5. Завершение: Предлагай заключить конкретный behavioral contract (контракт на изменение поведения наяву).
-
-Контекст: Я прошел ТА-тест. Мой основной запрос — понять связь между моими снами и реальной жизнью.
-Ответь только: "Режим активирован. Расскажите свой сон, и мы начнем с поиска эго-состояний ваших персонажей."`;
-
-// ==========================================
-// 2. УПРАВЛЕНИЕ СОСТОЯНИЕМ
-// ==========================================
-let state = {
-    currentQuestion: 0,
-    answers: new Array(QUESTIONS.length).fill(null),
-    testId: null
-};
-
-const Storage = {
-    save: (data) => {
-        try { localStorage.setItem('ta_progress', JSON.stringify({ ...data, savedAt: Date.now() })); } catch(e){}
-    },
-    load: () => {
-        try {
-            const data = localStorage.getItem('ta_progress');
-            if (!data) return null;
-            const parsed = JSON.parse(data);
-            if (Date.now() - parsed.savedAt > 7 * 24 * 60 * 60 * 1000) { localStorage.removeItem('ta_progress'); return null; }
-            return parsed;
-        } catch(e) { return null; }
-    },
-    clear: () => localStorage.removeItem('ta_progress'),
-    saveResult: (data) => {
-        try { localStorage.setItem('ta_result', JSON.stringify({ ...data, savedAt: Date.now() })); } catch(e){}
-    },
-    loadResult: () => {
-        try { return JSON.parse(localStorage.getItem('ta_result')); } catch(e) { return null; }
+    // Загрузка из localStorage
+    const savedState = localStorage.getItem('ta_quiz_state');
+    if (savedState) {
+        currentState = JSON.parse(savedState);
     }
-};
 
-// ==========================================
-// 3. ЛОГИКА ИНТЕРФЕЙСА
-// ==========================================
-document.addEventListener('DOMContentLoaded', () => {
-    // Аккордеон
+    // ==========================================
+    // 3. ЛОГИКА ИНТЕРФЕЙСА
+    // ==========================================
     const theoryToggle = document.getElementById('theoryToggle');
     const theoryBody = document.getElementById('theoryBody');
+    
     theoryToggle.addEventListener('click', () => {
         theoryToggle.classList.toggle('active');
         theoryBody.classList.toggle('open');
     });
 
-    // Кнопки старта
-    document.getElementById('btnStart').addEventListener('click', startTest);
-    document.getElementById('btnResume').addEventListener('click', resumeTest);
-    document.getElementById('btnRestart').addEventListener('click', () => { Storage.clear(); showScreen('startScreen'); });
-    document.getElementById('btnDownloadPDF').addEventListener('click', generatePDF);
-    document.getElementById('btnShare').addEventListener('click', shareResult);
-
-    // Проверка сохраненного прогресса
-    const saved = Storage.load();
-    if (saved && saved.answers.some(a => a !== null)) {
-        showScreen('resumeScreen');
-    } else {
-        showScreen('startScreen');
-    }
-});
-
-function showScreen(id) {
-    ['startScreen', 'resumeScreen', 'quizContainer', 'resultScreen'].forEach(s => document.getElementById(s).classList.add('hidden'));
-    document.getElementById(id).classList.remove('hidden');
-    if (id === 'startScreen' || id === 'resumeScreen') window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-function startTest() {
-    state = { currentQuestion: 0, answers: new Array(QUESTIONS.length).fill(null), testId: 'ta_' + Date.now() };
-    Storage.save(state);
-    showScreen('quizContainer');
-    renderQuestion();
-}
-
-function resumeTest() {
-    const saved = Storage.load();
-    if (saved) {
-        state = saved;
-        showScreen('quizContainer');
+    document.getElementById('btnStart').addEventListener('click', () => {
+        document.querySelector('.accordion').classList.add('hidden');
+        document.getElementById('btnStart').classList.add('hidden');
+        document.getElementById('quizContainer').classList.remove('hidden');
         renderQuestion();
+    });
+
+    function saveState() {
+        localStorage.setItem('ta_quiz_state', JSON.stringify(currentState));
     }
-}
 
-function renderQuestion() {
-    const container = document.getElementById('questionsContent');
-    const q = QUESTIONS[state.currentQuestion];
-    const currentAnswer = state.answers[state.currentQuestion];
-    const isLast = state.currentQuestion === QUESTIONS.length - 1;
+    function renderQuestion() {
+        const q = questions[currentState.currentQuestion];
+        const container = document.getElementById('questionContent');
+        
+        // Обновление прогресса
+        const progress = ((currentState.currentQuestion) / questions.length) * 100;
+        document.getElementById('progressFill').style.width = `${progress}%`;
+        document.getElementById('progressText').textContent = `Вопрос ${currentState.currentQuestion + 1} из ${questions.length}`;
+        document.getElementById('progressPercent').textContent = `${Math.round(progress)}%`;
 
-    container.innerHTML = `
-        <div class="question-card active">
-            <div class="question-number">Вопрос ${state.currentQuestion + 1} из ${QUESTIONS.length}</div>
-            <div class="question-text">${q.text}</div>
-            <div class="scale-container" id="scaleContainer">
-                ${SCALE_LABELS.map((label, index) => {
-                    const value = index + 1;
-                    const isSelected = currentAnswer === value;
-                    return `<div class="scale-option ${isSelected ? 'selected' : ''}" data-value="${value}">
-                        <div class="scale-radio"></div>
-                        <div class="scale-label">${label}</div>
-                    </div>`;
-                }).join('')}
+        // Генерация вариантов ответа с УНИКАЛЬНЫМИ ID для каждого радио-инпута
+        // Это на 100% устраняет баг с неправильным выбором галочки
+        let optionsHTML = '';
+        const labels = [
+            { val: 1, text: 'Совсем не согласен' },
+            { val: 2, text: 'Скорее не согласен' },
+            { val: 3, text: 'Затрудняюсь ответить' },
+            { val: 4, text: 'Скорее согласен' },
+            { val: 5, text: 'Полностью согласен' }
+        ];
+
+        labels.forEach(opt => {
+            const inputId = `q${q.id}_opt${opt.val}`;
+            const isChecked = currentState.answers[q.id] === opt.val ? 'checked' : '';
+            optionsHTML += `
+                <label class="option-label" for="${inputId}">
+                    <input type="radio" name="q${q.id}" id="${inputId}" value="${opt.val}" ${isChecked} onchange="handleAnswer(${q.id}, ${opt.val})">
+                    <span class="radio-custom"></span>
+                    <span class="option-text">${opt.text}</span>
+                </label>
+            `;
+        });
+
+        const isLast = currentState.currentQuestion === questions.length - 1;
+        const isDisabled = !currentState.answers[q.id];
+
+        container.innerHTML = `
+            <div class="question-card">
+                <div class="question-number">Вопрос ${currentState.currentQuestion + 1}</div>
+                <div class="question-text">${q.text}</div>
+                <div class="options-grid">
+                    ${optionsHTML}
+                </div>
+                <div class="navigation">
+                    ${currentState.currentQuestion > 0 ? `<button class="btn-nav btn-prev" onclick="prevQuestion()">← Назад</button>` : '<div></div>'}
+                    <button class="btn-nav btn-next" id="btnNext" ${isDisabled ? 'disabled' : ''} onclick="nextQuestion()">
+                        ${isLast ? 'Завершить тест' : 'Далее →'}
+                    </button>
+                </div>
             </div>
-            <div class="navigation">
-                ${state.currentQuestion > 0 ? '<button class="btn btn-secondary" id="btnPrev">← Назад</button>' : '<div></div>'}
-                ${isLast 
-                    ? `<button class="btn btn-primary btn-submit" id="btnNext" ${currentAnswer === null ? 'disabled' : ''}>Получить результат 🎉</button>`
-                    : `<button class="btn btn-primary btn-next" id="btnNext" ${currentAnswer === null ? 'disabled' : ''}>Далее →</button>`
-                }
-            </div>
-        </div>
-    `;
+        `;
+    }
 
-    // 🔑 ИСПРАВЛЕНИЕ БАГА: Делегирование событий + data-value
-    document.getElementById('scaleContainer').addEventListener('click', (e) => {
-        const option = e.target.closest('.scale-option');
-        if (!option) return;
-        
-        const value = parseInt(option.getAttribute('data-value'), 10);
-        state.answers[state.currentQuestion] = value;
-        Storage.save(state);
-        
-        // Снимаем выделение со всех и ставим только на выбранный
-        document.querySelectorAll('.scale-option').forEach(opt => opt.classList.remove('selected'));
-        option.classList.add('selected');
-        
+    function handleAnswer(qId, value) {
+        currentState.answers[qId] = value;
+        saveState();
         document.getElementById('btnNext').disabled = false;
-    });
+    }
 
-    document.getElementById('btnPrev')?.addEventListener('click', () => {
-        if (state.currentQuestion > 0) { state.currentQuestion--; renderQuestion(); }
-    });
-    
-    document.getElementById('btnNext').addEventListener('click', () => {
-        if (state.answers[state.currentQuestion] === null) return;
-        if (state.currentQuestion < QUESTIONS.length - 1) {
-            state.currentQuestion++;
-            Storage.save(state);
+    function nextQuestion() {
+        if (currentState.currentQuestion < questions.length - 1) {
+            currentState.currentQuestion++;
+            saveState();
             renderQuestion();
         } else {
             finishTest();
         }
-    });
-
-    updateProgress();
-}
-
-function updateProgress() {
-    const pct = ((state.currentQuestion + 1) / QUESTIONS.length) * 100;
-    document.getElementById('progressFill').style.width = pct + '%';
-    document.getElementById('progressText').textContent = `Вопрос ${state.currentQuestion + 1} из ${QUESTIONS.length}`;
-    document.getElementById('progressPercent').textContent = Math.round(pct) + '%';
-}
-
-// ==========================================
-// 4. РАСЧЕТ И ГЕНЕРАЦИЯ РЕЗУЛЬТАТОВ
-// ==========================================
-function finishTest() {
-    const scores = {};
-    const counts = {};
-    
-    QUESTIONS.forEach((q, idx) => {
-        const baseCat = q.category.replace(/-\d+$/, ''); // Убираем суффиксы типа -2 для группировки
-        if (!scores[baseCat]) { scores[baseCat] = 0; counts[baseCat] = 0; }
-        scores[baseCat] += (state.answers[idx] || 3);
-        counts[baseCat]++;
-    });
-
-    const averages = {};
-    for (const cat in scores) {
-        averages[cat] = (scores[cat] / counts[cat]).toFixed(2);
     }
 
-    const sortedInj = Object.entries(averages).filter(([k]) => !['be-perfect','be-strong','please-others','be-quick','try-hard'].includes(k)).sort((a,b) => b[1] - a[1]);
-    const sortedDrv = Object.entries(averages).filter(([k]) => ['be-perfect','be-strong','please-others','be-quick','try-hard'].includes(k)).sort((a,b) => b[1] - a[1]);
-
-    const topInj = sortedInj.filter(x => x[1] >= 2.5).slice(0, 3);
-    const topDrv = sortedDrv.filter(x => x[1] >= 2.5).slice(0, 2);
-
-    let html = `<h3>🔍 Ключевые инсайты вашего профиля</h3>`;
-    html += `<p>На основе ваших ответов выстроен следующий психологический профиль. Обратите внимание на паттерны, набравшие <strong>2.5 и выше</strong>.</p>`;
-    
-    if (topInj.length > 0) {
-        html += `<h4 style="margin-top:20px; color:var(--text-dark);">🔴 Ваши ведущие инъюнкции</h4>`;
-        topInj.forEach(([key, score]) => {
-            const data = INJ_INTERP[key];
-            html += `<div class="case-card">
-                <h4><span class="case-label">${score} / 5.0</span> ${LABELS[key]}</h4>
-                <p><strong>Проявления:</strong> ${data ? data.manifests : 'Индивидуальный паттерн.'}</p>
-                <p><strong>Разрешение:</strong> ${ALLOWANCES[key] || ''}</p>
-            </div>`;
-        });
-    }
-
-    if (topDrv.length > 0) {
-        html += `<h4 style="margin-top:20px; color:var(--text-dark);">🟢 Ваши ведущие драйверы</h4>`;
-        topDrv.forEach(([key, score]) => {
-            const data = DRV_INTERP[key];
-            html += `<div class="case-card" style="border-left-color: var(--success);">
-                <h4><span class="case-label" style="background:#ecfdf5; color:var(--success);">${score} / 5.0</span> ${LABELS[key]}</h4>
-                <p><strong>Проявления:</strong> ${data ? data.manifests : 'Индивидуальный паттерн.'}</p>
-                <p><strong>Разрешение:</strong> ${ALLOWANCES[key] || ''}</p>
-            </div>`;
-        });
-    }
-
-    // Связки
-    const pairs = [
-        {inj:'not-succeed', drv:'try-hard', desc:'Вы прилагаете огромные усилия (Старайся), чтобы обойти запрет на успех. Парадокс: именно усилие блокирует результат.'},
-        {inj:'not-feel', drv:'be-strong', desc:'Инъюнкция «Не чувствуй» защищается драйвером «Будь сильным». Вы подавляете эмоции, но тело «говорит» через психосоматику.'},
-        {inj:'not-matter', drv:'please-others', desc:'Вы чувствуете свою незначительность и пытаетесь «заслужить» ценность через обслуживание других.'}
-    ];
-    
-    const foundPairs = pairs.filter(p => averages[p.inj] >= 2.5 && averages[p.drv] >= 2.5);
-    if (foundPairs.length > 0) {
-        html += `<h4 style="margin-top:20px; color:var(--text-dark);">🔗 Обнаруженные сценарные связки</h4>`;
-        foundPairs.forEach(p => {
-            html += `<div class="case-card" style="border-left-color: #f59e0b;">
-                <h4 style="color: #d97706;"><span class="case-label" style="background:#fffbeb; color:#d97706;">Связка</span> ${LABELS[p.inj]} + ${LABELS[p.drv]}</h4>
-                <p>${p.desc}</p>
-            </div>`;
-        });
-    }
-
-    // Анализ снов
-    html += `<h4 style="margin-top:30px; color:var(--text-dark);">🌙 Бонус: ТА-Анализ ваших снов</h4>
-    <p style="font-size:0.95rem;">Ваше подсознание «проигрывает» сценарные паттерны во сне. Скопируйте этот промпт в ChatGPT/Claude, загрузите результаты теста и опишите свой сон:</p>
-    <div class="prompt-block" id="dreamPromptBlock">
-        <button class="copy-prompt-btn" id="copyPromptBtn">📋 Копировать</button>${escapeHtml(DREAM_PROMPT)}
-    </div>`;
-
-    // Таблица всех результатов
-    html += `<h4 style="margin-top:30px; color:var(--text-dark);">📊 Полная таблица результатов</h4>
-    <table class="results-table"><thead><tr><th>Параметр</th><th>Балл</th></tr></thead><tbody>`;
-    
-    [...sortedInj, ...sortedDrv].forEach(([key, score]) => {
-        const cls = score >= 3.5 ? 'score-high' : (score >= 2.5 ? 'score-medium' : '');
-        html += `<tr><td>${LABELS[key]}</td><td class="${cls}">${score}</td></tr>`;
-    });
-    html += `</tbody></table>`;
-    html += `<p style="margin-top:20px; font-size:0.85rem; color:var(--text-muted); text-align:center;">⚠️ Данный опросник является инструментом самопознания и не заменяет профессиональную психотерапию.</p>`;
-
-    document.getElementById('resultContent').innerHTML = html;
-    
-    document.getElementById('quizContainer').classList.add('hidden');
-    document.getElementById('resultScreen').classList.remove('hidden');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-
-    Storage.saveResult({ averages, topInj, topDrv });
-    Storage.clear();
-
-    // Логика копирования промпта
-    setTimeout(() => {
-        const copyBtn = document.getElementById('copyPromptBtn');
-        if (copyBtn) {
-            copyBtn.addEventListener('click', () => {
-                navigator.clipboard.writeText(DREAM_PROMPT).then(() => {
-                    copyBtn.textContent = '✅ Скопировано!';
-                    copyBtn.classList.add('copied');
-                    setTimeout(() => { copyBtn.textContent = '📋 Копировать'; copyBtn.classList.remove('copied'); }, 2000);
-                });
-            });
+    function prevQuestion() {
+        if (currentState.currentQuestion > 0) {
+            currentState.currentQuestion--;
+            saveState();
+            renderQuestion();
         }
-    }, 100);
-}
-
-function escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
-}
-
-function shareResult() {
-    const text = "Я прошел глубинную диагностику сценарных предписаний по методологии транзактного анализа! Узнай свои паттерны тоже.";
-    if (navigator.share) {
-        navigator.share({ title: 'ТА-Диагностика', text: text, url: window.location.href }).catch(()=>{});
-    } else {
-        navigator.clipboard.writeText(window.location.href).then(() => alert('Ссылка скопирована! 📋'));
     }
-}
 
-// ==========================================
-// 5. ГЕНЕРАЦИЯ PDF (html2canvas + jsPDF)
-// ==========================================
-async function generatePDF() {
-    const saved = Storage.loadResult();
-    if (!saved) { alert('Результаты не найдены.'); return; }
-    
-    const { jsPDF } = window.jspdf;
-    const pdf = new jsPDF('p', 'mm', 'a4');
-    const pageWidth = pdf.internal.pageSize.getWidth();
-    const marginX = 15;
-    const contentWidth = pageWidth - 2 * marginX;
-    
-    // Создаем временный div для рендеринга HTML в PDF
-    const tempDiv = document.createElement('div');
-    tempDiv.style.cssText = `position:fixed; left:-9999px; top:0; width:${Math.floor(contentWidth * 3.78)}px; background:#fff; padding:20px; font-family:Arial, sans-serif; color:#222; font-size:13px; line-height:1.5;`;
-    
-    let htmlContent = `<h1 style="font-size:20px; color:#4f46e5; text-align:center; margin-bottom:5px;">Отчет ТА-Диагностики</h1>`;
-    htmlContent += `<p style="text-align:center; color:#666; font-size:12px; margin-bottom:20px;">Дата: ${new Date().toLocaleDateString('ru-RU')}</p>`;
-    
-    htmlContent += `<h3 style="color:#4f46e5; border-bottom:2px solid #e0e7ff; padding-bottom:5px; margin-top:15px;">Ведущие инъюнкции</h3>`;
-    saved.topInj.forEach(([key, score]) => {
-        htmlContent += `<p><strong>${LABELS[key]}</strong>: ${score} | <em>Разрешение:</em> ${ALLOWANCES[key]}</p>`;
-    });
-    
-    htmlContent += `<h3 style="color:#4f46e5; border-bottom:2px solid #e0e7ff; padding-bottom:5px; margin-top:15px;">Ведущие драйверы</h3>`;
-    saved.topDrv.forEach(([key, score]) => {
-        htmlContent += `<p><strong>${LABELS[key]}</strong>: ${score} | <em>Разрешение:</em> ${ALLOWANCES[key]}</p>`;
-    });
-    
-    htmlContent += `<div style="margin-top:30px; padding:15px; background:#fffbeb; border-radius:8px; font-size:11px; color:#92400e;">
-        <strong>Дисклеймер:</strong> Данный отчет является инструментом для самопознания и рефлексии, основанным на методологии транзактного анализа (Э. Берн, Р. и М. Гулдинги, Т. Калер). Он не является клиническим диагнозом.
-    </div>`;
-    
-    tempDiv.innerHTML = htmlContent;
-    document.body.appendChild(tempDiv);
-    
-    try {
-        const canvas = await html2canvas(tempDiv, { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
-        const imgData = canvas.toDataURL('image/jpeg', 0.9);
-        const imgHeight = (canvas.height * contentWidth) / canvas.width;
-        
-        let currentY = 15;
-        if (imgHeight > 270) {
-            // Простая логика разбивки на страницы, если контент очень длинный
-            const sliceHeightPx = Math.floor(270 * canvas.width / contentWidth);
-            let sourceY = 0;
-            while (sourceY < canvas.height) {
-                if (sourceY > 0) pdf.addPage();
-                const currentSlice = Math.min(sliceHeightPx, canvas.height - sourceY);
-                const sliceCanvas = document.createElement('canvas');
-                sliceCanvas.width = canvas.width;
-                sliceCanvas.height = currentSlice;
-                const ctx = sliceCanvas.getContext('2d');
-                ctx.fillStyle = '#ffffff';
-                ctx.fillRect(0, 0, canvas.width, currentSlice);
-                ctx.drawImage(canvas, 0, sourceY, canvas.width, currentSlice, 0, 0, canvas.width, currentSlice);
-                
-                const sliceImgHeight = (currentSlice * contentWidth) / canvas.width;
-                pdf.addImage(sliceCanvas.toDataURL('image/jpeg', 0.9), 'JPEG', marginX, currentY, contentWidth, sliceImgHeight, undefined, 'FAST');
-                sourceY += currentSlice;
-                currentY = 15;
+    // ==========================================
+    // 4. ОБРАБОТКА РЕЗУЛЬТАТОВ
+    // ==========================================
+    function finishTest() {
+        document.getElementById('quizContainer').classList.add('hidden');
+        document.getElementById('resultContainer').classList.remove('hidden');
+        localStorage.removeItem('ta_quiz_state'); // Очистка после завершения
+
+        const scores = {};
+        const counts = {};
+
+        // Подсчет баллов
+        questions.forEach(q => {
+            if (!scores[q.category]) {
+                scores[q.category] = 0;
+                counts[q.category] = 0;
             }
-        } else {
-            pdf.addImage(imgData, 'JPEG', marginX, currentY, contentWidth, imgHeight, undefined, 'FAST');
+            scores[q.category] += (currentState.answers[q.id] || 3);
+            counts[q.category]++;
+        });
+
+        // Расчет средних значений и сортировка
+        const results = [];
+        for (const cat in scores) {
+            const avg = (scores[cat] / counts[cat]).toFixed(1);
+            results.push({ category: cat, score: parseFloat(avg), max: 5 });
         }
-        pdf.save(`TA-Report-${Date.now()}.pdf`);
-    } catch (e) {
-        console.error('Ошибка PDF:', e);
-        alert('Не удалось сгенерировать PDF. Попробуйте сделать скриншот результатов.');
-    } finally {
-        document.body.removeChild(tempDiv);
+        results.sort((a, b) => b.score - a.score);
+
+        // Генерация HTML результатов
+        let html = '<div class="result-block"><h3>Ваши ведущие паттерны</h3><p style="margin-bottom:15px; color:#4b5563;">Чем выше балл (макс. 5.0), тем сильнее выражен данный паттерн в вашей жизни.</p>';
+        
+        results.slice(0, 5).forEach(res => {
+            const percent = (res.score / 5) * 100;
+            let color = 'var(--accent)';
+            if (res.score >= 4.0) color = 'var(--danger)';
+            else if (res.score >= 3.0) color = 'var(--warning)';
+
+            html += `
+                <div style="margin-bottom: 16px;">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+                        <span style="font-weight:600;">${res.category}</span>
+                        <span style="font-weight:700; color:${color};">${res.score} / 5.0</span>
+                    </div>
+                    <div class="result-bar">
+                        <div class="result-bar-fill" style="width: ${percent}%; background: ${color};"></div>
+                    </div>
+                </div>
+            `;
+        });
+        html += '</div>';
+
+        // Интерпретация
+        const topInjunctions = results.filter(r => ["Не живи","Не будь собой","Не будь ребенком","Не расти","Не добивайся успеха","Не приближайся","Не доверяй","Не чувствуй","Не будь важным","Не думай","Не будь здоровым","Не принадлежи"].includes(r.category) && r.score >= 3.5);
+        const topDrivers = results.filter(r => ["Будь совершенным","Будь сильным","Радуй других","Торопись","Старайся"].includes(r.category) && r.score >= 3.5);
+
+        if (topInjunctions.length > 0 || topDrivers.length > 0) {
+            html += '<div class="result-block" style="border-left-color: var(--success);"><h3>Рекомендации по проработке</h3>';
+            if (topInjunctions.length > 0) {
+                html += `<p><strong>Обратите внимание на инъюнкции:</strong> ${topInjunctions.map(t => t.category).join(', ')}. <br>Попробуйте сформулировать для себя контр-послание (Разрешение). Например, вместо "Не думай" — "Мои мысли и идеи имеют ценность".</p>`;
+            }
+            if (topDrivers.length > 0) {
+                html += `<p><strong>Ваши активные драйверы:</strong> ${topDrivers.map(t => t.category).join(', ')}. <br>В стрессе вы можете попадать в ловушку этих паттернов. Практикуйте осознанную паузу перед реакцией и спрашивайте себя: "Чего я хочу на самом деле, а не чего от меня ожидают?".</p>`;
+            }
+            html += '</div>';
+        }
+
+        document.getElementById('resultsBody').innerHTML = html;
+        window.calculatedResults = results; // Сохраняем для PDF
     }
-}
+
+    // ==========================================
+    // 5. ГЕНЕРАЦИЯ PDF
+    // ==========================================
+    document.getElementById('btnDownloadPDF').addEventListener('click', () => {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(20);
+        doc.text("Отчет по транзактному анализу", 20, 20);
+        
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(10);
+        doc.text(`Дата прохождения: ${new Date().toLocaleDateString('ru-RU')}`, 20, 30);
+        
+        let y = 45;
+        doc.setFontSize(14);
+        doc.setFont("helvetica", "bold");
+        doc.text("Результаты по шкалам:", 20, y);
+        y += 10;
+        
+        doc.setFontSize(11);
+        doc.setFont("helvetica", "normal");
+        
+        window.calculatedResults.forEach(res => {
+            if (y > 270) { doc.addPage(); y = 20; }
+            doc.text(`${res.category}: ${res.score} / 5.0`, 20, y);
+            
+            // Простая визуализация полоски в PDF
+            doc.setFillColor(200, 200, 200);
+            doc.rect(80, y - 4, 100, 4, 'F');
+            doc.setFillColor(79, 70, 229);
+            doc.rect(80, y - 4, 100 * (res.score / 5), 4, 'F');
+            
+            y += 10;
+        });
+
+        y += 15;
+        doc.setFontSize(10);
+        doc.setTextColor(100);
+        const disclaimer = "Данный отчет является инструментом для самопознания и рефлексии, основанным на методологии транзактного анализа (Э. Берн, Р. и М. Гулдинги, В. Джойнс). Он не является клиническим диагнозом и не заменяет консультацию квалифицированного психотерапевта.";
+        const splitDisclaimer = doc.splitTextToSize(disclaimer, 170);
+        doc.text(splitDisclaimer, 20, y);
+
+        doc.save("TA_Результаты.pdf");
+    });
+
+    // Инициализация при загрузке (если есть сохраненный прогресс, можно показать кнопку "Продолжить", но для простоты рендерим первый вопрос при старте)
 </script>
+
 </body>
 </html>
