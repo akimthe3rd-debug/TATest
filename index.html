@@ -8,9 +8,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Cormorant+Garamond:ital,wght@1,500;1,600&display=swap" rel="stylesheet">
     
-    <!-- Стабильные версии библиотек -->
+    <!-- Библиотеки для PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
 
     <style>
         :root {
@@ -107,9 +107,9 @@
             background: white;
         }
 
-        .main-accordion-body.open { max-height: 10000px; /* Увеличили лимит для вложенных списков */ }
+        .main-accordion-body.open { max-height: 10000px; }
 
-        /* Вложенные Аккордеоны (Подразделы теории) */
+        /* Вложенные Аккордеоны */
         .sub-accordion {
             border-top: 1px solid #f3f4f6;
         }
@@ -137,7 +137,7 @@
             overflow: hidden;
             transition: max-height 0.3s ease-out;
             background: white;
-            padding: 0 20px; /* Горизонтальные отступы будут добавлены контенту ниже */
+            padding: 0 20px;
         }
         
         .sub-accordion-body.open { max-height: 5000px; }
@@ -489,21 +489,6 @@
         .copy-btn:hover { background: #4338ca; }
         .copy-btn.copied { background: var(--success); }
 
-        /* Контейнер для PDF (всегда скрыт, но присутствует в DOM) */
-        #pdf-render-container {
-            position: fixed;
-            left: -9999px;
-            top: 0;
-            width: 800px;
-            background: white;
-            z-index: -1;
-            font-family: Arial, Helvetica, sans-serif;
-            color: #333;
-            line-height: 1.6;
-            font-size: 14px;
-            padding: 20px;
-        }
-
         @media (max-width: 768px) {
             .content { padding: 30px 20px; }
             .header h1 { font-size: 2rem; }
@@ -825,9 +810,6 @@
     </div>
 </div>
 
-<!-- Скрытый контейнер для генерации PDF -->
-<div id="pdf-render-container"></div>
-
 <script>
     // ==========================================
     // 1. ДАННЫЕ ОПРОСНИКА (58 вопросов)
@@ -956,7 +938,7 @@
         answers: {} 
     };
 
-    const STORAGE_KEY = 'ta_quiz_state_v6'; 
+    const STORAGE_KEY = 'ta_quiz_state_v7'; 
 
     function loadState() {
         try {
@@ -1257,162 +1239,219 @@
     }
 
     // ==========================================
-    // 5. НАДЕЖНАЯ ГЕНЕРАЦИЯ PDF
+    // 5. ГЕНЕРАЦИЯ PDF (НОВАЯ ЛОГИКА С AUTOTABLE)
     // ==========================================
-    async function generateFullPDF() {
+    function generateFullPDF() {
         if (!window.finalResults) return alert('Результаты не найдены.');
         
-        const element = document.getElementById('pdf-render-container');
-        
-        // Очищаем контейнер перед новым рендером
-        element.innerHTML = '';
-
-        // Строим чистый HTML для PDF
-        let pdfHtml = `
-            <div style="text-align: center; margin-bottom: 30px; border-bottom: 2px solid #6366f1; padding-bottom: 20px;">
-                <h1 style="color: #6366f1; font-size: 24px; margin: 0;">Отчет по транзактному анализу</h1>
-                <p style="color: #666; font-size: 12px; margin-top: 5px;">Дата прохождения: ${new Date().toLocaleDateString('ru-RU')}</p>
-            </div>
-
-            <h2 style="color: #1f2937; font-size: 18px; margin-bottom: 15px; border-left: 4px solid #6366f1; padding-left: 10px;">1. Резюме профиля</h2>
-            <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 13px;">
-                <thead>
-                    <tr style="background-color: #f3f4f6;">
-                        <th style="padding: 8px; text-align: left; border-bottom: 1px solid #ddd;">Параметр</th>
-                        <th style="padding: 8px; text-align: right; border-bottom: 1px solid #ddd;">Балл (0-5)</th>
-                        <th style="padding: 8px; text-align: left; border-bottom: 1px solid #ddd;">Уровень</th>
-                    </tr>
-                </thead>
-                <tbody>
-        `;
-
-        window.finalResults.forEach(res => {
-            const level = res.score >= 4.0 ? 'Высокий' : (res.score >= 3.0 ? 'Средний' : 'Низкий');
-            const color = res.score >= 4.0 ? '#dc2626' : (res.score >= 3.0 ? '#d97706' : '#6b7280');
-            pdfHtml += `
-                <tr>
-                    <td style="padding: 8px; border-bottom: 1px solid #eee; font-weight: bold;">${LABELS[res.category]}</td>
-                    <td style="padding: 8px; text-align: right; border-bottom: 1px solid #eee; color: ${color}; font-weight: bold;">${res.score}</td>
-                    <td style="padding: 8px; border-bottom: 1px solid #eee; color: ${color};">${level}</td>
-                </tr>
-            `;
-        });
-
-        pdfHtml += `
-                </tbody>
-            </table>
-
-            <h2 style="color: #dc2626; font-size: 18px; margin-top: 30px; margin-bottom: 15px; border-left: 4px solid #dc2626; padding-left: 10px;">2. Ведущие инъюнкции</h2>
-            <p style="font-size: 13px; color: #666; margin-bottom: 15px;">Это глубинные запрещающие послания, составляющие ядро вашего сценария.</p>
-        `;
-
-        if (window.topInjData.length > 0) {
-            window.topInjData.forEach(item => {
-                const data = INJ_INTERP[item.category];
-                pdfHtml += `
-                    <div style="background-color: #fef2f2; border-left: 4px solid #dc2626; padding: 15px; margin-bottom: 15px; border-radius: 4px; page-break-inside: avoid;">
-                        <h3 style="margin: 0 0 10px 0; font-size: 16px; color: #991b1b;">${LABELS[item.category]} (${item.score}/5)</h3>
-                        <p style="margin: 0 0 10px 0; font-size: 13px;"><strong>Как проявляется:</strong> ${data ? data.manifests : ''}</p>
-                        <p style="margin: 0; font-size: 13px; color: #059669;"><strong>Разрешение:</strong> ${ALLOWANCES[item.category]}</p>
-                    </div>
-                `;
-            });
-        } else {
-            pdfHtml += `<p style="font-size: 13px; color: #666;">Значимых инъюнкций не выявлено (балл ниже 2.5).</p>`;
-        }
-
-        pdfHtml += `
-            <h2 style="color: #059669; font-size: 18px; margin-top: 30px; margin-bottom: 15px; border-left: 4px solid #059669; padding-left: 10px;">3. Ведущие драйверы</h2>
-            <p style="font-size: 13px; color: #666; margin-bottom: 15px;">Компенсаторные паттерны поведения, активируемые в стрессе.</p>
-        `;
-
-        if (window.topDrvData.length > 0) {
-            window.topDrvData.forEach(item => {
-                const data = DRV_INTERP[item.category];
-                pdfHtml += `
-                    <div style="background-color: #ecfdf5; border-left: 4px solid #059669; padding: 15px; margin-bottom: 15px; border-radius: 4px; page-break-inside: avoid;">
-                        <h3 style="margin: 0 0 10px 0; font-size: 16px; color: #065f46;">${LABELS[item.category]} (${item.score}/5)</h3>
-                        <p style="margin: 0 0 10px 0; font-size: 13px;"><strong>Как проявляется:</strong> ${data ? data.manifests : ''}</p>
-                        <p style="margin: 0; font-size: 13px; color: #4f46e5;"><strong>Практика выхода:</strong> ${data ? data.action : ''}</p>
-                    </div>
-                `;
-            });
-        } else {
-            pdfHtml += `<p style="font-size: 13px; color: #666;">Значимых драйверов не выявлено (балл ниже 2.5).</p>`;
-        }
-
-        if (window.foundPairs.length > 0) {
-            pdfHtml += `
-                <h2 style="color: #f59e0b; font-size: 18px; margin-top: 30px; margin-bottom: 15px; border-left: 4px solid #f59e0b; padding-left: 10px;">4. Сценарные связки</h2>
-                <p style="font-size: 13px; color: #666; margin-bottom: 15px;">Взаимодействие инъюнкций и драйверов в вашем профиле.</p>
-            `;
-            window.foundPairs.forEach(pair => {
-                pdfHtml += `
-                    <div style="background-color: #fffbeb; border-left: 4px solid #f59e0b; padding: 15px; margin-bottom: 15px; border-radius: 4px; page-break-inside: avoid;">
-                        <h3 style="margin: 0 0 10px 0; font-size: 16px; color: #92400e;">${LABELS[pair.inj]} + ${LABELS[pair.drv]}</h3>
-                        <p style="margin: 0; font-size: 13px;">${pair.desc}</p>
-                        <p style="margin: 5px 0 0 0; font-size: 12px; color: #666;">Баллы: Инъюнкция ${pair.iScore}, Драйвер ${pair.dScore}</p>
-                    </div>
-                `;
-            });
-        }
-
-        pdfHtml += `
-            <h2 style="color: #6366f1; font-size: 18px; margin-top: 30px; margin-bottom: 15px; border-left: 4px solid #6366f1; padding-left: 10px;">5. Общие рекомендации</h2>
-            <ul style="font-size: 13px; color: #333; margin-left: 20px; margin-bottom: 20px;">
-                <li><strong>Осознание:</strong> Замечайте моменты, когда включаются ваши ведущие паттерны. Что происходит в теле? Какие мысли возникают?</li>
-                <li><strong>Деконтраминация:</strong> Отделяйте факты реальности («здесь и сейчас») от старых детских решений. Спрашивайте себя: «Это правда обо мне сейчас?»</li>
-                <li><strong>Разрешения:</strong> Ежедневно повторяйте вслух или про себя свои персональные разрешения (см. разделы выше).</li>
-                <li><strong>Новые решения:</strong> По Берну, сценарий — это решение. Вы можете принять новое решение Взрослым эго-состоянием.</li>
-            </ul>
-
-            <div style="background-color: #f3f4f6; border: 1px solid #e5e7eb; padding: 15px; border-radius: 8px; margin-top: 30px; font-size: 11px; color: #6b7280; text-align: center;">
-                <strong>Дисклеймер:</strong> Данный отчет является инструментом для самопознания и рефлексии, основанным на методологии транзактного анализа (Э. Берн, Р. и М. Гулдинги, В. Джойнс). Он не является клиническим диагнозом и не заменяет консультацию квалифицированного психотерапевта.
-            </div>
-        `;
-        
-        element.innerHTML = pdfHtml;
-
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF('p', 'mm', 'a4');
         const pageWidth = doc.internal.pageSize.getWidth();
         const pageHeight = doc.internal.pageSize.getHeight();
-        const marginX = 10;
-        const contentWidth = pageWidth - 2 * marginX;
+        const margin = 15;
+        const contentWidth = pageWidth - 2 * margin;
+        
+        let y = margin;
 
-        try {
-            // Рендерим элемент в Canvas
-            const canvas = await html2canvas(element, {
-                scale: 2,
-                useCORS: true,
-                logging: false,
-                backgroundColor: '#ffffff'
-            });
-
-            const imgData = canvas.toDataURL('image/jpeg', 0.95);
-            const imgWidth = contentWidth;
-            const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-            let heightLeft = imgHeight;
-            let position = marginX;
-
-            // Первая страница
-            doc.addImage(imgData, 'JPEG', marginX, position, imgWidth, imgHeight, undefined, 'FAST');
-            heightLeft -= (pageHeight - position - marginX);
-
-            // Последующие страницы
-            while (heightLeft > 0) {
-                position = heightLeft - imgHeight + marginX;
+        // Хелпер для проверки конца страницы
+        const checkPageBreak = (neededSpace) => {
+            if (y + neededSpace > pageHeight - margin) {
                 doc.addPage();
-                doc.addImage(imgData, 'JPEG', marginX, position, imgWidth, imgHeight, undefined, 'FAST');
-                heightLeft -= (pageHeight - 2 * marginX);
+                y = margin;
             }
+        };
 
-            doc.save(`TA_Report_${Date.now()}.pdf`);
-        } catch (error) {
-            console.error("Ошибка PDF:", error);
-            alert("Произошла ошибка при создании PDF. Пожалуйста, попробуйте еще раз.");
+        // Хелпер для добавления текста с переносом
+        const addText = (text, fontSize = 10, fontStyle = 'normal', color = [51, 51, 51], maxWidth = contentWidth) => {
+            doc.setFontSize(fontSize);
+            doc.setFontStyle(fontStyle);
+            doc.setTextColor(...color);
+            const lines = doc.splitTextToSize(text, maxWidth);
+            const lineHeight = fontSize * 0.5; // Примерная высота строки в мм
+            
+            lines.forEach(line => {
+                checkPageBreak(lineHeight + 2);
+                doc.text(line, margin, y);
+                y += lineHeight + 1;
+            });
+            y += 2; // Отступ после параграфа
+        };
+
+        // Хелпер для заголовков
+        const addHeader = (text, level = 1) => {
+            checkPageBreak(15);
+            if (level === 1) {
+                doc.setFontSize(16);
+                doc.setFontStyle('bold');
+                doc.setTextColor(99, 102, 241); // Primary
+            } else {
+                doc.setFontSize(12);
+                doc.setFontStyle('bold');
+                doc.setTextColor(31, 41, 55); // Dark
+            }
+            doc.text(text, margin, y);
+            y += level === 1 ? 8 : 6;
+            
+            // Линия под заголовком
+            doc.setDrawColor(229, 231, 235);
+            doc.line(margin, y - 2, pageWidth - margin, y - 2);
+            y += 4;
+        };
+
+        // --- ЛИЦО ОТЧЕТА ---
+        doc.setFontSize(20);
+        doc.setFontStyle('bold');
+        doc.setTextColor(99, 102, 241);
+        doc.text("Отчет по транзактному анализу", pageWidth / 2, y, { align: 'center' });
+        y += 10;
+        
+        doc.setFontSize(10);
+        doc.setFontStyle('normal');
+        doc.setTextColor(107, 114, 128);
+        doc.text(`Дата прохождения: ${new Date().toLocaleDateString('ru-RU')}`, pageWidth / 2, y, { align: 'center' });
+        y += 20;
+
+        // --- 1. РЕЗЮМЕ ПРОФИЛЯ (ТАБЛИЦА) ---
+        addHeader("1. Резюме профиля");
+        
+        const tableRows = window.finalResults.map(res => {
+            const level = res.score >= 4.0 ? 'Высокий' : (res.score >= 3.0 ? 'Средний' : 'Низкий');
+            return [LABELS[res.category], res.score.toString(), level];
+        });
+
+        doc.autoTable({
+            startY: y,
+            head: [['Параметр', 'Балл (0-5)', 'Уровень']],
+            body: tableRows,
+            theme: 'grid',
+            styles: { fontSize: 9, cellPadding: 3 },
+            headStyles: { fillColor: [99, 102, 241], textColor: 255 },
+            alternateRowStyles: { fillColor: [249, 250, 251] },
+            margin: { left: margin, right: margin }
+        });
+
+        y = doc.lastAutoTable.finalY + 10;
+
+        // --- 2. ВЕДУЩИЕ ИНЪЮНКЦИИ ---
+        addHeader("2. Ведущие инъюнкции");
+        addText("Это глубинные запрещающие послания, составляющие ядро вашего сценария.", 9, 'italic', [107, 114, 128]);
+
+        if (window.topInjData.length > 0) {
+            window.topInjData.forEach(item => {
+                const data = INJ_INTERP[item.category];
+                addHeader(`${LABELS[item.category]} (${item.score}/5)`, 2);
+                
+                // Цветной фон для блока (имитация карточки)
+                const boxHeight = 30; // Приблизительно
+                checkPageBreak(boxHeight);
+                
+                doc.setFillColor(254, 242, 242); // Light Red BG
+                doc.rect(margin, y - 2, contentWidth, boxHeight, 'F');
+                doc.setDrawColor(220, 38, 38); // Red Border
+                doc.line(margin, y - 2, margin, y + boxHeight - 2);
+
+                y += 4;
+                addText(`Проявления: ${data ? data.manifests : ''}`, 9, 'normal', [51, 51, 51], contentWidth - 4);
+                addText(`Разрешение: ${ALLOWANCES[item.category]}`, 9, 'bold', [5, 150, 105], contentWidth - 4);
+                
+                y += 6; // Отступ после блока
+            });
+        } else {
+            addText("Значимых инъюнкций не выявлено (балл ниже 2.5).", 9, 'normal', [107, 114, 128]);
         }
+
+        // --- 3. ВЕДУЩИЕ ДРАЙВЕРЫ ---
+        addHeader("3. Ведущие драйверы");
+        addText("Компенсаторные паттерны поведения, активируемые в стрессе.", 9, 'italic', [107, 114, 128]);
+
+        if (window.topDrvData.length > 0) {
+            window.topDrvData.forEach(item => {
+                const data = DRV_INTERP[item.category];
+                addHeader(`${LABELS[item.category]} (${item.score}/5)`, 2);
+                
+                const boxHeight = 30;
+                checkPageBreak(boxHeight);
+                
+                doc.setFillColor(236, 253, 245); // Light Green BG
+                doc.rect(margin, y - 2, contentWidth, boxHeight, 'F');
+                doc.setDrawColor(5, 150, 105); // Green Border
+                doc.line(margin, y - 2, margin, y + boxHeight - 2);
+
+                y += 4;
+                addText(`Проявления: ${data ? data.manifests : ''}`, 9, 'normal', [51, 51, 51], contentWidth - 4);
+                addText(`Практика выхода: ${data ? data.action : ''}`, 9, 'bold', [79, 70, 229], contentWidth - 4);
+                
+                y += 6;
+            });
+        } else {
+            addText("Значимых драйверов не выявлено (балл ниже 2.5).", 9, 'normal', [107, 114, 128]);
+        }
+
+        // --- 4. СЦЕНАРНЫЕ СВЯЗКИ ---
+        if (window.foundPairs.length > 0) {
+            addHeader("4. Сценарные связки");
+            addText("Взаимодействие инъюнкций и драйверов в вашем профиле.", 9, 'italic', [107, 114, 128]);
+
+            window.foundPairs.forEach(pair => {
+                addHeader(`${LABELS[pair.inj]} + ${LABELS[pair.drv]}`, 2);
+                
+                const boxHeight = 25;
+                checkPageBreak(boxHeight);
+                
+                doc.setFillColor(255, 251, 235); // Light Yellow BG
+                doc.rect(margin, y - 2, contentWidth, boxHeight, 'F');
+                doc.setDrawColor(245, 158, 11); // Orange Border
+                doc.line(margin, y - 2, margin, y + boxHeight - 2);
+
+                y += 4;
+                addText(pair.desc, 9, 'normal', [51, 51, 51], contentWidth - 4);
+                addText(`Баллы: Инъюнкция ${pair.iScore}, Драйвер ${pair.dScore}`, 8, 'italic', [107, 114, 128], contentWidth - 4);
+                
+                y += 6;
+            });
+        }
+
+        // --- 5. РЕКОМЕНДАЦИИ ---
+        addHeader("5. Общие рекомендации");
+        
+        const recommendations = [
+            "Осознание: Замечайте моменты, когда включаются ваши ведущие паттерны. Что происходит в теле? Какие мысли возникают?",
+            "Деконтраминация: Отделяйте факты реальности («здесь и сейчас») от старых детских решений. Спрашивайте себя: «Это правда обо мне сейчас?»",
+            "Разрешения: Ежедневно повторяйте вслух или про себя свои персональные разрешения (см. разделы выше).",
+            "Новые решения: По Берну, сценарий — это решение. Вы можете принять новое решение Взрослым эго-состоянием."
+        ];
+
+        recommendations.forEach(rec => {
+            checkPageBreak(10);
+            doc.setFontSize(9);
+            doc.setFontStyle('normal');
+            doc.setTextColor(51, 51, 51);
+            // Маркер списка
+            doc.circle(margin + 1, y - 1, 0.5, 'F'); 
+            const lines = doc.splitTextToSize(rec, contentWidth - 5);
+            lines.forEach(line => {
+                checkPageBreak(5);
+                doc.text(line, margin + 3, y);
+                y += 4;
+            });
+            y += 2;
+        });
+
+        // --- ДИСКЛЕЙМЕР ---
+        checkPageBreak(20);
+        y += 10;
+        doc.setFontSize(8);
+        doc.setFontStyle('italic');
+        doc.setTextColor(107, 114, 128);
+        const disclaimer = "Данный отчет является инструментом для самопознания и рефлексии, основанным на методологии транзактного анализа (Э. Берн, Р. и М. Гулдинги, В. Джойнс). Он не является клиническим диагнозом и не заменяет консультацию квалифицированного психотерапевта.";
+        const disLines = doc.splitTextToSize(disclaimer, contentWidth);
+        disLines.forEach(line => {
+            checkPageBreak(4);
+            doc.text(line, margin, y);
+            y += 3;
+        });
+
+        doc.save(`TA_Report_${Date.now()}.pdf`);
     }
 
     function copyDreamPrompt() {
