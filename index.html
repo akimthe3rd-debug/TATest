@@ -9,8 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Cormorant+Garamond:ital,wght@1,500;1,600&display=swap" rel="stylesheet">
     
     <!-- Библиотеки для PDF -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <style>
         :root {
@@ -147,7 +146,7 @@
             margin: 20px auto;
             text-align: center;
             width: 100%;
-            max-width: 400px; /* Ограничение ширины для красивого вида */
+            max-width: 400px; 
             overflow-x: auto;
         }
         
@@ -219,6 +218,18 @@
         }
 
         .btn-start:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(236, 72, 153, 0.4); }
+        
+        .btn-resume {
+            background: #f3f4f6;
+            color: var(--text-dark);
+            box-shadow: none;
+            border: 1px solid var(--border-color);
+        }
+        .btn-resume:hover {
+            background: #e5e7eb;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
 
         /* Опросник */
         .progress-container {
@@ -434,6 +445,20 @@
         .copy-btn:hover { background: #4338ca; }
         .copy-btn.copied { background: var(--success); }
 
+        /* Специфические стили для PDF контента (скрыты на сайте, видны только при генерации) */
+        #pdfContentWrapper {
+            display: none; /* Скрыто по умолчанию */
+        }
+        
+        @media print {
+            body { background: white; padding: 0; }
+            .container { box-shadow: none; border-radius: 0; width: 100%; max-width: 100%; }
+            .header, .content:not(#resultContainer), .quiz-info-block, .accordion, .btn-start, .btn-nav, .progress-container { display: none !important; }
+            #resultContainer { display: block !important; padding: 0; }
+            #resultsBody { display: none; } /* Прячем веб-версию результатов */
+            #pdfContentWrapper { display: block !important; padding: 20px; font-family: Arial, sans-serif; color: black; }
+        }
+
         @media (max-width: 768px) {
             .content { padding: 30px 20px; }
             .header h1 { font-size: 2rem; }
@@ -477,10 +502,10 @@
                             <li><strong>Ребенок (C):</strong> Архаичные реакции, спонтанность, эмоции, сохранившиеся с детства.</li>
                         </ul>
                         
-                        <!-- ИСПРАВЛЕННАЯ ДИАГРАММА -->
+                        <!-- ИСПРАВЛЕННАЯ ДИАГРАММА Р-В-Р -->
                         <div class="diagram-container">
                             <svg viewBox="0 0 300 400" class="diagram-svg" xmlns="http://www.w3.org/2000/svg">
-                                <!-- Линии связи (рисуются первыми, чтобы быть под кругами) -->
+                                <!-- Линии связи -->
                                 <line x1="150" y1="100" x2="150" y2="180" stroke="#cbd5e1" stroke-width="3" />
                                 <line x1="150" y1="220" x2="150" y2="300" stroke="#cbd5e1" stroke-width="3" />
 
@@ -605,10 +630,12 @@
                 <div class="info-item"><span>💾</span> Прогресс сохраняется автоматически</div>
             </div>
 
-            <button class="btn-start" id="btnStart">Перейти к тестированию</button>
-            
-            <!-- Кнопка продолжить, если есть сохраненный прогресс -->
-            <button class="btn-start" id="btnResume" style="display:none; margin-top: 10px; background: #f3f4f6; color: var(--text-dark); box-shadow: none;">Продолжить прерванный тест</button>
+            <!-- Контейнер кнопок старта -->
+            <div id="startButtonsContainer">
+                <button class="btn-start" id="btnStartNew">Начать новый тест</button>
+                <!-- Кнопка продолжения появится динамически, если есть прогресс -->
+                <button class="btn-start btn-resume hidden" id="btnResumeTest">Продолжить прерванный тест</button>
+            </div>
         </div>
 
         <!-- Контейнер опросника -->
@@ -631,6 +658,8 @@
         <!-- Контейнер результатов -->
         <div id="resultContainer" class="hidden result-section">
             <h2>Ваши результаты</h2>
+            
+            <!-- Веб-версия результатов (для просмотра на экране) -->
             <div id="resultsBody"></div>
             
             <button class="btn-start" id="btnDownloadPDF" style="margin-top: 20px;">📄 Скачать PDF-отчет</button>
@@ -671,6 +700,9 @@
         </div>
     </div>
 </div>
+
+<!-- Скрытый контейнер для генерации PDF. Он заполняется JS перед скачиванием -->
+<div id="pdfContentWrapper"></div>
 
 <script>
     // ==========================================
@@ -783,6 +815,16 @@
         'try-hard': { manifests: "В огромных усилиях при скромных результатах, хронической усталости, ощущении «я должен заслужить».", action: "Разрешение: «Делай! Результат важнее усилия». Практика: выполните задачу «на троечку», без перенапряжения." }
     };
 
+    // Пары для связок
+    const PAIRS = [
+        {inj:'not-succeed', drv:'try-hard', desc:'Классическая связка: человек прилагает огромные усилия (драйвер «Старайся»), чтобы обойти запрет на успех (инъюнкция «Не добивайся успеха»). Парадокс в том, что именно усилие блокирует результат.'},
+        {inj:'not-feel', drv:'be-strong', desc:'Инъюнкция «Не чувствуй» защищается драйвером «Будь сильным». Человек подавляет эмоции, демонстрирует неуязвимость, но тело «говорит» через психосоматику.'},
+        {inj:'not-matter', drv:'please-others', desc:'«Не будь важным» компенсируется драйвером «Радуй других». Человек чувствует свою незначительность и пытается «заслужить» ценность через обслуживание других.'},
+        {inj:'not-be-yourself', drv:'be-perfect', desc:'«Не будь собой» защищается перфекционизмом. Человек боится быть аутентичным и пытается стать «идеальной версией».'},
+        {inj:'not-be-close', drv:'be-quick', desc:'«Не приближайся» компенсируется спешкой. Человек не даёт отношениям развиться до глубины.'},
+        {inj:'not-trust', drv:'be-strong', desc:'«Не доверяй» защищается «Будь сильным». Человек не может опереться на других и несёт всё в одиночку.'}
+    ];
+
     // ==========================================
     // 2. УПРАВЛЕНИЕ СОСТОЯНИЕМ
     // ==========================================
@@ -791,14 +833,13 @@
         answers: {} 
     };
 
-    const STORAGE_KEY = 'ta_quiz_state_v2';
+    const STORAGE_KEY = 'ta_quiz_state_v3'; 
 
     function loadState() {
         try {
             const saved = localStorage.getItem(STORAGE_KEY);
             if (saved) {
                 const parsed = JSON.parse(saved);
-                // Проверка целостности данных
                 if(parsed && typeof parsed.currentQuestion === 'number' && parsed.answers) {
                     return parsed;
                 }
@@ -815,27 +856,34 @@
         localStorage.removeItem(STORAGE_KEY);
     }
 
+    // Глобальные переменные для хранения результатов после расчета
+    window.finalResults = null;
+    window.topInjData = [];
+    window.topDrvData = [];
+    window.foundPairs = [];
+
     // ==========================================
     // 3. ЛОГИКА ИНТЕРФЕЙСА
     // ==========================================
     document.addEventListener('DOMContentLoaded', () => {
         const saved = loadState();
         
-        // Настройка аккордеонов
         setupAccordion('theoryToggle', 'theoryBody');
         setupAccordion('dreamToggle', 'dreamBody');
 
-        if (saved) {
-            // Есть несохраненный прогресс
-            currentState = saved;
-            document.getElementById('btnResume').style.display = 'block';
-            document.getElementById('btnStart').textContent = 'Начать заново';
+        const btnStartNew = document.getElementById('btnStartNew');
+        const btnResume = document.getElementById('btnResumeTest');
+
+        if (saved && Object.keys(saved.answers).length > 0) {
+            btnResume.classList.remove('hidden');
+            btnStartNew.textContent = 'Начать сначала';
+            btnResume.textContent = `Продолжить с вопроса ${saved.currentQuestion + 1}`;
         } else {
-            document.getElementById('btnResume').style.display = 'none';
+            btnResume.classList.add('hidden');
+            btnStartNew.textContent = 'Начать новый тест';
         }
 
-        // Обработчики кнопок старта
-        document.getElementById('btnStart').addEventListener('click', () => {
+        btnStartNew.addEventListener('click', () => {
             if (loadState()) {
                 if(confirm("Вы уверены? Ваш текущий прогресс будет потерян.")) {
                     clearState();
@@ -846,15 +894,16 @@
             }
         });
 
-        document.getElementById('btnResume').addEventListener('click', resumeTest);
+        btnResume.addEventListener('click', () => {
+            const data = loadState();
+            if(data) {
+                currentState = data;
+                showQuizScreen();
+            }
+        });
 
-        // Обработчик кнопки "Назад к теории" внутри теста
         document.getElementById('btnBackToTheory').addEventListener('click', goBackToHome);
-
-        // Обработчик PDF
         document.getElementById('btnDownloadPDF').addEventListener('click', generateFullPDF);
-        
-        // Обработчик копирования промпта
         document.getElementById('copyDreamBtn').addEventListener('click', copyDreamPrompt);
     });
 
@@ -875,10 +924,6 @@
         showQuizScreen();
     }
 
-    function resumeTest() {
-        showQuizScreen();
-    }
-
     function showQuizScreen() {
         document.getElementById('startScreen').classList.add('hidden');
         document.getElementById('resultContainer').classList.add('hidden');
@@ -887,10 +932,17 @@
     }
 
     function goBackToHome() {
-        // Сохраняем состояние перед выходом
         saveState();
         document.getElementById('quizContainer').classList.add('hidden');
         document.getElementById('startScreen').classList.remove('hidden');
+        
+        const btnResume = document.getElementById('btnResumeTest');
+        const btnStartNew = document.getElementById('btnStartNew');
+        
+        btnResume.classList.remove('hidden');
+        btnResume.textContent = `Продолжить с вопроса ${currentState.currentQuestion + 1}`;
+        btnStartNew.textContent = 'Начать сначала';
+        
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
@@ -973,7 +1025,7 @@
     function finishTest() {
         document.getElementById('quizContainer').classList.add('hidden');
         document.getElementById('resultContainer').classList.remove('hidden');
-        clearState(); // Очищаем прогресс после завершения
+        clearState(); 
 
         const scores = {};
         const counts = {};
@@ -994,6 +1046,31 @@
         }
         results.sort((a, b) => b.score - a.score);
 
+        // Сохраняем глобально для PDF
+        window.finalResults = results;
+
+        // Фильтрация для анализа
+        const injKeys = ["not-live","not-be-yourself","not-be-child","not-grow","not-succeed","not-be-close","not-trust","not-feel","not-matter","not-think","not-be-well","not-belong"];
+        const drvKeys = ["be-perfect","be-strong","please-others","be-quick","try-hard"];
+
+        const topInj = results.filter(r => injKeys.includes(r.category)).sort((a,b)=>b.score-a.score).filter(x => x.score >= 2.5).slice(0,3);
+        const topDrv = results.filter(r => drvKeys.includes(r.category)).sort((a,b)=>b.score-a.score).filter(x => x.score >= 2.5).slice(0,2);
+        
+        window.topInjData = topInj;
+        window.topDrvData = topDrv;
+
+        // Поиск пар
+        const foundPairs = [];
+        PAIRS.forEach(p => {
+            const injScore = results.find(r => r.category === p.inj)?.score || 0;
+            const drvScore = results.find(r => r.category === p.drv)?.score || 0;
+            if(injScore >= 2.5 && drvScore >= 2.5) {
+                foundPairs.push({...p, iScore: injScore, dScore: drvScore});
+            }
+        });
+        window.foundPairs = foundPairs;
+
+        // Генерация HTML для экрана
         let html = '<div class="result-block"><h3>Ваши ведущие паттерны</h3><p style="margin-bottom:15px; color:#4b5563;">Чем выше балл (макс. 5.0), тем сильнее выражен данный паттерн в вашей жизни.</p>';
         
         results.slice(0, 5).forEach(res => {
@@ -1015,12 +1092,6 @@
             `;
         });
         html += '</div>';
-
-        const injKeys = ["not-live","not-be-yourself","not-be-child","not-grow","not-succeed","not-be-close","not-trust","not-feel","not-matter","not-think","not-be-well","not-belong"];
-        const drvKeys = ["be-perfect","be-strong","please-others","be-quick","try-hard"];
-
-        const topInj = results.filter(r => injKeys.includes(r.category)).sort((a,b)=>b.score-a.score).filter(x => x.score >= 2.5).slice(0,3);
-        const topDrv = results.filter(r => drvKeys.includes(r.category)).sort((a,b)=>b.score-a.score).filter(x => x.score >= 2.5).slice(0,2);
 
         if (topInj.length > 0) {
             html += `<div class="result-block" style="border-left-color: var(--danger);"><h3>🔴 Ведущие инъюнкции</h3>`;
@@ -1049,113 +1120,148 @@
         }
 
         document.getElementById('resultsBody').innerHTML = html;
-        window.calculatedResults = results;
-        window.topInjData = topInj;
-        window.topDrvData = topDrv;
     }
 
     // ==========================================
-    // 5. ГЕНЕРАЦИЯ ПОЛНОЦЕННОГО PDF
+    // 5. ГЕНЕРАЦИЯ ПОЛНОЦЕННОГО PDF (Новая логика)
     // ==========================================
     async function generateFullPDF() {
-        if (!window.calculatedResults) return alert('Результаты не найдены.');
+        if (!window.finalResults) return alert('Результаты не найдены.');
         
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF('p', 'mm', 'a4');
-        const pageWidth = doc.internal.pageSize.getWidth();
-        const marginX = 15;
-        const contentWidth = pageWidth - 2 * marginX;
+        const element = document.getElementById('pdfContentWrapper');
         
-        const tempDiv = document.createElement('div');
-        tempDiv.style.cssText = `position:fixed; left:-9999px; top:0; width:${Math.floor(contentWidth * 3.78)}px; background:#fff; padding:20px; font-family:Arial, Helvetica, sans-serif; color:#222; font-size:13px; line-height:1.5;`;
-        
-        let htmlContent = `
-            <div style="text-align:center; margin-bottom:20px; border-bottom:2px solid #6366f1; padding-bottom:15px;">
-                <h1 style="font-size:22px; color:#6366f1; margin:0;">Отчет по транзактному анализу</h1>
-                <p style="color:#666; font-size:12px; margin:5px 0 0 0;">Дата: ${new Date().toLocaleDateString('ru-RU')}</p>
-            </div>
-            
-            <h2 style="font-size:16px; color:#1f2937; margin:20px 0 10px 0;">1. Ваши ведущие паттерны</h2>
-            <table style="width:100%; border-collapse:collapse; margin-bottom:20px;">
-                <tr style="background:#f3f4f6;">
-                    <th style="padding:8px; text-align:left; border-bottom:1px solid #ddd;">Параметр</th>
-                    <th style="padding:8px; text-align:right; border-bottom:1px solid #ddd;">Балл</th>
-                </tr>
+        // Строим HTML для PDF
+        let pdfHtml = `
+            <div style="font-family: 'Arial', sans-serif; color: #333; line-height: 1.5; font-size: 14px;">
+                
+                <!-- Шапка -->
+                <div style="text-align: center; margin-bottom: 30px; border-bottom: 2px solid #6366f1; padding-bottom: 20px;">
+                    <h1 style="color: #6366f1; font-size: 24px; margin: 0;">Отчет по транзактному анализу</h1>
+                    <p style="color: #666; font-size: 12px; margin-top: 5px;">Дата прохождения: ${new Date().toLocaleDateString('ru-RU')}</p>
+                </div>
+
+                <!-- Резюме -->
+                <h2 style="color: #1f2937; font-size: 18px; margin-bottom: 15px; border-left: 4px solid #6366f1; padding-left: 10px;">1. Резюме профиля</h2>
+                <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 13px;">
+                    <thead>
+                        <tr style="background-color: #f3f4f6;">
+                            <th style="padding: 8px; text-align: left; border-bottom: 1px solid #ddd;">Параметр</th>
+                            <th style="padding: 8px; text-align: right; border-bottom: 1px solid #ddd;">Балл (0-5)</th>
+                            <th style="padding: 8px; text-align: left; border-bottom: 1px solid #ddd;">Уровень</th>
+                        </tr>
+                    </thead>
+                    <tbody>
         `;
-        
-        window.calculatedResults.slice(0, 8).forEach(res => {
+
+        window.finalResults.forEach(res => {
+            const level = res.score >= 4.0 ? 'Высокий' : (res.score >= 3.0 ? 'Средний' : 'Низкий');
             const color = res.score >= 4.0 ? '#dc2626' : (res.score >= 3.0 ? '#d97706' : '#6b7280');
-            htmlContent += `
+            pdfHtml += `
                 <tr>
-                    <td style="padding:8px; border-bottom:1px solid #eee;">${LABELS[res.category]}</td>
-                    <td style="padding:8px; text-align:right; font-weight:bold; color:${color}; border-bottom:1px solid #eee;">${res.score} / 5.0</td>
+                    <td style="padding: 8px; border-bottom: 1px solid #eee; font-weight: bold;">${LABELS[res.category]}</td>
+                    <td style="padding: 8px; text-align: right; border-bottom: 1px solid #eee; color: ${color}; font-weight: bold;">${res.score}</td>
+                    <td style="padding: 8px; border-bottom: 1px solid #eee; color: ${color};">${level}</td>
                 </tr>
             `;
         });
-        htmlContent += `</table>`;
 
-        if (window.topInjData && window.topInjData.length > 0) {
-            htmlContent += `<h2 style="font-size:16px; color:#dc2626; margin:20px 0 10px 0;">2. Развернутый анализ инъюнкций</h2>`;
+        pdfHtml += `
+                    </tbody>
+                </table>
+
+                <!-- Инъюнкции -->
+                <h2 style="color: #dc2626; font-size: 18px; margin-top: 30px; margin-bottom: 15px; border-left: 4px solid #dc2626; padding-left: 10px;">2. Ведущие инъюнкции</h2>
+                <p style="font-size: 13px; color: #666; margin-bottom: 15px;">Это глубинные запрещающие послания, составляющие ядро вашего сценария.</p>
+        `;
+
+        if (window.topInjData.length > 0) {
             window.topInjData.forEach(item => {
                 const data = INJ_INTERP[item.category];
-                htmlContent += `
-                    <div style="background:#fef2f2; border-left:4px solid #dc2626; padding:12px; margin-bottom:15px; border-radius:4px;">
-                        <h3 style="font-size:14px; color:#991b1b; margin:0 0 8px 0;">${LABELS[item.category]} (${item.score}/5)</h3>
-                        <p style="margin:0 0 8px 0; font-size:12px;"><strong>Проявления:</strong> ${data ? data.manifests : ''}</p>
-                        <p style="margin:0; font-size:12px; color:#059669;"><strong>Разрешение:</strong> ${ALLOWANCES[item.category]}</p>
+                pdfHtml += `
+                    <div style="background-color: #fef2f2; border-left: 4px solid #dc2626; padding: 15px; margin-bottom: 15px; border-radius: 4px; page-break-inside: avoid;">
+                        <h3 style="margin: 0 0 10px 0; font-size: 16px; color: #991b1b;">${LABELS[item.category]} (${item.score}/5)</h3>
+                        <p style="margin: 0 0 10px 0; font-size: 13px;"><strong>Как проявляется:</strong> ${data ? data.manifests : ''}</p>
+                        <p style="margin: 0; font-size: 13px; color: #059669;"><strong>Разрешение:</strong> ${ALLOWANCES[item.category]}</p>
                     </div>
                 `;
             });
+        } else {
+            pdfHtml += `<p style="font-size: 13px; color: #666;">Значимых инъюнкций не выявлено (балл ниже 2.5).</p>`;
         }
 
-        if (window.topDrvData && window.topDrvData.length > 0) {
-            htmlContent += `<h2 style="font-size:16px; color:#059669; margin:20px 0 10px 0;">3. Развернутый анализ драйверов</h2>`;
+        // Драйверы
+        pdfHtml += `
+                <h2 style="color: #059669; font-size: 18px; margin-top: 30px; margin-bottom: 15px; border-left: 4px solid #059669; padding-left: 10px;">3. Ведущие драйверы</h2>
+                <p style="font-size: 13px; color: #666; margin-bottom: 15px;">Компенсаторные паттерны поведения, активируемые в стрессе.</p>
+        `;
+
+        if (window.topDrvData.length > 0) {
             window.topDrvData.forEach(item => {
                 const data = DRV_INTERP[item.category];
-                htmlContent += `
-                    <div style="background:#ecfdf5; border-left:4px solid #059669; padding:12px; margin-bottom:15px; border-radius:4px;">
-                        <h3 style="font-size:14px; color:#065f46; margin:0 0 8px 0;">${LABELS[item.category]} (${item.score}/5)</h3>
-                        <p style="margin:0 0 8px 0; font-size:12px;"><strong>Проявления:</strong> ${data ? data.manifests : ''}</p>
-                        <p style="margin:0; font-size:12px; color:#4f46e5;"><strong>Практика выхода:</strong> ${data ? data.action : ''}</p>
+                pdfHtml += `
+                    <div style="background-color: #ecfdf5; border-left: 4px solid #059669; padding: 15px; margin-bottom: 15px; border-radius: 4px; page-break-inside: avoid;">
+                        <h3 style="margin: 0 0 10px 0; font-size: 16px; color: #065f46;">${LABELS[item.category]} (${item.score}/5)</h3>
+                        <p style="margin: 0 0 10px 0; font-size: 13px;"><strong>Как проявляется:</strong> ${data ? data.manifests : ''}</p>
+                        <p style="margin: 0; font-size: 13px; color: #4f46e5;"><strong>Практика выхода:</strong> ${data ? data.action : ''}</p>
+                    </div>
+                `;
+            });
+        } else {
+            pdfHtml += `<p style="font-size: 13px; color: #666;">Значимых драйверов не выявлено (балл ниже 2.5).</p>`;
+        }
+
+        // Связки
+        if (window.foundPairs.length > 0) {
+            pdfHtml += `
+                <h2 style="color: #f59e0b; font-size: 18px; margin-top: 30px; margin-bottom: 15px; border-left: 4px solid #f59e0b; padding-left: 10px;">4. Сценарные связки</h2>
+                <p style="font-size: 13px; color: #666; margin-bottom: 15px;">Взаимодействие инъюнкций и драйверов в вашем профиле.</p>
+            `;
+            window.foundPairs.forEach(pair => {
+                pdfHtml += `
+                    <div style="background-color: #fffbeb; border-left: 4px solid #f59e0b; padding: 15px; margin-bottom: 15px; border-radius: 4px; page-break-inside: avoid;">
+                        <h3 style="margin: 0 0 10px 0; font-size: 16px; color: #92400e;">${LABELS[pair.inj]} + ${LABELS[pair.drv]}</h3>
+                        <p style="margin: 0; font-size: 13px;">${pair.desc}</p>
+                        <p style="margin: 5px 0 0 0; font-size: 12px; color: #666;">Баллы: Инъюнкция ${pair.iScore}, Драйвер ${pair.dScore}</p>
                     </div>
                 `;
             });
         }
 
-        htmlContent += `
-            <div style="background:#fffbeb; border:1px solid #fde68a; padding:12px; border-radius:6px; margin-top:20px; font-size:11px; color:#92400e;">
-                <strong>Дисклеймер:</strong> Данный отчет является инструментом для самопознания и рефлексии, основанным на методологии транзактного анализа (Э. Берн, Р. и М. Гулдинги, В. Джойнс). Он не является клиническим диагнозом и не заменяет консультацию квалифицированного психотерапевта.
+        // Рекомендации
+        pdfHtml += `
+                <h2 style="color: #6366f1; font-size: 18px; margin-top: 30px; margin-bottom: 15px; border-left: 4px solid #6366f1; padding-left: 10px;">5. Общие рекомендации</h2>
+                <ul style="font-size: 13px; color: #333; margin-left: 20px; margin-bottom: 20px;">
+                    <li><strong>Осознание:</strong> Замечайте моменты, когда включаются ваши ведущие паттерны. Что происходит в теле? Какие мысли возникают?</li>
+                    <li><strong>Деконтраминация:</strong> Отделяйте факты реальности («здесь и сейчас») от старых детских решений. Спрашивайте себя: «Это правда обо мне сейчас?»</li>
+                    <li><strong>Разрешения:</strong> Ежедневно повторяйте вслух или про себя свои персональные разрешения (см. разделы выше).</li>
+                    <li><strong>Новые решения:</strong> По Берну, сценарий — это решение. Вы можете принять новое решение Взрослым эго-состоянием.</li>
+                </ul>
+
+                <div style="background-color: #f3f4f6; border: 1px solid #e5e7eb; padding: 15px; border-radius: 8px; margin-top: 30px; font-size: 11px; color: #6b7280; text-align: center;">
+                    <strong>Дисклеймер:</strong> Данный отчет является инструментом для самопознания и рефлексии, основанным на методологии транзактного анализа (Э. Берн, Р. и М. Гулдинги, В. Джойнс). Он не является клиническим диагнозом и не заменяет консультацию квалифицированного психотерапевта.
+                </div>
             </div>
         `;
-        
-        tempDiv.innerHTML = htmlContent;
-        document.body.appendChild(tempDiv);
-        
+
+        element.innerHTML = pdfHtml;
+        element.style.display = 'block'; // Делаем видимым для html2pdf
+
+        const opt = {
+            margin:       [10, 10, 10, 10], // mm
+            filename:     `TA_Report_${Date.now()}.pdf`,
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2, useCORS: true },
+            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
+            pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] } // Важно для переноса страниц
+        };
+
         try {
-            const canvas = await html2canvas(tempDiv, { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
-            const imgData = canvas.toDataURL('image/jpeg', 0.95);
-            const imgWidth = contentWidth;
-            const imgHeight = (canvas.height * imgWidth) / canvas.width;
-            
-            let heightLeft = imgHeight;
-            let position = 15; 
-            
-            doc.addImage(imgData, 'JPEG', marginX, position, imgWidth, imgHeight, undefined, 'FAST');
-            heightLeft -= (doc.internal.pageSize.getHeight() - position - 15); 
-            
-            while (heightLeft > 0) {
-                position = heightLeft - imgHeight + 15; 
-                doc.addPage();
-                doc.addImage(imgData, 'JPEG', marginX, position, imgWidth, imgHeight, undefined, 'FAST');
-                heightLeft -= (doc.internal.pageSize.getHeight() - 30); 
-            }
-            
-            doc.save(`TA_Report_${Date.now()}.pdf`);
-        } catch (e) {
-            console.error('Ошибка PDF:', e);
-            alert('Не удалось сгенерировать PDF. Попробуйте сделать скриншот результатов.');
+            await html2pdf().set(opt).from(element).save();
+        } catch (error) {
+            console.error("Ошибка генерации PDF:", error);
+            alert("Произошла ошибка при создании PDF. Попробуйте еще раз.");
         } finally {
-            document.body.removeChild(tempDiv);
+            element.style.display = 'none'; // Скрываем обратно
         }
     }
 
