@@ -48,6 +48,7 @@
             border-radius: 24px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
             overflow: hidden;
+            position: relative;
         }
 
         .header {
@@ -137,18 +138,33 @@
         .theory-content strong { color: var(--text-dark); font-weight: 600; }
         .theory-content em { color: var(--secondary); font-style: italic; }
 
+        /* Исправленный стиль для диаграммы */
         .diagram-container {
             background: #fdfbff;
             border: 1px solid #f3e8ff;
             border-radius: 12px;
             padding: 20px;
-            margin: 20px 0;
+            margin: 20px auto;
             text-align: center;
+            width: 100%;
+            max-width: 400px; /* Ограничение ширины для красивого вида */
             overflow-x: auto;
         }
         
-        .diagram-container svg { max-width: 100%; height: auto; min-width: 300px; }
-        .caption { font-size: 0.85rem; color: var(--text-light); margin-top: 10px; font-style: italic; }
+        .diagram-svg {
+            width: 100%;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .caption { 
+            font-size: 0.85rem; 
+            color: var(--text-light); 
+            margin-top: 15px; 
+            font-style: italic; 
+            text-align: center;
+        }
 
         .injunction-grid {
             display: grid;
@@ -209,6 +225,14 @@
             padding: 20px 30px;
             background: #f9fafb;
             border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .progress-wrapper {
+            flex-grow: 1;
+            margin-right: 20px;
         }
 
         .progress-bar {
@@ -225,6 +249,32 @@
             border-radius: 10px;
             transition: width 0.4s ease;
             width: 0%;
+        }
+
+        .progress-text {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+
+        .btn-home {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-light);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .btn-home:hover {
+            background: #f3f4f6;
+            color: var(--text-dark);
+            border-color: #d1d5db;
         }
 
         .question-card { animation: fadeIn 0.4s ease; }
@@ -391,6 +441,10 @@
             .quiz-info-block { flex-direction: column; align-items: center; text-align: center; gap: 10px; }
             .navigation { flex-direction: column-reverse; gap: 10px; }
             .btn-nav { width: 100%; text-align: center; }
+            .progress-container { flex-direction: column; align-items: stretch; gap: 15px; }
+            .progress-wrapper { margin-right: 0; }
+            .btn-home { align-self: flex-start; }
+            .diagram-container { max-width: 100%; padding: 10px; }
         }
     </style>
 </head>
@@ -404,151 +458,171 @@
 
     <div class="content">
         <!-- Блок теории -->
-        <div class="accordion">
-            <div class="accordion-header" id="theoryToggle">
-                <span>Теория</span>
-                <span class="icon">▼</span>
-            </div>
-            <div class="accordion-body" id="theoryBody">
-                <div class="theory-content">
-                    <h3>Что такое Транзактный Анализ?</h3>
-                    <p>ТА — это теория личности и метод психотерапии, разработанный Эриком Берном. Он основан на идее, что каждый человек изначально находится в позиции <em>«Я-ОК, Ты-ОК»</em>, но в процессе взросления формирует бессознательный жизненный план (сценарий).</p>
+        <div id="startScreen">
+            <div class="accordion">
+                <div class="accordion-header" id="theoryToggle">
+                    <span>Теория</span>
+                    <span class="icon">▼</span>
+                </div>
+                <div class="accordion-body" id="theoryBody">
+                    <div class="theory-content">
+                        <h3>Что такое Транзактный Анализ?</h3>
+                        <p>ТА — это теория личности и метод психотерапии, разработанный Эриком Берном. Он основан на идее, что каждый человек изначально находится в позиции <em>«Я-ОК, Ты-ОК»</em>, но в процессе взросления формирует бессознательный жизненный план (сценарий).</p>
 
-                    <h3>1. Модель эго-состояний</h3>
-                    <ul>
-                        <li><strong>Родитель (P):</strong> Заимствованные мысли, чувства и поведения от авторитетных фигур детства.</li>
-                        <li><strong>Взрослый (A):</strong> Объективная оценка реальности «здесь и сейчас», логика.</li>
-                        <li><strong>Ребенок (C):</strong> Архаичные реакции, спонтанность, эмоции, сохранившиеся с детства.</li>
-                    </ul>
-                    <div class="diagram-container">
-                        <svg viewBox="0 0 400 220" xmlns="http://www.w3.org/2000/svg">
-                            <circle cx="200" cy="60" r="50" fill="#e0e7ff" stroke="#4f46e5" stroke-width="2"/>
-                            <text x="200" y="65" text-anchor="middle" fill="#4f46e5" font-weight="bold" font-size="18">Родитель</text>
-                            <circle cx="200" cy="160" r="50" fill="#f3f4f6" stroke="#4b5563" stroke-width="2"/>
-                            <text x="200" y="165" text-anchor="middle" fill="#4b5563" font-weight="bold" font-size="18">Взрослый</text>
-                            <circle cx="200" cy="260" r="50" fill="#fce7f3" stroke="#ec4899" stroke-width="2"/>
-                            <text x="200" y="265" text-anchor="middle" fill="#ec4899" font-weight="bold" font-size="18">Ребёнок</text>
-                        </svg>
-                        <div class="caption">Рис 1. Структурная модель Р-В-Р</div>
-                    </div>
+                        <h3>1. Модель эго-состояний</h3>
+                        <p>Личность состоит из трех основных состояний:</p>
+                        <ul>
+                            <li><strong>Родитель (P):</strong> Заимствованные мысли, чувства и поведения от авторитетных фигур детства.</li>
+                            <li><strong>Взрослый (A):</strong> Объективная оценка реальности «здесь и сейчас», логика.</li>
+                            <li><strong>Ребенок (C):</strong> Архаичные реакции, спонтанность, эмоции, сохранившиеся с детства.</li>
+                        </ul>
+                        
+                        <!-- ИСПРАВЛЕННАЯ ДИАГРАММА -->
+                        <div class="diagram-container">
+                            <svg viewBox="0 0 300 400" class="diagram-svg" xmlns="http://www.w3.org/2000/svg">
+                                <!-- Линии связи (рисуются первыми, чтобы быть под кругами) -->
+                                <line x1="150" y1="100" x2="150" y2="180" stroke="#cbd5e1" stroke-width="3" />
+                                <line x1="150" y1="220" x2="150" y2="300" stroke="#cbd5e1" stroke-width="3" />
 
-                    <h3>2. Инъюнкции (Сценарные приказания)</h3>
-                    <p>Согласно Р. и М. Гулдингам, существует 12 классических инъюнкций:</p>
-                    <div class="injunction-grid">
-                        <div class="injunction-item">Не живи</div>
-                        <div class="injunction-item">Не будь собой</div>
-                        <div class="injunction-item">Не будь ребёнком</div>
-                        <div class="injunction-item">Не расти</div>
-                        <div class="injunction-item">Не добивайся успеха</div>
-                        <div class="injunction-item">Не приближайся</div>
-                        <div class="injunction-item">Не доверяй</div>
-                        <div class="injunction-item">Не чувствуй</div>
-                        <div class="injunction-item">Не будь важным</div>
-                        <div class="injunction-item">Не думай</div>
-                        <div class="injunction-item">Не будь здоровым</div>
-                        <div class="injunction-item">Не принадлежи</div>
-                    </div>
+                                <!-- Круг Родителя -->
+                                <circle cx="150" cy="70" r="50" fill="#e0e7ff" stroke="#4f46e5" stroke-width="3"/>
+                                <text x="150" y="75" text-anchor="middle" dominant-baseline="middle" fill="#4f46e5" font-weight="bold" font-size="16" font-family="Inter, sans-serif">РОДИТЕЛЬ</text>
+                                
+                                <!-- Круг Взрослого -->
+                                <circle cx="150" cy="200" r="50" fill="#f3f4f6" stroke="#4b5563" stroke-width="3"/>
+                                <text x="150" y="205" text-anchor="middle" dominant-baseline="middle" fill="#4b5563" font-weight="bold" font-size="16" font-family="Inter, sans-serif">ВЗРОСЛЫЙ</text>
 
-                    <h4>Кем формируются?</h4>
-                    <p>Инъюнкции исходят из <strong>эго-состояния Ребёнка родителя</strong> и направляются в <strong>эго-состояние Ребёнка ребёнка</strong>. Они рождаются не из зрелой части родителя, а из его собственных детских травм, страхов и обид.</p>
+                                <!-- Круг Ребенка -->
+                                <circle cx="150" cy="330" r="50" fill="#fce7f3" stroke="#ec4899" stroke-width="3"/>
+                                <text x="150" y="335" text-anchor="middle" dominant-baseline="middle" fill="#ec4899" font-weight="bold" font-size="16" font-family="Inter, sans-serif">РЕБЕНОК</text>
+                            </svg>
+                            <div class="caption">Рис 1. Структурная модель Р-В-Р</div>
+                        </div>
 
-                    <h4>Когда формируются?</h4>
-                    <p>Закладываются в <strong>раннем детстве (довербальный период)</strong>, преимущественно до 2–3 лет.</p>
+                        <h3>2. Инъюнкции (Сценарные приказания)</h3>
+                        <p>Согласно Р. и М. Гулдингам, существует 12 классических инъюнкций:</p>
+                        <div class="injunction-grid">
+                            <div class="injunction-item">Не живи</div>
+                            <div class="injunction-item">Не будь собой</div>
+                            <div class="injunction-item">Не будь ребёнком</div>
+                            <div class="injunction-item">Не расти</div>
+                            <div class="injunction-item">Не добивайся успеха</div>
+                            <div class="injunction-item">Не приближайся</div>
+                            <div class="injunction-item">Не доверяй</div>
+                            <div class="injunction-item">Не чувствуй</div>
+                            <div class="injunction-item">Не будь важным</div>
+                            <div class="injunction-item">Не думай</div>
+                            <div class="injunction-item">Не будь здоровым</div>
+                            <div class="injunction-item">Не принадлежи</div>
+                        </div>
 
-                    <h4>Как передаются?</h4>
-                    <p>По своей природе они <strong>невербальны</strong>. Передаются через тон голоса, мимику, жесты, напряжение тела, эмоциональную атмосферу. Ребёнок «считывает» их своим <em>Маленьким Профессором</em>.</p>
+                        <h4>Кем формируются?</h4>
+                        <p>Инъюнкции исходят из <strong>эго-состояния Ребёнка родителя</strong> и направляются в <strong>эго-состояние Ребёнка ребёнка</strong>. Они рождаются не из зрелой части родителя, а из его собственных детских травм, страхов и обид.</p>
 
-                    <h3>3. Драйверы (Компенсаторные паттерны)</h3>
-                    <p>Выделенные Таиби Калером 5 специфических поведенческих паттернов, которые активируются в стрессе. Они говорят: <em>«Ты ОК, только если...»</em>.</p>
-                    <ul>
-                        <li><strong>Будь совершенным:</strong> «...если всё идеально».</li>
-                        <li><strong>Будь сильным:</strong> «...если не показываешь слабости».</li>
-                        <li><strong>Радуй других:</strong> «...если угождаешь другим».</li>
-                        <li><strong>Торопись:</strong> «...если делаешь всё быстро».</li>
-                        <li><strong>Старайся:</strong> «...если прилагаешь максимум усилий».</li>
-                    </ul>
+                        <h4>Когда формируются?</h4>
+                        <p>Закладываются в <strong>раннем детстве (довербальный период)</strong>, преимущественно до 2–3 лет.</p>
 
-                    <h4>Кем формируются?</h4>
-                    <p>Исходят из <strong>Родителя родителя</strong> и направляются в <strong>Родителя ребёнка</strong>. Это квинтэссенция наиболее эмоционально заряженных директив.</p>
+                        <h4>Как передаются?</h4>
+                        <p>По своей природе они <strong>невербальны</strong>. Передаются через тон голоса, мимику, жесты, напряжение тела, эмоциональную атмосферу. Ребёнок «считывает» их своим <em>Маленьким Профессором</em>.</p>
 
-                    <h4>Когда формируются?</h4>
-                    <p>Формируются позже инъюнкций, в возрасте <strong>от 3 до 12 лет</strong>, когда ребёнок уже владеет речью.</p>
+                        <h3>3. Драйверы (Компенсаторные паттерны)</h3>
+                        <p>Выделенные Таиби Калером 5 специфических поведенческих паттернов, которые активируются в стрессе. Они говорят: <em>«Ты ОК, только если...»</em>.</p>
+                        <ul>
+                            <li><strong>Будь совершенным:</strong> «...если всё идеально».</li>
+                            <li><strong>Будь сильным:</strong> «...если не показываешь слабости».</li>
+                            <li><strong>Радуй других:</strong> «...если угождаешь другим».</li>
+                            <li><strong>Торопись:</strong> «...если делаешь всё быстро».</li>
+                            <li><strong>Старайся:</strong> «...если прилагаешь максимум усилий».</li>
+                        </ul>
 
-                    <h4>Как передаются?</h4>
-                    <p><strong>Вербально</strong>, через повторяющиеся фразы и правила воспитания: «Поторопись!», «Не плачь, будь мужчиной», «Учись лучше всех».</p>
+                        <h4>Кем формируются?</h4>
+                        <p>Исходят из <strong>Родителя родителя</strong> и направляются в <strong>Родителя ребёнка</strong>. Это квинтэссенция наиболее эмоционально заряженных директив.</p>
 
-                    <h3>4. Сценарная матрица</h3>
-                    <div class="diagram-container">
-                        <svg viewBox="0 0 500 250" xmlns="http://www.w3.org/2000/svg">
-                            <rect x="20" y="20" width="200" height="80" rx="8" fill="#e0e7ff" stroke="#4f46e5"/>
-                            <text x="120" y="65" text-anchor="middle" fill="#4f46e5" font-weight="bold">Родитель родителя</text>
-                            <text x="120" y="85" text-anchor="middle" fill="#4f46e5" font-size="12">(Директивы / Драйверы)</text>
-                            
-                            <rect x="280" y="20" width="200" height="80" rx="8" fill="#fce7f3" stroke="#ec4899"/>
-                            <text x="380" y="65" text-anchor="middle" fill="#ec4899" font-weight="bold">Ребёнок родителя</text>
-                            <text x="380" y="85" text-anchor="middle" fill="#ec4899" font-size="12">(Инъюнкции / Приказания)</text>
+                        <h4>Когда формируются?</h4>
+                        <p>Формируются позже инъюнкций, в возрасте <strong>от 3 до 12 лет</strong>, когда ребёнок уже владеет речью.</p>
 
-                            <line x1="120" y1="100" x2="120" y2="150" stroke="#4f46e5" stroke-width="2" marker-end="url(#arrow)"/>
-                            <line x1="380" y1="100" x2="380" y2="150" stroke="#ec4899" stroke-width="2" marker-end="url(#arrow)"/>
+                        <h4>Как передаются?</h4>
+                        <p><strong>Вербально</strong>, через повторяющиеся фразы и правила воспитания: «Поторопись!», «Не плачь, будь мужчиной», «Учись лучше всех».</p>
 
-                            <rect x="20" y="150" width="200" height="80" rx="8" fill="#f3f4f6" stroke="#4b5563"/>
-                            <text x="120" y="195" text-anchor="middle" fill="#4b5563" font-weight="bold">Родитель ребёнка</text>
-                            <text x="120" y="215" text-anchor="middle" fill="#4b5563" font-size="12">(Контрсценарий)</text>
+                        <h3>4. Сценарная матрица</h3>
+                        <div class="diagram-container">
+                            <svg viewBox="0 0 500 250" class="diagram-svg" xmlns="http://www.w3.org/2000/svg">
+                                <rect x="20" y="20" width="200" height="80" rx="8" fill="#e0e7ff" stroke="#4f46e5"/>
+                                <text x="120" y="65" text-anchor="middle" fill="#4f46e5" font-weight="bold">Родитель родителя</text>
+                                <text x="120" y="85" text-anchor="middle" fill="#4f46e5" font-size="12">(Директивы / Драйверы)</text>
+                                
+                                <rect x="280" y="20" width="200" height="80" rx="8" fill="#fce7f3" stroke="#ec4899"/>
+                                <text x="380" y="65" text-anchor="middle" fill="#ec4899" font-weight="bold">Ребёнок родителя</text>
+                                <text x="380" y="85" text-anchor="middle" fill="#ec4899" font-size="12">(Инъюнкции / Приказания)</text>
 
-                            <rect x="280" y="150" width="200" height="80" rx="8" fill="#f3f4f6" stroke="#4b5563"/>
-                            <text x="380" y="195" text-anchor="middle" fill="#4b5563" font-weight="bold">Ребёнок ребёнка</text>
-                            <text x="380" y="215" text-anchor="middle" fill="#4b5563" font-size="12">(Сценарий)</text>
-                            
-                            <defs>
-                                <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
-                                    <path d="M 0 0 L 10 5 L 0 10 z" fill="#4b5563"/>
-                                </marker>
-                            </defs>
-                        </svg>
-                        <div class="caption">Рис 2. Сценарная матрица (по К. Стайнеру)</div>
-                    </div>
+                                <line x1="120" y1="100" x2="120" y2="150" stroke="#4f46e5" stroke-width="2" marker-end="url(#arrow)"/>
+                                <line x1="380" y1="100" x2="380" y2="150" stroke="#ec4899" stroke-width="2" marker-end="url(#arrow)"/>
 
-                    <h3>5. Драматический треугольник (Карпмана)</h3>
-                    <div class="diagram-container">
-                        <svg viewBox="0 0 400 250" xmlns="http://www.w3.org/2000/svg">
-                            <polygon points="200,30 50,200 350,200" fill="none" stroke="#6366f1" stroke-width="3"/>
-                            <circle cx="200" cy="30" r="25" fill="#fff" stroke="#6366f1" stroke-width="2"/>
-                            <text x="200" y="35" text-anchor="middle" fill="#6366f1" font-weight="bold" font-size="14">СПАСАТЕЛЬ</text>
-                            <circle cx="50" cy="200" r="25" fill="#fff" stroke="#ef4444" stroke-width="2"/>
-                            <text x="50" y="205" text-anchor="middle" fill="#ef4444" font-weight="bold" font-size="14">ЖЕРТВА</text>
-                            <circle cx="350" cy="200" r="25" fill="#fff" stroke="#f59e0b" stroke-width="2"/>
-                            <text x="350" y="205" text-anchor="middle" fill="#f59e0b" font-weight="bold" font-size="14">ПРЕСЛЕДО-</text>
-                            <text x="350" y="220" text-anchor="middle" fill="#f59e0b" font-weight="bold" font-size="14">ВАТЕЛЬ</text>
-                        </svg>
-                        <div class="caption">Рис 3. Роли в драматическом треугольнике</div>
-                    </div>
+                                <rect x="20" y="150" width="200" height="80" rx="8" fill="#f3f4f6" stroke="#4b5563"/>
+                                <text x="120" y="195" text-anchor="middle" fill="#4b5563" font-weight="bold">Родитель ребёнка</text>
+                                <text x="120" y="215" text-anchor="middle" fill="#4b5563" font-size="12">(Контрсценарий)</text>
 
-                    <div style="background: #fffbeb; border: 1px solid #fde68a; padding: 15px; border-radius: 8px; margin-top: 20px; font-size: 0.9rem; color: #92400e;">
-                        <strong>Важно:</strong> Данный опросник является инструментом самопознания и не заменяет профессиональную психотерапевтическую работу.
+                                <rect x="280" y="150" width="200" height="80" rx="8" fill="#f3f4f6" stroke="#4b5563"/>
+                                <text x="380" y="195" text-anchor="middle" fill="#4b5563" font-weight="bold">Ребёнок ребёнка</text>
+                                <text x="380" y="215" text-anchor="middle" fill="#4b5563" font-size="12">(Сценарий)</text>
+                                
+                                <defs>
+                                    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+                                        <path d="M 0 0 L 10 5 L 0 10 z" fill="#4b5563"/>
+                                    </marker>
+                                </defs>
+                            </svg>
+                            <div class="caption">Рис 2. Сценарная матрица (по К. Стайнеру)</div>
+                        </div>
+
+                        <h3>5. Драматический треугольник (Карпмана)</h3>
+                        <div class="diagram-container">
+                            <svg viewBox="0 0 400 250" class="diagram-svg" xmlns="http://www.w3.org/2000/svg">
+                                <polygon points="200,30 50,200 350,200" fill="none" stroke="#6366f1" stroke-width="3"/>
+                                <circle cx="200" cy="30" r="25" fill="#fff" stroke="#6366f1" stroke-width="2"/>
+                                <text x="200" y="35" text-anchor="middle" fill="#6366f1" font-weight="bold" font-size="14">СПАСАТЕЛЬ</text>
+                                <circle cx="50" cy="200" r="25" fill="#fff" stroke="#ef4444" stroke-width="2"/>
+                                <text x="50" y="205" text-anchor="middle" fill="#ef4444" font-weight="bold" font-size="14">ЖЕРТВА</text>
+                                <circle cx="350" cy="200" r="25" fill="#fff" stroke="#f59e0b" stroke-width="2"/>
+                                <text x="350" y="205" text-anchor="middle" fill="#f59e0b" font-weight="bold" font-size="14">ПРЕСЛЕДО-</text>
+                                <text x="350" y="220" text-anchor="middle" fill="#f59e0b" font-weight="bold" font-size="14">ВАТЕЛЬ</text>
+                            </svg>
+                            <div class="caption">Рис 3. Роли в драматическом треугольнике</div>
+                        </div>
+
+                        <div style="background: #fffbeb; border: 1px solid #fde68a; padding: 15px; border-radius: 8px; margin-top: 20px; font-size: 0.9rem; color: #92400e;">
+                            <strong>Важно:</strong> Данный опросник является инструментом самопознания и не заменяет профессиональную психотерапевтическую работу.
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Информационный блок -->
-        <div class="quiz-info-block">
-            <div class="info-item"><span>📝</span> 58 вопросов</div>
-            <div class="info-item"><span>⏱️</span> 10–15 минут</div>
-            <div class="info-item"><span>📊</span> Шкала от 1 до 5</div>
-            <div class="info-item"><span>💾</span> Прогресс сохраняется автоматически</div>
-        </div>
+            <!-- Информационный блок -->
+            <div class="quiz-info-block">
+                <div class="info-item"><span>📝</span> 58 вопросов</div>
+                <div class="info-item"><span>⏱️</span> 10–15 минут</div>
+                <div class="info-item"><span>📊</span> Шкала от 1 до 5</div>
+                <div class="info-item"><span>💾</span> Прогресс сохраняется автоматически</div>
+            </div>
 
-        <button class="btn-start" id="btnStart">Перейти к тестированию</button>
+            <button class="btn-start" id="btnStart">Перейти к тестированию</button>
+            
+            <!-- Кнопка продолжить, если есть сохраненный прогресс -->
+            <button class="btn-start" id="btnResume" style="display:none; margin-top: 10px; background: #f3f4f6; color: var(--text-dark); box-shadow: none;">Продолжить прерванный тест</button>
+        </div>
 
         <!-- Контейнер опросника -->
         <div id="quizContainer" class="hidden">
             <div class="progress-container">
-                <div class="progress-bar">
-                    <div class="progress-fill" id="progressFill"></div>
-                </div>
-                <div style="display: flex; justify-content: space-between; font-size: 0.9rem; color: var(--text-light);">
-                    <span id="progressText">Вопрос 1 из 58</span>
-                    <span id="progressPercent">0%</span>
+                <button class="btn-home" id="btnBackToTheory">← Главная / Теория</button>
+                <div class="progress-wrapper">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <div class="progress-text">
+                        <span id="progressText">Вопрос 1 из 58</span>
+                        <span id="progressPercent">0%</span>
+                    </div>
                 </div>
             </div>
             <div class="content" id="questionContent"></div>
@@ -717,39 +791,107 @@
         answers: {} 
     };
 
-    const savedState = localStorage.getItem('ta_quiz_state');
-    if (savedState) {
+    const STORAGE_KEY = 'ta_quiz_state_v2';
+
+    function loadState() {
         try {
-            const parsed = JSON.parse(savedState);
-            if(parsed && typeof parsed.currentQuestion === 'number' && parsed.answers) {
-                currentState = parsed;
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                // Проверка целостности данных
+                if(parsed && typeof parsed.currentQuestion === 'number' && parsed.answers) {
+                    return parsed;
+                }
             }
         } catch(e) { console.error("Error loading state", e); }
+        return null;
+    }
+
+    function saveState() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(currentState));
+    }
+
+    function clearState() {
+        localStorage.removeItem(STORAGE_KEY);
     }
 
     // ==========================================
     // 3. ЛОГИКА ИНТЕРФЕЙСА
     // ==========================================
-    document.getElementById('theoryToggle').addEventListener('click', function() {
-        this.classList.toggle('active');
-        document.getElementById('theoryBody').classList.toggle('open');
+    document.addEventListener('DOMContentLoaded', () => {
+        const saved = loadState();
+        
+        // Настройка аккордеонов
+        setupAccordion('theoryToggle', 'theoryBody');
+        setupAccordion('dreamToggle', 'dreamBody');
+
+        if (saved) {
+            // Есть несохраненный прогресс
+            currentState = saved;
+            document.getElementById('btnResume').style.display = 'block';
+            document.getElementById('btnStart').textContent = 'Начать заново';
+        } else {
+            document.getElementById('btnResume').style.display = 'none';
+        }
+
+        // Обработчики кнопок старта
+        document.getElementById('btnStart').addEventListener('click', () => {
+            if (loadState()) {
+                if(confirm("Вы уверены? Ваш текущий прогресс будет потерян.")) {
+                    clearState();
+                    startFreshTest();
+                }
+            } else {
+                startFreshTest();
+            }
+        });
+
+        document.getElementById('btnResume').addEventListener('click', resumeTest);
+
+        // Обработчик кнопки "Назад к теории" внутри теста
+        document.getElementById('btnBackToTheory').addEventListener('click', goBackToHome);
+
+        // Обработчик PDF
+        document.getElementById('btnDownloadPDF').addEventListener('click', generateFullPDF);
+        
+        // Обработчик копирования промпта
+        document.getElementById('copyDreamBtn').addEventListener('click', copyDreamPrompt);
     });
 
-    document.getElementById('dreamToggle').addEventListener('click', function() {
-        this.classList.toggle('active');
-        document.getElementById('dreamBody').classList.toggle('open');
-    });
+    function setupAccordion(headerId, bodyId) {
+        const header = document.getElementById(headerId);
+        const body = document.getElementById(bodyId);
+        if(header && body) {
+            header.addEventListener('click', () => {
+                header.classList.toggle('active');
+                body.classList.toggle('open');
+            });
+        }
+    }
 
-    document.getElementById('btnStart').addEventListener('click', () => {
-        document.querySelector('.accordion').classList.add('hidden');
-        document.querySelector('.quiz-info-block').classList.add('hidden');
-        document.getElementById('btnStart').classList.add('hidden');
+    function startFreshTest() {
+        currentState = { currentQuestion: 0, answers: {} };
+        saveState();
+        showQuizScreen();
+    }
+
+    function resumeTest() {
+        showQuizScreen();
+    }
+
+    function showQuizScreen() {
+        document.getElementById('startScreen').classList.add('hidden');
+        document.getElementById('resultContainer').classList.add('hidden');
         document.getElementById('quizContainer').classList.remove('hidden');
         renderQuestion();
-    });
+    }
 
-    function saveState() {
-        localStorage.setItem('ta_quiz_state', JSON.stringify(currentState));
+    function goBackToHome() {
+        // Сохраняем состояние перед выходом
+        saveState();
+        document.getElementById('quizContainer').classList.add('hidden');
+        document.getElementById('startScreen').classList.remove('hidden');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     function renderQuestion() {
@@ -821,7 +963,6 @@
     window.prevQuestion = function() {
         if (currentState.currentQuestion > 0) {
             currentState.currentQuestion--;
-            saveState();
             renderQuestion();
         }
     }
@@ -832,7 +973,7 @@
     function finishTest() {
         document.getElementById('quizContainer').classList.add('hidden');
         document.getElementById('resultContainer').classList.remove('hidden');
-        localStorage.removeItem('ta_quiz_state');
+        clearState(); // Очищаем прогресс после завершения
 
         const scores = {};
         const counts = {};
@@ -908,7 +1049,7 @@
         }
 
         document.getElementById('resultsBody').innerHTML = html;
-        window.calculatedResults = results; // Глобальная переменная для PDF
+        window.calculatedResults = results;
         window.topInjData = topInj;
         window.topDrvData = topDrv;
     }
@@ -916,7 +1057,7 @@
     // ==========================================
     // 5. ГЕНЕРАЦИЯ ПОЛНОЦЕННОГО PDF
     // ==========================================
-    document.getElementById('btnDownloadPDF').addEventListener('click', async () => {
+    async function generateFullPDF() {
         if (!window.calculatedResults) return alert('Результаты не найдены.');
         
         const { jsPDF } = window.jspdf;
@@ -925,7 +1066,6 @@
         const marginX = 15;
         const contentWidth = pageWidth - 2 * marginX;
         
-        // Создаем временный div для рендеринга HTML в PDF
         const tempDiv = document.createElement('div');
         tempDiv.style.cssText = `position:fixed; left:-9999px; top:0; width:${Math.floor(contentWidth * 3.78)}px; background:#fff; padding:20px; font-family:Arial, Helvetica, sans-serif; color:#222; font-size:13px; line-height:1.5;`;
         
@@ -998,18 +1138,16 @@
             const imgHeight = (canvas.height * imgWidth) / canvas.width;
             
             let heightLeft = imgHeight;
-            let position = 15; // Отступ сверху
+            let position = 15; 
             
-            // Первая страница
             doc.addImage(imgData, 'JPEG', marginX, position, imgWidth, imgHeight, undefined, 'FAST');
-            heightLeft -= (doc.internal.pageSize.getHeight() - position - 15); // Вычитаем высоту первой страницы минус отступы
+            heightLeft -= (doc.internal.pageSize.getHeight() - position - 15); 
             
-            // Последующие страницы, если контент длинный
             while (heightLeft > 0) {
-                position = heightLeft - imgHeight + 15; // Смещение вверх для следующей части
+                position = heightLeft - imgHeight + 15; 
                 doc.addPage();
                 doc.addImage(imgData, 'JPEG', marginX, position, imgWidth, imgHeight, undefined, 'FAST');
-                heightLeft -= (doc.internal.pageSize.getHeight() - 30); // Высота страницы минус отступы сверху и снизу
+                heightLeft -= (doc.internal.pageSize.getHeight() - 30); 
             }
             
             doc.save(`TA_Report_${Date.now()}.pdf`);
@@ -1019,10 +1157,9 @@
         } finally {
             document.body.removeChild(tempDiv);
         }
-    });
+    }
 
-    // Копирование промпта для снов
-    document.getElementById('copyDreamBtn').addEventListener('click', () => {
+    function copyDreamPrompt() {
         const text = document.getElementById('dreamPromptText').innerText;
         navigator.clipboard.writeText(text).then(() => {
             const btn = document.getElementById('copyDreamBtn');
@@ -1036,7 +1173,7 @@
             console.error('Failed to copy: ', err);
             alert('Не удалось скопировать. Выделите текст вручную.');
         });
-    });
+    }
 </script>
 
 </body>
