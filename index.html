@@ -938,7 +938,7 @@
         answers: {} 
     };
 
-    const STORAGE_KEY = 'ta_quiz_state_v7'; 
+    const STORAGE_KEY = 'ta_quiz_state_v8'; 
 
     function loadState() {
         try {
@@ -1055,11 +1055,13 @@
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
+    // ИСПРАВЛЕННАЯ ФУНКЦИЯ ВЫБОРА ОТВЕТА
     window.selectOption = function(questionIndex, value) {
         const q = questions[questionIndex];
         currentState.answers[q.id] = value;
         saveState();
         
+        // Принудительное обновление UI
         const options = document.querySelectorAll('.option-label');
         options.forEach(opt => {
             opt.classList.remove('selected');
@@ -1068,6 +1070,7 @@
             }
         });
 
+        // Активация кнопки Далее
         const nextBtn = document.getElementById('btnNext');
         if(nextBtn) nextBtn.disabled = false;
     }
@@ -1239,7 +1242,7 @@
     }
 
     // ==========================================
-    // 5. ГЕНЕРАЦИЯ PDF (НОВАЯ ЛОГИКА С AUTOTABLE)
+    // 5. ГЕНЕРАЦИЯ PDF (СТАБИЛЬНАЯ ВЕРСИЯ)
     // ==========================================
     function generateFullPDF() {
         if (!window.finalResults) return alert('Результаты не найдены.');
@@ -1253,7 +1256,7 @@
         
         let y = margin;
 
-        // Хелпер для проверки конца страницы
+        // Хелпер: Проверка конца страницы с учетом запаса
         const checkPageBreak = (neededSpace) => {
             if (y + neededSpace > pageHeight - margin) {
                 doc.addPage();
@@ -1261,45 +1264,49 @@
             }
         };
 
-        // Хелпер для добавления текста с переносом
+        // Хелпер: Добавление текста с автоматическим переносом
         const addText = (text, fontSize = 10, fontStyle = 'normal', color = [51, 51, 51], maxWidth = contentWidth) => {
             doc.setFontSize(fontSize);
             doc.setFontStyle(fontStyle);
             doc.setTextColor(...color);
             const lines = doc.splitTextToSize(text, maxWidth);
-            const lineHeight = fontSize * 0.5; // Примерная высота строки в мм
+            const lineHeight = fontSize * 0.5 + 1; 
             
             lines.forEach(line => {
-                checkPageBreak(lineHeight + 2);
+                checkPageBreak(lineHeight);
                 doc.text(line, margin, y);
-                y += lineHeight + 1;
+                y += lineHeight;
             });
             y += 2; // Отступ после параграфа
         };
 
-        // Хелпер для заголовков
+        // Хелпер: Заголовки
         const addHeader = (text, level = 1) => {
-            checkPageBreak(15);
+            // Для H1 оставляем больше места сверху, если это начало секции
+            if(level === 1) checkPageBreak(20); 
+            else checkPageBreak(15);
+
             if (level === 1) {
-                doc.setFontSize(16);
+                doc.setFontSize(14);
                 doc.setFontStyle('bold');
-                doc.setTextColor(99, 102, 241); // Primary
+                doc.setTextColor(99, 102, 241); // Primary Indigo
             } else {
-                doc.setFontSize(12);
+                doc.setFontSize(11);
                 doc.setFontStyle('bold');
-                doc.setTextColor(31, 41, 55); // Dark
+                doc.setTextColor(31, 41, 55); // Dark Gray
             }
             doc.text(text, margin, y);
             y += level === 1 ? 8 : 6;
             
             // Линия под заголовком
             doc.setDrawColor(229, 231, 235);
+            doc.setLineWidth(0.2);
             doc.line(margin, y - 2, pageWidth - margin, y - 2);
             y += 4;
         };
 
         // --- ЛИЦО ОТЧЕТА ---
-        doc.setFontSize(20);
+        doc.setFontSize(18);
         doc.setFontStyle('bold');
         doc.setTextColor(99, 102, 241);
         doc.text("Отчет по транзактному анализу", pageWidth / 2, y, { align: 'center' });
@@ -1311,7 +1318,7 @@
         doc.text(`Дата прохождения: ${new Date().toLocaleDateString('ru-RU')}`, pageWidth / 2, y, { align: 'center' });
         y += 20;
 
-        // --- 1. РЕЗЮМЕ ПРОФИЛЯ (ТАБЛИЦА) ---
+        // --- 1. РЕЗЮМЕ ПРОФИЛЯ (ТАБЛИЦА AUTOTABLE) ---
         addHeader("1. Резюме профиля");
         
         const tableRows = window.finalResults.map(res => {
@@ -1319,15 +1326,30 @@
             return [LABELS[res.category], res.score.toString(), level];
         });
 
+        // Используем autoTable для идеального переноса таблиц
         doc.autoTable({
             startY: y,
             head: [['Параметр', 'Балл (0-5)', 'Уровень']],
             body: tableRows,
             theme: 'grid',
-            styles: { fontSize: 9, cellPadding: 3 },
-            headStyles: { fillColor: [99, 102, 241], textColor: 255 },
-            alternateRowStyles: { fillColor: [249, 250, 251] },
-            margin: { left: margin, right: margin }
+            styles: { 
+                fontSize: 9, 
+                cellPadding: 3,
+                valign: 'middle'
+            },
+            headStyles: { 
+                fillColor: [99, 102, 241], 
+                textColor: 255,
+                fontStyle: 'bold'
+            },
+            alternateRowStyles: { 
+                fillColor: [249, 250, 251] 
+            },
+            margin: { left: margin, right: margin },
+            showHead: 'everyPage', // Повторять шапку на каждой странице
+            didDrawPage: (data) => {
+                // Можно добавить колонтитулы здесь, если нужно
+            }
         });
 
         y = doc.lastAutoTable.finalY + 10;
@@ -1339,21 +1361,47 @@
         if (window.topInjData.length > 0) {
             window.topInjData.forEach(item => {
                 const data = INJ_INTERP[item.category];
+                
+                // Проверяем место для всего блока (Заголовок + Текст + Разрешение)
+                // Примерная высота блока ~35мм
+                checkPageBreak(40); 
+                
                 addHeader(`${LABELS[item.category]} (${item.score}/5)`, 2);
                 
-                // Цветной фон для блока (имитация карточки)
-                const boxHeight = 30; // Приблизительно
-                checkPageBreak(boxHeight);
+                // Фон блока
+                const boxTop = y;
+                const boxHeight = 35; // Фиксированная высота для предсказуемости
                 
                 doc.setFillColor(254, 242, 242); // Light Red BG
-                doc.rect(margin, y - 2, contentWidth, boxHeight, 'F');
+                doc.rect(margin, boxTop - 2, contentWidth, boxHeight, 'F');
                 doc.setDrawColor(220, 38, 38); // Red Border
-                doc.line(margin, y - 2, margin, y + boxHeight - 2);
+                doc.setLineWidth(0.5);
+                doc.line(margin, boxTop - 2, margin, boxTop + boxHeight - 2);
 
                 y += 4;
-                addText(`Проявления: ${data ? data.manifests : ''}`, 9, 'normal', [51, 51, 51], contentWidth - 4);
-                addText(`Разрешение: ${ALLOWANCES[item.category]}`, 9, 'bold', [5, 150, 105], contentWidth - 4);
                 
+                // Текст проявлений
+                const manifestLines = doc.splitTextToSize(`Проявления: ${data ? data.manifests : ''}`, contentWidth - 4);
+                manifestLines.forEach(line => {
+                    doc.setFontSize(9);
+                    doc.setFontStyle('normal');
+                    doc.setTextColor(51, 51, 51);
+                    doc.text(line, margin + 2, y);
+                    y += 4;
+                });
+                
+                y += 2; // Пробел между текстами
+                
+                // Разрешение
+                const allowanceLines = doc.splitTextToSize(`Разрешение: ${ALLOWANCES[item.category]}`, contentWidth - 4);
+                allowanceLines.forEach(line => {
+                    doc.setFontSize(9);
+                    doc.setFontStyle('bold');
+                    doc.setTextColor(5, 150, 105); // Green
+                    doc.text(line, margin + 2, y);
+                    y += 4;
+                });
+
                 y += 6; // Отступ после блока
             });
         } else {
@@ -1367,20 +1415,42 @@
         if (window.topDrvData.length > 0) {
             window.topDrvData.forEach(item => {
                 const data = DRV_INTERP[item.category];
+                
+                checkPageBreak(40);
+                
                 addHeader(`${LABELS[item.category]} (${item.score}/5)`, 2);
                 
-                const boxHeight = 30;
-                checkPageBreak(boxHeight);
+                const boxTop = y;
+                const boxHeight = 35;
                 
                 doc.setFillColor(236, 253, 245); // Light Green BG
-                doc.rect(margin, y - 2, contentWidth, boxHeight, 'F');
+                doc.rect(margin, boxTop - 2, contentWidth, boxHeight, 'F');
                 doc.setDrawColor(5, 150, 105); // Green Border
-                doc.line(margin, y - 2, margin, y + boxHeight - 2);
+                doc.setLineWidth(0.5);
+                doc.line(margin, boxTop - 2, margin, boxTop + boxHeight - 2);
 
                 y += 4;
-                addText(`Проявления: ${data ? data.manifests : ''}`, 9, 'normal', [51, 51, 51], contentWidth - 4);
-                addText(`Практика выхода: ${data ? data.action : ''}`, 9, 'bold', [79, 70, 229], contentWidth - 4);
                 
+                const manifestLines = doc.splitTextToSize(`Проявления: ${data ? data.manifests : ''}`, contentWidth - 4);
+                manifestLines.forEach(line => {
+                    doc.setFontSize(9);
+                    doc.setFontStyle('normal');
+                    doc.setTextColor(51, 51, 51);
+                    doc.text(line, margin + 2, y);
+                    y += 4;
+                });
+                
+                y += 2;
+                
+                const practiceLines = doc.splitTextToSize(`Практика выхода: ${data ? data.action : ''}`, contentWidth - 4);
+                practiceLines.forEach(line => {
+                    doc.setFontSize(9);
+                    doc.setFontStyle('bold');
+                    doc.setTextColor(79, 70, 229); // Purple
+                    doc.text(line, margin + 2, y);
+                    y += 4;
+                });
+
                 y += 6;
             });
         } else {
@@ -1393,20 +1463,36 @@
             addText("Взаимодействие инъюнкций и драйверов в вашем профиле.", 9, 'italic', [107, 114, 128]);
 
             window.foundPairs.forEach(pair => {
+                checkPageBreak(30);
+                
                 addHeader(`${LABELS[pair.inj]} + ${LABELS[pair.drv]}`, 2);
                 
+                const boxTop = y;
                 const boxHeight = 25;
-                checkPageBreak(boxHeight);
                 
                 doc.setFillColor(255, 251, 235); // Light Yellow BG
-                doc.rect(margin, y - 2, contentWidth, boxHeight, 'F');
+                doc.rect(margin, boxTop - 2, contentWidth, boxHeight, 'F');
                 doc.setDrawColor(245, 158, 11); // Orange Border
-                doc.line(margin, y - 2, margin, y + boxHeight - 2);
+                doc.setLineWidth(0.5);
+                doc.line(margin, boxTop - 2, margin, boxTop + boxHeight - 2);
 
                 y += 4;
-                addText(pair.desc, 9, 'normal', [51, 51, 51], contentWidth - 4);
-                addText(`Баллы: Инъюнкция ${pair.iScore}, Драйвер ${pair.dScore}`, 8, 'italic', [107, 114, 128], contentWidth - 4);
                 
+                const descLines = doc.splitTextToSize(pair.desc, contentWidth - 4);
+                descLines.forEach(line => {
+                    doc.setFontSize(9);
+                    doc.setFontStyle('normal');
+                    doc.setTextColor(51, 51, 51);
+                    doc.text(line, margin + 2, y);
+                    y += 4;
+                });
+                
+                y += 2;
+                
+                doc.setFontSize(8);
+                doc.setFontStyle('italic');
+                doc.setTextColor(107, 114, 128);
+                doc.text(`Баллы: Инъюнкция ${pair.iScore}, Драйвер ${pair.dScore}`, margin + 2, y);
                 y += 6;
             });
         }
@@ -1426,8 +1512,10 @@
             doc.setFontSize(9);
             doc.setFontStyle('normal');
             doc.setTextColor(51, 51, 51);
+            
             // Маркер списка
             doc.circle(margin + 1, y - 1, 0.5, 'F'); 
+            
             const lines = doc.splitTextToSize(rec, contentWidth - 5);
             lines.forEach(line => {
                 checkPageBreak(5);
