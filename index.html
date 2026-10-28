@@ -8,6 +8,10 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Cormorant+Garamond:ital,wght@1,500;1,600&display=swap" rel="stylesheet">
 
+    <!-- ПОДКЛЮЧЕНИЕ БИБЛИОТЕК ДЛЯ PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
     <style>
         :root {
             --primary: #6366f1;       
@@ -485,6 +489,29 @@
         .copy-btn:hover { background: #4338ca; }
         .copy-btn.copied { background: var(--success); }
 
+        /* Стили для генерируемого PDF контента (скрытого) */
+        #pdf-generator {
+            position: absolute;
+            left: -9999px;
+            top: 0;
+            width: 800px; /* Ширина A4 примерно 794px при 96dpi */
+            background: white;
+            padding: 40px;
+            font-family: Arial, sans-serif; /* Безопасный шрифт для canvas */
+            color: #333;
+        }
+        #pdf-generator h1 { color: #6366f1; border-bottom: 2px solid #6366f1; padding-bottom: 10px; margin-bottom: 20px; font-size: 24px; }
+        #pdf-generator h2 { color: #1f2937; margin-top: 30px; border-left: 4px solid #6366f1; padding-left: 10px; font-size: 18px; page-break-after: avoid; }
+        #pdf-generator table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        #pdf-generator th, #pdf-generator td { border: 1px solid #ddd; padding: 8px; text-align: left; font-size: 12px; }
+        #pdf-generator th { background-color: #f3f4f6; font-weight: bold; }
+        #pdf-generator .block-inj { background-color: #fef2f2; border-left: 4px solid #dc2626; padding: 15px; margin-bottom: 15px; border-radius: 4px; }
+        #pdf-generator .block-drv { background-color: #ecfdf5; border-left: 4px solid #059669; padding: 15px; margin-bottom: 15px; border-radius: 4px; }
+        #pdf-generator .block-pair { background-color: #fffbeb; border-left: 4px solid #f59e0b; padding: 15px; margin-bottom: 15px; border-radius: 4px; }
+        #pdf-generator .allowance { color: #059669; font-weight: bold; }
+        #pdf-generator .practice { color: #4f46e5; font-weight: bold; }
+        #pdf-generator .disclaimer { margin-top: 40px; font-size: 10px; color: #666; border-top: 1px solid #eee; padding-top: 10px; text-align: center; }
+
         @media (max-width: 768px) {
             .content { padding: 30px 20px; }
             .header h1 { font-size: 2rem; }
@@ -768,7 +795,7 @@
             <h2>Ваши результаты</h2>
             <div id="resultsBody"></div>
             
-            <button class="btn-start" id="btnDownloadPDF" style="margin-top: 20px;">📥 Скачать отчет (.html)</button>
+            <button class="btn-start" id="btnDownloadPDF" style="margin-top: 20px;">📥 Скачать отчет (PDF)</button>
             <button class="btn-nav btn-prev" onclick="location.reload()" style="width: 100%; margin-top: 10px; text-align: center;">Пройти тест заново</button>
 
             <div class="main-accordion" style="margin-top: 30px;">
@@ -782,7 +809,7 @@
                         
                         <div class="dream-prompt-box" id="dreamPromptBlock">
                             <button class="copy-btn" id="copyDreamBtn">📋 Копировать</button>
-<span id="dreamPromptText">Активируй режим «ТА-Аналитик Снов». Ты — эксперт по Транзактному анализу Эрика Берна. Твоя задача — анализировать мои сны строго через призму ТА, без мистики, сонников и фрейдизма.
+<span id="dreamPromptText">Активируй режим «ТА-Аналитик Снов». Ты — эксперт по Трансактному анализу Эрика Берна. Твоя задача — анализировать мои сны строго через призму ТА, без мистики, сонников и фрейдизма.
 
 ТВОИ КЛЮЧЕВЫЕ ПРАВИЛА:
 1. Структурный анализ: Распределяй всех персонажей и объекты сна по эго-состояниям (Родитель, Взрослый, Ребенок). Уточняй их модификации (Критикующий/Заботливый Родитель, Адаптивный/Свободный Ребенок).
@@ -805,6 +832,9 @@
         </div>
     </div>
 </div>
+
+<!-- СКРЫТЫЙ КОНТЕЙНЕР ДЛЯ ГЕНЕРАЦИИ PDF -->
+<div id="pdf-generator"></div>
 
 <script>
     // ==========================================
@@ -1012,7 +1042,7 @@
         });
 
         document.getElementById('btnBackToTheory').addEventListener('click', goBackToHome);
-        document.getElementById('btnDownloadPDF').addEventListener('click', downloadReportFile);
+        document.getElementById('btnDownloadPDF').addEventListener('click', generateRealPDF);
         document.getElementById('copyDreamBtn').addEventListener('click', copyDreamPrompt);
     });
 
@@ -1240,164 +1270,151 @@
     }
 
     // ==========================================
-    // 5. ГЕНЕРАЦИЯ И СКАЧИВАНИЕ ФАЙЛА ОТЧЕТА
+    // 5. ГЕНЕРАЦИЯ НАСТОЯЩЕГО PDF (через html2canvas + jsPDF)
     // ==========================================
-    function downloadReportFile() {
+    async function generateRealPDF() {
         if (!window.finalResults) return alert('Результаты не найдены.');
         
-        const dateStr = new Date().toLocaleDateString('ru-RU');
-        const fileName = `TA_Report_${dateStr.replace(/\./g, '-')}.html`;
+        const btn = document.getElementById('btnDownloadPDF');
+        const originalText = btn.innerText;
+        btn.innerText = '⏳ Генерация PDF...';
+        btn.disabled = true;
 
-        // Строим полный HTML документ для скачивания
-        let reportHtml = `
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <title>Отчет по транзактному анализу</title>
-    <style>
-        body { font-family: Arial, Helvetica, sans-serif; color: #333; line-height: 1.5; padding: 40px; max-width: 800px; margin: 0 auto; background: white; }
-        h1 { color: #6366f1; border-bottom: 2px solid #6366f1; padding-bottom: 10px; font-size: 24px; }
-        h2 { color: #1f2937; margin-top: 30px; border-left: 4px solid #6366f1; padding-left: 10px; font-size: 18px; page-break-after: avoid; }
-        h3 { color: #dc2626; margin-top: 20px; font-size: 16px; page-break-after: avoid; }
-        table { width: 100%; border-collapse: collapse; margin: 20px 0; page-break-inside: avoid; }
-        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; font-size: 14px; }
-        th { background-color: #f3f4f6; font-weight: bold; }
-        .high-score { color: #dc2626; font-weight: bold; }
-        .medium-score { color: #d97706; font-weight: bold; }
-        .low-score { color: #6b7280; }
-        .allowance { color: #059669; font-weight: bold; }
-        .practice { color: #4f46e5; font-weight: bold; }
-        .block-inj { background-color: #fef2f2; border-left: 4px solid #dc2626; padding: 15px; margin-bottom: 15px; border-radius: 4px; page-break-inside: avoid; }
-        .block-drv { background-color: #ecfdf5; border-left: 4px solid #059669; padding: 15px; margin-bottom: 15px; border-radius: 4px; page-break-inside: avoid; }
-        .block-pair { background-color: #fffbeb; border-left: 4px solid #f59e0b; padding: 15px; margin-bottom: 15px; border-radius: 4px; page-break-inside: avoid; }
-        .disclaimer { margin-top: 40px; font-size: 0.8em; color: #666; border-top: 1px solid #eee; padding-top: 10px; text-align: center; }
-        @media print {
-            body { padding: 0; }
-            button { display: none; }
-        }
-    </style>
-</head>
-<body>
-    <h1>Отчет по транзактному анализу</h1>
-    <p>Дата прохождения: ${dateStr}</p>
+        try {
+            // 1. Формируем HTML контент для скрытого div
+            const generatorDiv = document.getElementById('pdf-generator');
+            let pdfHtml = `
+                <h1>Отчет по транзактному анализу</h1>
+                <p>Дата прохождения: ${new Date().toLocaleDateString('ru-RU')}</p>
 
-    <h2>1. Резюме профиля</h2>
-    <table>
-        <tr><th>Параметр</th><th>Балл (0-5)</th><th>Уровень</th></tr>
-`;
+                <h2>1. Резюме профиля</h2>
+                <table>
+                    <tr><th>Параметр</th><th>Балл (0-5)</th><th>Уровень</th></tr>
+            `;
 
-        window.finalResults.forEach(res => {
-            const level = res.score >= 4.0 ? 'Высокий' : (res.score >= 3.0 ? 'Средний' : 'Низкий');
-            const className = res.score >= 4.0 ? 'high-score' : (res.score >= 3.0 ? 'medium-score' : 'low-score');
-            reportHtml += `
-        <tr>
-            <td>${LABELS[res.category]}</td>
-            <td class="${className}">${res.score}</td>
-            <td class="${className}">${level}</td>
-        </tr>
-`;
-        });
-
-        reportHtml += `
-    </table>
-
-    <h2>2. Ведущие инъюнкции</h2>
-    <p><i>Это глубинные запрещающие послания, составляющие ядро вашего сценария.</i></p>
-`;
-
-        if (window.topInjData.length > 0) {
-            window.topInjData.forEach(item => {
-                const data = INJ_INTERP[item.category];
-                reportHtml += `
-    <div class="block-inj">
-        <h3>${LABELS[item.category]} (${item.score}/5)</h3>
-        <p><strong>Как проявляется:</strong> ${data ? data.manifests : ''}</p>
-        <p class="allowance"><strong>Разрешение:</strong> ${ALLOWANCES[item.category]}</p>
-    </div>
-`;
+            window.finalResults.forEach(res => {
+                const level = res.score >= 4.0 ? 'Высокий' : (res.score >= 3.0 ? 'Средний' : 'Низкий');
+                pdfHtml += `
+                    <tr>
+                        <td>${LABELS[res.category]}</td>
+                        <td>${res.score}</td>
+                        <td>${level}</td>
+                    </tr>
+                `;
             });
-        } else {
-            reportHtml += `<p>Значимых инъюнкций не выявлено (балл ниже 2.5).</p>`;
-        }
 
-        reportHtml += `
-    <h2>3. Ведущие драйверы</h2>
-    <p><i>Компенсаторные паттерны поведения, активируемые в стрессе.</i></p>
-`;
+            pdfHtml += `
+                </table>
 
-        if (window.topDrvData.length > 0) {
-            window.topDrvData.forEach(item => {
-                const data = DRV_INTERP[item.category];
-                reportHtml += `
-    <div class="block-drv">
-        <h3 style="color:#059669">${LABELS[item.category]} (${item.score}/5)</h3>
-        <p><strong>Как проявляется:</strong> ${data ? data.manifests : ''}</p>
-        <p class="practice"><strong>Практика выхода:</strong> ${data ? data.action : ''}</p>
-    </div>
-`;
+                <h2>2. Ведущие инъюнкции</h2>
+                <p><i>Это глубинные запрещающие послания, составляющие ядро вашего сценария.</i></p>
+            `;
+
+            if (window.topInjData.length > 0) {
+                window.topInjData.forEach(item => {
+                    const data = INJ_INTERP[item.category];
+                    pdfHtml += `
+                        <div class="block-inj">
+                            <h3>${LABELS[item.category]} (${item.score}/5)</h3>
+                            <p><strong>Как проявляется:</strong> ${data ? data.manifests : ''}</p>
+                            <p class="allowance"><strong>Разрешение:</strong> ${ALLOWANCES[item.category]}</p>
+                        </div>
+                    `;
+                });
+            } else {
+                pdfHtml += `<p>Значимых инъюнкций не выявлено (балл ниже 2.5).</p>`;
+            }
+
+            pdfHtml += `
+                <h2>3. Ведущие драйверы</h2>
+                <p><i>Компенсаторные паттерны поведения, активируемые в стрессе.</i></p>
+            `;
+
+            if (window.topDrvData.length > 0) {
+                window.topDrvData.forEach(item => {
+                    const data = DRV_INTERP[item.category];
+                    pdfHtml += `
+                        <div class="block-drv">
+                            <h3 style="color:#059669">${LABELS[item.category]} (${item.score}/5)</h3>
+                            <p><strong>Как проявляется:</strong> ${data ? data.manifests : ''}</p>
+                            <p class="practice"><strong>Практика выхода:</strong> ${data ? data.action : ''}</p>
+                        </div>
+                    `;
+                });
+            } else {
+                pdfHtml += `<p>Значимых драйверов не выявлено (балл ниже 2.5).</p>`;
+            }
+
+            if (window.foundPairs.length > 0) {
+                pdfHtml += `
+                    <h2>4. Сценарные связки</h2>
+                    <p><i>Взаимодействие инъюнкций и драйверов в вашем профиле.</i></p>
+                `;
+                window.foundPairs.forEach(pair => {
+                    pdfHtml += `
+                        <div class="block-pair">
+                            <h3 style="color:#92400e">${LABELS[pair.inj]} + ${LABELS[pair.drv]}</h3>
+                            <p>${pair.desc}</p>
+                            <p><small>Баллы: Инъюнкция ${pair.iScore}, Драйвер ${pair.dScore}</small></p>
+                        </div>
+                    `;
+                });
+            }
+
+            pdfHtml += `
+                <h2>5. Общие рекомендации</h2>
+                <ul>
+                    <li><strong>Осознание:</strong> Замечайте моменты, когда включаются ваши ведущие паттерны.</li>
+                    <li><strong>Деконтраминация:</strong> Отделяйте факты реальности от старых детских решений.</li>
+                    <li><strong>Разрешения:</strong> Ежедневно повторяйте свои персональные разрешения.</li>
+                    <li><strong>Новые решения:</strong> Сценарий можно изменить Взрослым эго-состоянием.</li>
+                </ul>
+
+                <div class="disclaimer">
+                    <strong>Дисклеймер:</strong> Данный отчет является инструментом для самопознания и рефлексии, основанным на методологии транзактного анализа (Э. Берн, Р. и М. Гулдинги, В. Джойнс). Он не является клиническим диагнозом и не заменяет консультацию квалифицированного психотерапевта.
+                </div>
+            `;
+
+            // Вставляем HTML в скрытый div
+            generatorDiv.innerHTML = pdfHtml;
+
+            // 2. Делаем скриншот этого div в Canvas
+            const canvas = await html2canvas(generatorDiv, {
+                scale: 2, // Высокое качество
+                useCORS: true,
+                logging: false,
+                backgroundColor: '#ffffff'
             });
-        } else {
-            reportHtml += `<p>Значимых драйверов не выявлено (балл ниже 2.5).</p>`;
+
+            // 3. Создаем PDF
+            const imgData = canvas.toDataURL('image/png');
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF('p', 'mm', 'a4');
+            
+            const pdfWidth = pdf.internal.pageSize.getWidth();
+            const pdfHeight = pdf.internal.pageSize.getHeight();
+            const imgWidth = canvas.width;
+            const imgHeight = canvas.height;
+            const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
+            const scaledWidth = imgWidth * ratio;
+            const scaledHeight = imgHeight * ratio;
+            
+            // Центрирование по горизонтали
+            const xOffset = (pdfWidth - scaledWidth) / 2;
+            
+            // Добавляем изображение в PDF
+            pdf.addImage(imgData, 'PNG', xOffset, 0, scaledWidth, scaledHeight);
+            
+            // 4. Скачиваем
+            pdf.save(`TA_Report_${Date.now()}.pdf`);
+
+        } catch (error) {
+            console.error("Ошибка генерации PDF:", error);
+            alert("Произошла ошибка при создании PDF. Попробуйте обновить страницу.");
+        } finally {
+            btn.innerText = originalText;
+            btn.disabled = false;
         }
-
-        if (window.foundPairs.length > 0) {
-            reportHtml += `
-    <h2>4. Сценарные связки</h2>
-    <p><i>Взаимодействие инъюнкций и драйверов в вашем профиле.</i></p>
-`;
-            window.foundPairs.forEach(pair => {
-                reportHtml += `
-    <div class="block-pair">
-        <h3 style="color:#92400e">${LABELS[pair.inj]} + ${LABELS[pair.drv]}</h3>
-        <p>${pair.desc}</p>
-        <p><small>Баллы: Инъюнкция ${pair.iScore}, Драйвер ${pair.dScore}</small></p>
-    </div>
-`;
-            });
-        }
-
-        reportHtml += `
-    <h2>5. Общие рекомендации</h2>
-    <ul>
-        <li><strong>Осознание:</strong> Замечайте моменты, когда включаются ваши ведущие паттерны. Что происходит в теле? Какие мысли возникают?</li>
-        <li><strong>Деконтраминация:</strong> Отделяйте факты реальности («здесь и сейчас») от старых детских решений. Спрашивайте себя: «Это правда обо мне сейчас?»</li>
-        <li><strong>Разрешения:</strong> Ежедневно повторяйте вслух или про себя свои персональные разрешения (см. разделы выше).</li>
-        <li><strong>Новые решения:</strong> По Берну, сценарий — это решение. Вы можете принять новое решение Взрослым эго-состоянием.</li>
-    </ul>
-
-    <div class="disclaimer">
-        <strong>Дисклеймер:</strong> Данный отчет является инструментом для самопознания и рефлексии, основанным на методологии транзактного анализа (Э. Берн, Р. и М. Гулдинги, В. Джойнс). Он не является клиническим диагнозом и не заменяет консультацию квалифицированного психотерапевта.
-    </div>
-
-    <script>
-        // Автоматически запускаем печать при открытии файла
-        window.onload = function() {
-            setTimeout(function() {
-                window.print();
-            }, 1000);
-        };
-    <\/script>
-</body>
-</html>
-        `;
-
-        // Создаем Blob
-        const blob = new Blob([reportHtml], { type: 'text/html;charset=utf-8' });
-        const url = URL.createObjectURL(blob);
-        
-        // Создаем ссылку и кликаем по ней программно
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = fileName;
-        document.body.appendChild(a);
-        a.click();
-        
-        // Очистка памяти
-        setTimeout(() => {
-            document.body.removeChild(a);
-            window.URL.revokeObjectURL(url);
-        }, 100);
     }
 
     function copyDreamPrompt() {
