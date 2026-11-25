@@ -934,7 +934,7 @@ function buildTheory(){
       <h5>Минискрипт Калера</h5>
       <div class="formula">
         <span class="fnode" style="background:#4f46e5">1 · Драйвер</span><span class="farrow">→</span>
-        <span class="fnode" style="background:#0891b2">2 · Стоппор</span><span class="farrow">→</span>
+        <span class="fnode" style="background:#0891b2">2 · Стоппер</span><span class="farrow">→</span>
         <span class="fnode" style="background:#dc2626">3 · Обвинитель</span><span class="farrow">→</span>
         <span class="fnode" style="background:#5b21b6">4 · Разочарованный</span>
       </div>
@@ -1434,7 +1434,7 @@ function renderResults(){
 
   const chain=[
     {n:1,t:'Драйвер',c:'#4f46e5',s:`${DR[R.drvRank[0]].name}: «${DR[R.drvRank[0]].cond}». Вы мобилизуетесь.`},
-    {n:2,t:'Стоппор',c:'#0891b2',s:`Условие не выполнено → включается «${INJ[R.injRank[0]].name}». Позиция Я−Ты+, чувство: ${RACK[R.rkKey].name.toLowerCase()}.`},
+    {n:2,t:'Стоппер',c:'#0891b2',s:`Условие не выполнено → включается «${INJ[R.injRank[0]].name}». Позиция Я−Ты+, чувство: ${RACK[R.rkKey].name.toLowerCase()}.`},
     {n:3,t:'Обвинитель',c:'#dc2626',s:'«Это их вина» — Я+Ты−. Ответственность выносится наружу, рэкетное чувство получает оправдание.'},
     {n:4,t:'Разочарованный',c:'#5b21b6',s:'«Всё бессмысленно» — Я−Ты−. Сценарий подтверждён, собрана ещё одна «марка».'}
   ];
@@ -1738,7 +1738,7 @@ function pdfBlocks(){
     <h3>Ваш минискрипт Калера</h3>
     <table><tr><th>Позиция</th><th>Что происходит</th></tr>
       <tr><td>1 · Драйвер</td><td>${DR[R.drvRank[0]].name}: «${esc(DR[R.drvRank[0]].cond)}». Мобилизация.</td></tr>
-      <tr><td>2 · Стоппор</td><td>Условие не выполнено → «${INJ[R.injRank[0]].name}». Я−Ты+, чувство: ${RACK[R.rkKey].name.toLowerCase()}.</td></tr>
+      <tr><td>2 · Стоппер</td><td>Условие не выполнено → «${INJ[R.injRank[0]].name}». Я−Ты+, чувство: ${RACK[R.rkKey].name.toLowerCase()}.</td></tr>
       <tr><td>3 · Обвинитель</td><td>«Это их вина» — Я+Ты−. Ответственность выносится наружу.</td></tr>
       <tr><td>4 · Разочарованный</td><td>«Всё бессмысленно» — Я−Ты−. Сценарий подтверждён, собрана «марка».</td></tr></table>
     <div class="box" style="border-left-color:${VECTORS[R.vector].c}"><h3>${VECTORS[R.vector].t} · индекс ${R.vec}/100</h3>
