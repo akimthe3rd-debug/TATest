@@ -38,7 +38,6 @@ body{
   min-height:100vh; overflow-x:hidden; position:relative;
   padding:26px 16px 60px;
 }
-/* ---------- layered background ---------- */
 .bg{position:fixed;inset:0;z-index:-3;background:
   radial-gradient(120% 90% at 12% 0%, #4c2f9e 0%, transparent 55%),
   radial-gradient(100% 80% at 92% 8%, #a3286f 0%, transparent 52%),
@@ -54,14 +53,12 @@ body{
 @keyframes drift3{0%,100%{transform:translate(0,0)}50%{transform:translate(5vw,-6vh)}}
 .grain{position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.16;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E");}
-/* ---------- scrollbars ---------- */
 *{scrollbar-width:thin;scrollbar-color:#8b7bd8 rgba(255,255,255,.08)}
 ::-webkit-scrollbar{width:11px;height:11px}
 ::-webkit-scrollbar-track{background:rgba(49,46,129,.14);border-radius:20px}
 ::-webkit-scrollbar-thumb{background:linear-gradient(180deg,#6366f1,#a855f7 55%,#ec4899);border-radius:20px;border:2px solid transparent;background-clip:padding-box}
 ::-webkit-scrollbar-thumb:hover{background:linear-gradient(180deg,#818cf8,#c084fc 55%,#f472b6);background-clip:padding-box}
 ::-webkit-scrollbar-corner{background:transparent}
-/* ---------- shell ---------- */
 .shell{max-width:940px;margin:0 auto;background:rgba(255,255,255,.975);border-radius:var(--r-lg);
   box-shadow:var(--shadow-lg);overflow:hidden;position:relative;
   border:1px solid rgba(255,255,255,.5);animation:rise .7s cubic-bezier(.2,.8,.2,1) both}
@@ -83,7 +80,6 @@ body{
 .myth-chip{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:600;color:#fff;
   background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);padding:6px 11px 6px 8px;border-radius:99px}
 .myth-chip svg{width:17px;height:17px;flex:none}
-/* ---------- stage bar ---------- */
 .stagebar{display:flex;background:#f7f5ff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:40}
 .stage{flex:1;padding:14px 8px;text-align:center;font-size:13.5px;font-weight:600;color:var(--faint);
   background:none;border:0;cursor:pointer;font-family:inherit;position:relative;transition:color .25s,background .25s}
@@ -96,7 +92,6 @@ body{
 .view{display:none}
 .view.on{display:block;animation:fade .45s ease both}
 @keyframes fade{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
-/* ---------- accordion ---------- */
 .acc{border:1px solid var(--line);border-radius:var(--r-md);overflow:hidden;background:#fff;margin-bottom:14px}
 .acc-head{width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;
   padding:17px 20px;background:linear-gradient(180deg,#faf8ff,#f4f1fd);border:0;cursor:pointer;
@@ -131,7 +126,6 @@ body{
   margin:12px 0;font-size:13.8px;color:var(--ink-2);font-style:italic}
 .note{background:#fffbeb;border:1px solid #fde68a;border-radius:11px;padding:12px 15px;font-size:13.4px;color:#92400e;margin:14px 0}
 .note b{color:#78350f}
-/* ---------- generic bits ---------- */
 .grid-inj{display:grid;grid-template-columns:repeat(auto-fit,minmax(132px,1fr));gap:8px;margin:14px 0}
 .inj-pill{background:#eef2ff;color:#3730a3;border:1px solid #dbeafe;border-radius:9px;padding:8px 6px;
   text-align:center;font-size:12.6px;font-weight:600}
@@ -142,7 +136,6 @@ body{
 .formula{display:flex;flex-wrap:wrap;gap:7px;align-items:center;margin:14px 0;font-size:12.6px;font-weight:600}
 .fnode{padding:7px 11px;border-radius:9px;color:#fff;white-space:nowrap}
 .farrow{color:var(--faint);font-weight:700}
-/* ---------- myth cards ---------- */
 .myths{display:grid;gap:14px;margin:16px 0}
 .myth{border:1px solid var(--line);border-left-width:5px;border-radius:15px;padding:17px 19px;background:#fff;
   position:relative;overflow:hidden;transition:transform .3s cubic-bezier(.2,.8,.2,1),box-shadow .3s}
@@ -158,7 +151,6 @@ body{
 .myth dd{color:var(--ink-2)}
 .tagrow{display:flex;flex-wrap:wrap;gap:6px;margin-top:11px}
 .tag{font-size:11.6px;font-weight:600;padding:4px 9px;border-radius:99px;background:#f4f1fd;color:var(--violet-deep);border:1px solid #e6e1f5}
-/* ---------- start panel ---------- */
 .startcard{border:1px solid var(--line);border-radius:var(--r-md);background:linear-gradient(180deg,#fff,#faf8ff);padding:22px}
 .metarow{display:flex;flex-wrap:wrap;gap:9px;margin-bottom:18px}
 .meta{display:flex;align-items:center;gap:7px;font-size:12.8px;font-weight:600;color:var(--magenta-deep);
@@ -169,7 +161,7 @@ body{
 .bm-t{font-size:14px;font-weight:600;color:var(--ink)}
 .bm-d{font-size:12.4px;color:var(--muted)}
 .bm-c{margin-left:auto;font-size:11.6px;font-weight:700;color:var(--violet);background:#f4f1fd;padding:4px 9px;border-radius:99px;white-space:nowrap}
-.btn{display:inline-flex;align-items:center justify-content:center;gap:9px;align-items:center;justify-content:center;
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;
   padding:14px 26px;border:0;border-radius:13px;font-family:inherit;font-size:15px;font-weight:600;cursor:pointer;
   background:var(--grad);color:#fff;box-shadow:0 10px 26px -10px rgba(124,58,237,.75);
   transition:transform .22s cubic-bezier(.2,.8,.2,1),box-shadow .22s,filter .22s;text-align:center}
@@ -180,9 +172,7 @@ body{
 .btn.ghost{background:#f4f1fd;color:var(--ink-2);border:1px solid var(--line-2);box-shadow:none}
 .btn.ghost:hover{background:#ebe5fb}
 .btn.small{padding:9px 15px;font-size:13px;border-radius:10px}
-.btn.danger{background:linear-gradient(135deg,#dc2626,#be185d)}
 .btnrow{display:flex;gap:10px;flex-wrap:wrap}
-/* ---------- quiz ---------- */
 .qtop{padding:18px 34px;background:#faf8ff;border-bottom:1px solid var(--line)}
 .chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:9px;margin-bottom:11px}
 .chip{flex:none;display:flex;align-items:center;gap:6px;padding:6px 11px;border-radius:99px;font-size:11.8px;font-weight:600;
@@ -218,7 +208,6 @@ body{
 .choice.sel .dot::after{border-radius:2px}
 .qnav{display:flex;justify-content:space-between;gap:10px;margin-top:26px}
 .hintline{font-size:12.6px;color:var(--faint);margin-top:14px;text-align:center}
-/* ---------- pause ---------- */
 .pause{text-align:center;padding:14px 6px 8px}
 .breath{width:172px;height:172px;margin:6px auto 22px;position:relative;display:grid;place-items:center}
 .breath .ring{position:absolute;inset:0;border-radius:50%;border:2px solid rgba(124,58,237,.28)}
@@ -239,7 +228,6 @@ body{
 .pause-stats{display:flex;justify-content:center;gap:9px;flex-wrap:wrap;margin-bottom:20px}
 .pstat{background:#f4f1fd;border:1px solid var(--line);border-radius:11px;padding:9px 14px;font-size:12.6px;color:var(--ink-2);font-weight:600}
 .pstat b{color:var(--violet);font-size:15px}
-/* ---------- analyzing ---------- */
 .analyzing{text-align:center;padding:40px 10px}
 .orbit{width:120px;height:120px;margin:0 auto 24px;position:relative}
 .orbit i{position:absolute;inset:0;border-radius:50%;border:2px solid transparent;border-top-color:var(--indigo);animation:spin 1.4s linear infinite}
@@ -249,7 +237,6 @@ body{
 .analyzing h2{font-family:'Cormorant Garamond',Georgia,serif;font-size:1.7rem;margin-bottom:8px}
 .analyzing p{color:var(--muted);font-size:14px}
 .alog{margin-top:18px;font-size:12.6px;color:var(--violet);font-weight:600;min-height:20px}
-/* ---------- results ---------- */
 .hero{border-radius:20px;padding:26px;color:#fff;position:relative;overflow:hidden;margin-bottom:20px}
 .hero::after{content:'';position:absolute;inset:0;background:radial-gradient(80% 120% at 90% -20%,rgba(255,255,255,.28),transparent 60%);pointer-events:none}
 .hero>*{position:relative;z-index:1}
@@ -263,7 +250,6 @@ body{
 .badges{display:flex;gap:7px;flex-wrap:wrap;margin-top:14px}
 .badge{font-size:11.8px;font-weight:700;padding:5px 11px;border-radius:99px;background:rgba(255,255,255,.18);
   border:1px solid rgba(255,255,255,.3);color:#fff}
-/* toolbar */
 .toolbar{position:sticky;top:47px;z-index:30;background:rgba(250,248,255,.96);backdrop-filter:blur(8px);
   border:1px solid var(--line);border-radius:15px;padding:12px 14px;margin-bottom:20px;box-shadow:var(--shadow-md)}
 .tb-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
@@ -288,7 +274,6 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;bac
 .sw input:checked+i{background:var(--grad)}
 .sw input:checked+i::after{transform:translateX(16px)}
 .tbval{font-variant-numeric:tabular-nums;color:var(--violet);font-weight:700;min-width:30px}
-/* sections */
 .rsec{margin-bottom:26px;scroll-margin-top:120px}
 .rsec>h3{font-family:'Cormorant Garamond',Georgia,serif;font-size:1.62rem;font-weight:600;color:var(--ink);
   margin-bottom:4px;display:flex;align-items:center;gap:10px}
@@ -313,26 +298,22 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;bac
 .fill{height:100%;border-radius:99px;width:0;transition:width .9s cubic-bezier(.2,.8,.2,1)}
 .row-note{font-size:12.6px;color:var(--muted);margin-top:7px}
 .hidden-row{display:none}
-/* radar */
 .chartwrap{border:1px solid var(--line);border-radius:18px;background:linear-gradient(180deg,#fdfcff,#f6f2ff);padding:14px;margin-bottom:14px}
-.chartwrap svg{width:100%;height:auto;display:block;max-height:420px}
+.chartwrap svg{width:100%;height:auto;display:block;max-height:440px}
 .legend{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:8px}
 .lg{display:flex;align-items:center;gap:6px;font-size:11.8px;font-weight:600;color:var(--ink-2)}
 .lg i{width:11px;height:11px;border-radius:4px;flex:none}
-/* corral */
 .corral{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}
 .cq{border:1px solid var(--line);border-radius:13px;padding:13px;background:#fff;position:relative;transition:.3s}
 .cq.on{border-width:2px;box-shadow:var(--shadow-md)}
 .cq b{display:block;font-size:14px;margin-bottom:3px}
 .cq span{font-size:12.4px;color:var(--muted)}
 .cq .v{position:absolute;top:11px;right:12px;font-size:13px;font-weight:800;font-variant-numeric:tabular-nums}
-/* mini script */
 .chain{display:grid;gap:8px;margin:12px 0}
 .cn{display:flex;gap:12px;align-items:flex-start;border-radius:12px;padding:12px 14px;color:#fff}
 .cn b{font-size:13.4px;display:block}
 .cn span{font-size:12.6px;opacity:.92}
 .cn .n{width:24px;height:24px;flex:none;border-radius:8px;background:rgba(255,255,255,.22);display:grid;place-items:center;font-size:12px;font-weight:800}
-/* table */
 .tbl{width:100%;border-collapse:collapse;font-size:13.6px;margin-top:8px}
 .tbl th{text-align:left;font-size:11.4px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);
   padding:8px 10px;border-bottom:2px solid var(--line)}
@@ -340,30 +321,25 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;bac
 .tbl td:first-child{font-weight:600;color:var(--ink);white-space:nowrap}
 .tbl tr:last-child td{border-bottom:0}
 .allow{color:var(--emerald-deep);font-weight:600}
-/* steps */
 .steps{counter-reset:s;display:grid;gap:10px;margin-top:10px}
 .step{display:flex;gap:13px;align-items:flex-start;background:#fff;border:1px solid var(--line);border-radius:13px;padding:13px 15px}
 .step::before{counter-increment:s;content:counter(s);width:26px;height:26px;flex:none;border-radius:9px;
   background:var(--grad);color:#fff;display:grid;place-items:center;font-size:12.5px;font-weight:800}
 .step b{display:block;font-size:14px;color:var(--ink);margin-bottom:2px}
 .step span{font-size:13.4px;color:var(--ink-2)}
-/* contract */
 .contract{display:grid;gap:10px;margin-top:12px}
 .field label{display:block;font-size:12.2px;font-weight:700;color:var(--violet-deep);margin-bottom:5px;letter-spacing:.02em}
 .field input,.field textarea{width:100%;font-family:inherit;font-size:14px;color:var(--ink);background:#faf8ff;
   border:1px solid var(--line-2);border-radius:11px;padding:11px 13px;resize:vertical}
 .field input:focus,.field textarea:focus{outline:2px solid var(--violet);outline-offset:1px;background:#fff}
 .cout{background:#1a1730;color:#e9e4ff;border-radius:13px;padding:16px;font-size:13.4px;line-height:1.7;white-space:pre-wrap;margin-top:10px}
-/* dream */
 .prompt{background:#1a1730;color:#ddd6fe;border-radius:14px;padding:46px 18px 18px;font-family:'Courier New',monospace;
   font-size:12.4px;line-height:1.68;white-space:pre-wrap;position:relative;margin-top:12px;max-height:420px;overflow:auto}
 .copy{position:absolute;top:11px;right:11px;background:var(--grad);color:#fff;border:0;border-radius:9px;
   padding:7px 13px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;transition:.22s}
 .copy:hover{filter:brightness(1.12)}
 .copy.ok{background:linear-gradient(135deg,#059669,#0d9488)}
-/* export */
 .export{display:flex;gap:10px;flex-wrap:wrap;padding-top:20px;border-top:1px solid var(--line);margin-top:8px}
-/* toast + modal */
 .toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,26px);background:#1a1730;color:#fff;
   padding:12px 20px;border-radius:13px;font-size:13.6px;font-weight:600;box-shadow:var(--shadow-lg);
   opacity:0;pointer-events:none;transition:.32s cubic-bezier(.2,.8,.2,1);z-index:200;max-width:90vw;text-align:center}
@@ -376,7 +352,6 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;bac
 .mbox p{font-size:13.6px;color:var(--muted);margin-bottom:16px}
 .mbar{height:8px;background:#eee9fa;border-radius:99px;overflow:hidden}
 .mbar i{display:block;height:100%;width:0;background:var(--grad);border-radius:99px;transition:width .3s}
-/* pdf stage */
 #pdfStage{position:fixed;left:-12000px;top:0;width:794px;background:#fff}
 .pb{width:794px;background:#fff;padding:0 0 4px;font-family:Arial,Helvetica,sans-serif;color:#25203c;font-size:13px;line-height:1.58}
 .pb h1{font-family:Georgia,serif;font-size:27px;color:#4c1d95;margin:0 0 6px;line-height:1.2}
@@ -436,7 +411,6 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;bac
     <button class="stage" id="stRes" data-view="results" disabled>Результаты<span>профиль</span></button>
   </nav>
 
-  <!-- ============ HOME / THEORY ============ -->
   <section class="view on" id="v-home">
     <div class="pad">
       <div class="acc">
@@ -462,7 +436,6 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;bac
     </div>
   </section>
 
-  <!-- ============ QUIZ ============ -->
   <section class="view" id="v-quiz">
     <div class="qtop">
       <div class="chips" id="chips"></div>
@@ -477,7 +450,6 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;bac
     </div>
   </section>
 
-  <!-- ============ PAUSE ============ -->
   <section class="view" id="v-pause">
     <div class="pad">
       <div class="pause">
@@ -496,7 +468,6 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;bac
     </div>
   </section>
 
-  <!-- ============ ANALYZING ============ -->
   <section class="view" id="v-analyzing">
     <div class="pad"><div class="analyzing">
       <div class="orbit"><i></i><i></i><i></i><i></i></div>
@@ -506,7 +477,6 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;bac
     </div></div>
   </section>
 
-  <!-- ============ RESULTS ============ -->
   <section class="view" id="v-results">
     <div class="pad" id="resHost"></div>
   </section>
@@ -521,9 +491,6 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;bac
 
 <script>
 "use strict";
-/* ══════════════════════════════════════════════════════════════
-   1. ЗНАНИЯ: сценарные процессы, драйверы, инъюнкции, позиции
-   ══════════════════════════════════════════════════════════════ */
 const ICONS = {
   hourglass:'<path d="M7 3h10M7 21h10M8 3c0 4 8 5 8 9s-8 5-8 9M16 3c0 4-8 5-8 9s8 5 8 9" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>',
   sword:'<path d="M12 2v7M12 9l-3.2 3.2h6.4L12 9zM12 12.2V22M9 19h6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="2" r="1" fill="currentColor"/>',
@@ -636,7 +603,7 @@ const INJ = {
   'not-be-child':{name:'Не будь ребёнком',permission:'Будь ребёнком. Спонтанность и игра тебе разрешены.',text:'Запрет на лёгкость и игру, вина за отдых, хроническая серьёзность.'},
   'not-grow':{name:'Не расти',permission:'Расти. Ты имеешь право взрослеть и уходить вперёд.',text:'Отступление перед переменами, страх ответственности, удержание в знакомом.'},
   'not-succeed':{name:'Не добивайся успеха',permission:'Добивайся успеха. Ты имеешь право быть заметным.',text:'Саботаж на пороге успеха, неловкость от похвалы, «случайные» промахи в ключевой момент.'},
-  'not-be-close':{name:'Не приближайся',permission:'Приближайся. Близость для тебя безопасна.',text:'Дистанция в отношениях, отдаление при сближении, easier открыться тому, с кем скоро расстанешься.'},
+  'not-be-close':{name:'Не приближайся',permission:'Приближайся. Близость для тебя безопасна.',text:'Дистанция в отношениях, отдаление при сближении; легче открыться тому, с кем скоро расстанешься.'},
   'not-trust':{name:'Не доверяй',permission:'Доверяй. Ты можешь опираться на себя и на других.',text:'Ожидание подвоха, запасные планы, невозможность опереться, гиперконтроль.'},
   'not-feel':{name:'Не чувствуй',permission:'Чувствуй. Все твои эмоции законны.',text:'Эмоциональное онемение, трудность назвать чувство, анализ вместо проживания, психосоматика.'},
   'not-matter':{name:'Не будь важным',permission:'Будь важным. Твои потребности имеют значение.',text:'Свои желания «неважны», трудность просить, ощущение, что занимаешь слишком много места.'},
@@ -644,16 +611,14 @@ const INJ = {
   'not-be-well':{name:'Не будь здоровым',permission:'Будь здоровым. Ты имеешь право на благополучие.',text:'Игнорирование сигналов тела, забота о других вместо себя, саморазрушающие привычки.'},
   'not-belong':{name:'Не принадлежи',permission:'Принадлежи. Ты имеешь право быть частью.',text:'Ощущение «я чужой», отстранённость даже среди близких, трудность расслабиться в группе.'}
 };
-INJ['not-be-close'].text='Дистанция в отношениях, отдаление при сближении, легче открыться тому, с кем скоро расстанешься.';
 const INJ_ORDER = Object.keys(INJ);
 
 const POS = {
   'ok':{name:'Я+ Ты+',title:'Сотрудничество',hue:'#059669',text:'«Мы оба в порядке — давай решим задачу». Единственная позиция, целиком опирающаяся на реальность. Из неё строятся сценарии Победителя.'},
-  'dep':{name:'Я− Ты+',title:'Уход / депрессивная',hue:'#0891b2',text:'«Со мной что-то не так, другие лучше».从这里 легче уйти, чем предъявить себя. Питает сценарии «Никогда» и «Почти».'},
+  'dep':{name:'Я− Ты+',title:'Уход / депрессивная',hue:'#0891b2',text:'«Со мной что-то не так, другие лучше». Отсюда легче уйти, чем предъявить себя. Питает сценарии «Никогда» и «Почти».'},
   'par':{name:'Я+ Ты−',title:'Избавление / обвиняющая',hue:'#dc2626',text:'«Я в порядке, виноваты они». Защищает от собственной уязвимости, но людей рядом становится меньше. Питает «Всегда» и игры Преследователя.'},
   'fut':{name:'Я− Ты−',title:'Выжидание / бесплодная',hue:'#7c3aed',text:'«Всё бессмысленно — и я, и они». Позиция безнадёжности; энергия уходит на выжидание. Питает «Открытый конец» и отказ от риска.'}
 };
-POS.dep.text='«Со мной что-то не так, другие лучше». Отсюда легче уйти, чем предъявить себя. Питает сценарии «Никогда» и «Почти».';
 const POS_ORDER=['ok','dep','par','fut'];
 
 const RACK = {
@@ -664,9 +629,6 @@ const RACK = {
 };
 const RACK_ORDER=['anger','hurt','guilt','fear'];
 
-/* ══════════════════════════════════════════════════════════════
-   2. ВОПРОСЫ
-   ══════════════════════════════════════════════════════════════ */
 const L=(id,cat,text)=>({id,type:'scale',cat,text});
 const BLOCKS = [
   {id:'process',title:'Течение времени',sub:'Сценарный процесс',desc:'Как вы проживаете ожидание, радость и завершение',
@@ -696,7 +658,7 @@ const BLOCKS = [
     L('o3','open','Мысль о жизни «после того как всё будет сделано» вызывает растерянность, а не свободу.')
    ]},
   {id:'drivers',title:'Что вами движет',sub:'Пять драйверов Калера',desc:'Условное «Я ОК, если…» — то, что включается в стрессе первым',
-   insight:'Драйвер длится от полу секунды до семи секунд — и за это время проигрывает весь ваш сценарий в миниатюре. Мы измерили, какой из пяти включается у вас первым.',
+   insight:'Драйвер длится от полусекунды до семи секунд — и за это время проигрывает весь ваш сценарий в миниатюре. Мы измерили, какой из пяти включается у вас первым.',
    quote:'«Пять драйверов — это функциональные проявления неблагополучных контрсценариев.» — Таиби Калер',
    items:[
     L('bp1','be-perfect','Я стремлюсь делать всё идеально и избегаю ошибок.'),
@@ -745,7 +707,7 @@ const BLOCKS = [
     L('i24','not-belong','Даже среди близких я иногда чувствую себя отстранённым.')
    ]},
   {id:'position',title:'Позиция и чувства',sub:'ОК-коррал и рэкет',desc:'Базовая жизненная позиция, привычное чувство и сценарный вектор',
-   insight:'Позиция — это фундамент, на котором стоит весь сценарий. Рэкетное чувство — валюта, которой вы оплачиваете право не менять behaviour. Оба меняются.',
+   insight:'Позиция — это фундамент, на котором стоит весь сценарий. Рэкетное чувство — валюта, которой вы оплачиваете право не менять поведение. И то, и другое меняется.',
    quote:'«Все люди — ОК. Каждый человек способен думать. Все люди определяют свою судьбу, и эти решения могут быть изменены.» — Ян Стюарт, Вэнн Джойнс',
    items:[
     L('p1','ok','В трудной ситуации я ищу решение вместе с другими, а не виноватого.'),
@@ -805,7 +767,6 @@ const BLOCKS = [
    quote:'«Если вы проживаете сценарий с открытым концом — вам преподнесли подарок: финальные страницы утеряны, и вы можете написать желаемую концовку.» — Ян Стюарт, Вэнн Джойнс',
    items:[]}
 ];
-BLOCKS[3].insight='Позиция — это фундамент, на котором стоит весь сценарий. Рэкетное чувство — валюта, которой вы оплачиваете право не менять поведение. И то, и другое меняется.';
 
 const RESERVE = {
   process:{
@@ -844,9 +805,6 @@ const SCALE=[{v:1,t:'Совсем не про меня'},{v:2,t:'Скорее н
 const TOTAL = BLOCKS.reduce((s,b)=>s+(b.id==='adaptive'?8:b.items.length),0);
 const STORE='ta_script_profile_v3';
 
-/* ══════════════════════════════════════════════════════════════
-   3. СОСТОЯНИЕ
-   ══════════════════════════════════════════════════════════════ */
 let S={b:0,i:0,answers:{},adaptive:[],done:false,started:null};
 let RESULT=null;
 let UI={sort:'score',threshold:55,chart:'bars',onlySig:false,tips:true};
@@ -858,9 +816,6 @@ function wipe(){try{localStorage.removeItem(STORE);}catch(e){} S={b:0,i:0,answer
 function itemsOf(b){return BLOCKS[b].id==='adaptive'?S.adaptive:BLOCKS[b].items;}
 function answeredCount(){return Object.keys(S.answers).length;}
 
-/* ══════════════════════════════════════════════════════════════
-   4. ТЕОРИЯ
-   ══════════════════════════════════════════════════════════════ */
 function mythCard(k,compact){
   const s=SC[k];
   return `<article class="myth" style="border-left-color:${s.hue}">
@@ -927,7 +882,7 @@ function buildTheory(){
       <h5>Как передаются</h5><p>Невербально: тон, мимика, напряжение тела, эмоциональная атмосфера, паттерн прикосновений. Ребёнок считывает их <em>Маленьким Профессором</em> — Взрослым в Ребёнке.</p>
       <h5>Как ощущаются сейчас</h5><p>Не как слова, а как <strong>телесный дискомфорт</strong> при попытке поступить вопреки: сердцебиение, «сосёт под ложечкой», внезапная неловкость. Поэтому рациональные уговоры против инъюнкции бессильны — нужно <strong>разрешение</strong>.</p>`],
     ['Драйверы: пять условий «Я ОК, если…»',`
-      <p>Таиби Калер обнаружил пять наборов поведения, которые включаются <strong>перед</strong> входом в сценарий и длятся от полу секунды до семи секунд. Это квинтэссенция самых эмоционально заряженных контрприказаний.</p>
+      <p>Таиби Калер обнаружил пять наборов поведения, которые включаются <strong>перед</strong> входом в сценарий и длятся от полусекунды до семи секунд. Это квинтэссенция самых эмоционально заряженных контрприказаний.</p>
       <ul>${DR_ORDER.map(k=>`<li><strong>${DR[k].name}</strong> — ${DR[k].cond}</li>`).join('')}</ul>
       <div class="note"><b>Откуда берутся:</b> драйверы вырастают на <em>условных позитивных поглаживаниях</em>. Ребёнок заметил, что тёплый отклик приходит только при определённом поведении, и сделал вывод: «Я ОК, <em>если</em>…».</div>
       <h5>Кем и когда</h5><p>Из <strong>Родителя родителя</strong> в <strong>Родителя ребёнка</strong>, вербально, в 3–12 лет: «Будь лучшим!», «Не плачь!», «Поторопись!», «Думай о других!», «Старайся больше!».</p>
@@ -975,7 +930,7 @@ function buildTheory(){
       <p>Берн определяет это <em>не</em> по деньгам и статусу, а по тому, достиг ли человек <strong>поставленной им самим цели</strong>. Победитель знает, что будет делать, если проиграет, — и имеет несколько путей. Непобедитель много работает, чтобы сыграть вничью, и не рискует. Побеждённый не достигает цели или достигает её ценой разрушения.</p>
       <div class="quote">«Победитель знает, что будет делать, если проиграет, но не говорит об этом. Побеждённый не знает, но только и делает, что говорит о победе.» — Эрик Берн</div>`],
     ['Игры и треугольник Карпмана',`
-      <p><strong>Игра</strong> — повторяющаяся серия скрытых трансакций, ведущая к предсказуемой расплате в виде рэкетного чувства. Внешне это выглядит как деловой разговор или просьба о помощи; на психологическом уровне происходит совсем другое.</p>
+      <p><strong>Игра</strong> — повторяющаяся серия скрытых транзакций, ведущая к предсказуемой расплате в виде рэкетного чувства. Внешне это выглядит как деловой разговор или просьба о помощи; на психологическом уровне происходит совсем другое.</p>
       <h5>Формула игры: шесть стадий по Берну</h5>
       <div class="formula">
         <span class="fnode" style="background:#4f46e5">1 · Крючок</span><span class="farrow">+</span>
@@ -988,12 +943,12 @@ function buildTheory(){
       <ol>
         <li><strong>Крючок</strong> — скрытое приглашение: «Попробуй мне помочь, у тебя всё равно не выйдет».</li>
         <li><strong>Клёв</strong> — слабое место партнёра: его сценарная потребность («я должен помогать всем»).</li>
-        <li><strong>Отклик</strong> — серия внешне честных трансакций: советы, возражения, «да, но…».</li>
+        <li><strong>Отклик</strong> — серия внешне честных транзакций: советы, возражения, «да, но…».</li>
         <li><strong>Переключение</strong> — момент, когда роли меняются: помощник становится виноватым.</li>
         <li><strong>Смятение</strong> — доля секунды «что, чёрт возьми, произошло?».</li>
         <li><strong>Расплата</strong> — оба получают знакомое рэкетное чувство и «марку» в коллекцию.</li>
       </ol>
-      <div class="note"><b>Важно:</b> без переключения и смятения это не игра, а <em>рэкет</em> или времяпрепровождение. Именно переключение делает交互 драматичной.</div>
+      <div class="note"><b>Важно:</b> без переключения и смятения это не игра, а <em>рэкет</em> или времяпрепровождение. Именно переключение делает взаимодействие драматичным.</div>
       <h5>Драматический треугольник</h5>
       <div class="diagram"><svg viewBox="0 0 400 250" xmlns="http://www.w3.org/2000/svg">
         <polygon points="200,44 62,196 338,196" fill="none" stroke="#7c3aed" stroke-width="2.6"/>
@@ -1057,9 +1012,6 @@ function buildTheory(){
       <div class="bm-c">${b.id==='adaptive'?8:b.items.length} вопр.</div></div>`).join('');
 }
 
-/* ══════════════════════════════════════════════════════════════
-   5. НАВИГАЦИЯ
-   ══════════════════════════════════════════════════════════════ */
 const VIEWS={home:'v-home',quiz:'v-quiz',pause:'v-pause',analyzing:'v-analyzing',results:'v-results'};
 function go(name){
   Object.values(VIEWS).forEach(id=>document.getElementById(id).classList.remove('on'));
@@ -1071,9 +1023,6 @@ function go(name){
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('on');
   clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('on'),2600);}
 
-/* ══════════════════════════════════════════════════════════════
-   6. ОПРОСНИК
-   ══════════════════════════════════════════════════════════════ */
 function buildAdaptive(){
   const p=prelimProcess(), ij=avgByCat(BLOCKS[2].items), dr=avgByCat(BLOCKS[1].items);
   const topP=SC_ORDER.slice().sort((a,b)=>p[b]-p[a]).slice(0,2);
@@ -1089,7 +1038,6 @@ function avgByCat(items){
   const sum={},n={};
   items.forEach(q=>{const v=S.answers[q.id];if(v){sum[q.cat]=(sum[q.cat]||0)+v;n[q.cat]=(n[q.cat]||0)+1;}});
   const o={};Object.keys(sum).forEach(k=>o[k]=sum[k]/n[k]);
-  Object.keys(sum).length||0;
   return new Proxy(o,{get:(t,k)=>k in t?t[k]:1});
 }
 function prelimProcess(){
@@ -1188,9 +1136,6 @@ function runAnalysis(){
   tick();
 }
 
-/* ══════════════════════════════════════════════════════════════
-   7. ПОДСЧЁТ
-   ══════════════════════════════════════════════════════════════ */
 function pool(items,extra){
   const sum={},n={};
   const add=(cat,v)=>{sum[cat]=(sum[cat]||0)+v;n[cat]=(n[cat]||0)+1;};
@@ -1227,7 +1172,8 @@ function compute(){
     almost:Math.max(proc.almost1,proc.almost2),open:proc.open};
   const rankRaw=SC_ORDER.slice().sort((a,b)=>proc[b]-proc[a]);
   const topKey=rankRaw[0];
-  const secondKey=rankRaw.find(k=>!( (k==='almost1'||k==='almost2') && (topKey==='almost1'||topKey==='almost2') )) || rankRaw[1];
+  const fam=k=>(k==='almost1'||k==='almost2')?'almost':k;
+  const secondKey=rankRaw.find(k=>fam(k)!==fam(topKey))||rankRaw[1];
   const rankDisp=SC_DISPLAY.slice().sort((a,b)=>display[b]-display[a]);
 
   const drvRank=DR_ORDER.slice().sort((a,b)=>drv[b]-drv[a]);
@@ -1266,23 +1212,20 @@ function compute(){
     drvRank,injRank,posKey,rkKey,confirmed,clarity,gap,vector,pairs,date:new Date()};
 }
 
-/* ══════════════════════════════════════════════════════════════
-   8. ВИЗУАЛИЗАЦИИ
-   ══════════════════════════════════════════════════════════════ */
 function scOf(k){return k==='almost'?SC[RESULT.almostType]:SC[k];}
 function scName(k){if(k!=='almost')return SC[k].name;
   return RESULT.almostMixed?'Почти · смешанный':SC[RESULT.almostType].name;}
 function scMyth(k){return k==='almost'?'Сизиф':SC[k].myth;}
 
 function radarSVG(){
-  const cx=250,cy=228,R=155;
+  const cx=310,cy=232,R=150,LR=196;
   const keys=SC_DISPLAY;
   const pts=keys.map((k,i)=>{
     const a=-Math.PI/2+i*Math.PI*2/6;
     const v=Math.max(4,RESULT.display[k])/100;
     return {k,a,x:cx+Math.cos(a)*R*v,y:cy+Math.sin(a)*R*v,
       fx:cx+Math.cos(a)*R,fy:cy+Math.sin(a)*R,
-      lx:cx+Math.cos(a)*(R+36),ly:cy+Math.sin(a)*(R+36)};
+      lx:cx+Math.cos(a)*LR,ly:cy+Math.sin(a)*LR};
   });
   let rings='';
   [0.25,0.5,0.75,1].forEach(f=>{
@@ -1295,10 +1238,9 @@ function radarSVG(){
   const dots=pts.map(p=>{const s=scOf(p.k);
     return `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="6" fill="${s.hue}" stroke="#fff" stroke-width="2.5"/>`;}).join('');
   const labels=pts.map(p=>{const s=scOf(p.k);
-    const anchor=Math.abs(p.lx-cx)<12?'middle':(p.lx>cx?'start':'end');
-    return `<text x="${p.lx.toFixed(1)}" y="${(p.ly-3).toFixed(1)}" text-anchor="${anchor}" font-family="Inter,sans-serif" font-size="12.5" font-weight="700" fill="${s.deep}">${scMyth(p.k)}</text>
-      <text x="${p.lx.toFixed(1)}" y="${(p.ly+12).toFixed(1)}" text-anchor="${anchor}" font-family="Inter,sans-serif" font-size="11" fill="#6b6591">${scName(p.k)} · ${RESULT.display[p.k]}</text>`;}).join('');
-  return `<svg viewBox="0 0 500 456" xmlns="http://www.w3.org/2000/svg">
+    return `<text x="${p.lx.toFixed(1)}" y="${(p.ly-3).toFixed(1)}" text-anchor="middle" font-family="Inter,sans-serif" font-size="12.5" font-weight="700" fill="${s.deep}">${scMyth(p.k)}</text>
+      <text x="${p.lx.toFixed(1)}" y="${(p.ly+12).toFixed(1)}" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" fill="#6b6591">${scName(p.k)} · ${RESULT.display[p.k]}</text>`;}).join('');
+  return `<svg viewBox="0 0 620 470" xmlns="http://www.w3.org/2000/svg">
     <defs><linearGradient id="rg" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0%" stop-color="#7c3aed" stop-opacity=".38"/><stop offset="55%" stop-color="#ec4899" stop-opacity=".3"/>
       <stop offset="100%" stop-color="#f59e0b" stop-opacity=".28"/></linearGradient></defs>
@@ -1330,9 +1272,6 @@ function animateBars(root){
   requestAnimationFrame(()=>{root.querySelectorAll('.fill[data-w]').forEach(f=>{f.style.width=f.dataset.w+'%';});});
 }
 
-/* ══════════════════════════════════════════════════════════════
-   9. РЕЗУЛЬТАТЫ
-   ══════════════════════════════════════════════════════════════ */
 const VECTORS={
   winner:{t:'Вектор Победителя',c:'#059669',d:'Вы в целом достигаете того, что сами себе поставили, и знаете, что делать при срыве плана. По Берну это и есть определение Победителя — вне зависимости от статуса и денег.'},
   nonwinner:{t:'Вектор Непобедителя',c:'#d97706',d:'Много сил и мало риска: вы работаете, чтобы сыграть вничью. «По крайней мере, я…». Это устойчиво, но не даёт того, чего вы действительно хотите.'},
@@ -1653,9 +1592,6 @@ const DREAM_PROMPT=`Активируй режим «ТА-Аналитик Сно
 
 Ответь только: «Режим активирован. Я готов анализировать ваши сны по Берну. Расскажите свой сон, и мы начнём с поиска эго-состояний ваших персонажей.»`;
 
-/* ══════════════════════════════════════════════════════════════
-   10. PDF
-   ══════════════════════════════════════════════════════════════ */
 function pdfBar(v,hue){return `<span class="bar"><i style="width:${Math.max(2,v)}%;background:${hue}"></i></span>`;}
 function pdfBlocks(){
   const R=RESULT,top=scOf(R.rankDisp[0]),sec=scOf(R.rankDisp[1]),B=[];
@@ -1777,7 +1713,7 @@ function pdfBlocks(){
     <p class="kv"><b>Осознание</b> — видеть и слышать так, как видите вы, а не как вас научили. <b>Спонтанность</b> — свободно выбирать эго-состояние для реакции. <b>Близость</b> — прямой обмен подлинными чувствами и желаниями без игр.</p>
     <p class="kv" style="font-style:italic;color:#5b21b6">«Сначала почувствуйте себя лучше, а уж потом посмотрим, хотите ли вы по-прежнему измениться.» — Эрик Берн</p>`);
 
-  const ctA=document.getElementById('ctA'),ctOut=document.getElementById('ctOut');
+  const ctOut=document.getElementById('ctOut');
   if(ctOut&&ctOut.dataset.txt){
     B.push(`<h2>${R.pairs.length?10:9}. Ваш контракт на изменение</h2>
       <div class="box" style="border-left-color:#059669;background:#ecfdf5">
@@ -1871,9 +1807,6 @@ async function makePDF(){
   finally{modal.classList.remove('on');stage.innerHTML='';}
 }
 
-/* ══════════════════════════════════════════════════════════════
-   11. СТАРТ
-   ══════════════════════════════════════════════════════════════ */
 function refreshStart(){
   const saved=load();
   const has=saved&&Object.keys(saved.answers||{}).length>0&&!saved.done;
